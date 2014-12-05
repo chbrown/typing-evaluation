@@ -1,0 +1,66 @@
+---
+id: typing-evaluation/demographics/v01
+$schema: "http://json-schema.org/draft-04/schema#"
+title: Demographics Form
+description: Typing Evaluation Demographics Form
+type: object
+properties:
+  gender:
+    description: Gender
+    # male | female | other [free text]
+    type: string
+  date_of_birth:
+    description: Date of birth
+    type: string
+    format: date-time
+  family_history_of_neurological_diseases:
+    description: Family history of neurological diseases
+    type: string
+  drug_history:
+    description: Drug history
+    type: string
+  education:
+    description: Education
+    type: string
+  typing_experience:
+    description: Typing experience
+    enum:
+      - None
+      - Some
+      - Medium
+      - High
+      - Secretarial proficiency
+  game_experience:
+    description: Game experience
+    enum:
+      - None
+      - Some
+      - Medium
+      - High
+  typing_frequency:
+    description: How often do you type on a key board?
+    enum:
+      - Once a week or less
+      - 2 to 5 days a week
+      - 6 days a week or more
+  date_of_symptom_onset:
+    description: (Parkinson's Disease patients only) Date of symptom onset
+    type: string
+    format: date-time
+  date_of_confirmed_diagnosis:
+    description: (Parkinson's Disease patients only) Date of confirmed diagnosis
+    type: string
+    format: date-time
+  user_agent:
+    description: Participant's browser User-Agent identifier
+    type: string
+  ip_address:
+    description: Participant's connection IP Address
+    type: string
+    format: ipv4
+required:
+  - gender
+  - date_of_birth
+  - user_agent
+  - ip_address
+additionalProperties: false
