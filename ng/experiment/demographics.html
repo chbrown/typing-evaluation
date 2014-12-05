@@ -1,0 +1,77 @@
+<form name="form" ng-submit="submit($event)" style="width: 600px">
+  <div class="block">
+    <div class="description">Gender</div>
+    <div><label><input type="radio" name="gender" ng-model="demographics.gender" value="Male" required> Male</label></div>
+    <div><label><input type="radio" name="gender" ng-model="demographics.gender" value="Female" required> Female</label></div>
+    <div>
+      <label><input type="radio" name="gender" value="on" ng-click="demographics.gender = ''" required> Other</label>
+      <span ng-if="demographics.gender != 'Male' && demographics.gender != 'Female' && demographics.gender != null">
+        <input name="gender" ng-model="demographics.gender" required>
+      </span>
+    </div>
+  </div>
+  <label class="block">
+    <div class="description">Date of birth</div>
+    <div>
+      <input name="date_of_birth" type="date" ng-model="demographics.date_of_birth" required>
+    </div>
+  </label>
+  <label class="block">
+    <div class="description">Family history of neurological diseases</div>
+    <div>
+      <textarea name="family_history_of_neurological_diseases"
+        ng-model="demographics.family_history_of_neurological_diseases"></textarea>
+    </div>
+  </label>
+  <label class="block">
+    <div class="description">Drug history</div>
+    <div>
+      <textarea name="drug_history"
+        ng-model="demographics.drug_history"></textarea>
+    </div>
+  </label>
+  <label class="block">
+    <div class="description">Education</div>
+    <div>
+      <textarea name="education"
+        ng-model="demographics.education"></textarea>
+    </div>
+  </label>
+  <div class="block">
+    <div class="description">Typing experience</div>
+    <div><label><input type="radio" name="typing_experience" ng-model="demographics.typing_experience" value="None"> None</label></div>
+    <div><label><input type="radio" name="typing_experience" ng-model="demographics.typing_experience" value="Some"> Some</label></div>
+    <div><label><input type="radio" name="typing_experience" ng-model="demographics.typing_experience" value="Medium"> Medium</label></div>
+    <div><label><input type="radio" name="typing_experience" ng-model="demographics.typing_experience" value="High"> High</label></div>
+    <div><label><input type="radio" name="typing_experience" ng-model="demographics.typing_experience" value="Secretarial proficiency"> Secretarial proficiency</label></div>
+  </div>
+  <div class="block">
+    <div class="description">Game experience</div>
+    <div><label><input type="radio" name="game_experience" ng-model="demographics.game_experience" value="None"> None</label></div>
+    <div><label><input type="radio" name="game_experience" ng-model="demographics.game_experience" value="Some"> Some</label></div>
+    <div><label><input type="radio" name="game_experience" ng-model="demographics.game_experience" value="Medium"> Medium</label></div>
+    <div><label><input type="radio" name="game_experience" ng-model="demographics.game_experience" value="High"> High</label></div>
+  </div>
+  <div class="block">
+    <div class="description">How often do you type on a keyboard?</div>
+    <div><label><input type="radio" name="typing_frequency" ng-model="demographics.typing_frequency" value="Once a week or less"> Once a week or less</label></div>
+    <div><label><input type="radio" name="typing_frequency" ng-model="demographics.typing_frequency" value="2 to 5 days a week"> 2 to 5 days a week</label></div>
+    <div><label><input type="radio" name="typing_frequency" ng-model="demographics.typing_frequency" value="6 days a week or more"> 6 days a week or more</label></div>
+  </div>
+  <label class="block">
+    <div class="description">(Parkinson's Disease patients only) Date of symptom onset</div>
+    <div>
+      <input name="date_of_symptom_onset" type="date" ng-model="demographics.date_of_symptom_onset">
+    </div>
+  </label>
+  <label class="block">
+    <div class="description">(Parkinson's Disease patients only) Date of confirmed diagnosis</div>
+    <div>
+      <input name="date_of_confirmed_diagnosis" type="date" ng-model="demographics.date_of_confirmed_diagnosis">
+    </div>
+  </label>
+
+  <div class="block">
+    <button type="submit">Submit</button>
+  </div>
+</form>

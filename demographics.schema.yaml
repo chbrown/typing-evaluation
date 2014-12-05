@@ -6,14 +6,22 @@ description: Typing Evaluation Demographics Form
 type: object
 properties:
   gender:
+    # title: Gender
     description: Gender
-    # male | female | other [free text]
     type: string
+    # union is not a standard json+schema field: male | female | other [free text]
+    # union:
+    #   - enum: [Male, Female]
+    #   - type: string
+    # required: true
   date_of_birth:
+    # title: Date of birth
     description: Date of birth
     type: string
     format: date-time
+    # required: true
   family_history_of_neurological_diseases:
+    # title: Family history of neurological diseases
     description: Family history of neurological diseases
     type: string
   drug_history:
@@ -38,7 +46,7 @@ properties:
       - Medium
       - High
   typing_frequency:
-    description: How often do you type on a key board?
+    description: How often do you type on a keyboard?
     enum:
       - Once a week or less
       - 2 to 5 days a week
@@ -54,10 +62,12 @@ properties:
   user_agent:
     description: Participant's browser User-Agent identifier
     type: string
+    # required: true
   ip_address:
     description: Participant's connection IP Address
     type: string
     format: ipv4
+    # required: true
 required:
   - gender
   - date_of_birth

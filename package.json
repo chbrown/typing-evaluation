@@ -1,7 +1,7 @@
 {
   "name": "typing-evaluation",
   "version": "0.0.1",
-  "description": "Typing Evaluation",
+  "description": "University of Sheffield Typing Evaluation Project",
   "private": true,
   "repository" : {
     "type" : "git",
@@ -26,10 +26,18 @@
   "staticPattern": "static/lib/{file}",
   "staticDependencies": {
     "angular": "*",
+    "angular-translate": {
+      "url": "git://github.com/angular-translate/bower-angular-translate.git",
+      "filter": [" angular-translate.js", " angular-translate.min.js"]
+    },
     "angular-ui-router": "*",
     "lo-dash": "*",
     "misc-js": "git://github.com/chbrown/misc-js.git",
-    "ng-storage": "*"
+    "ng-storage": "*",
+    "tv4": {
+      "url": "git://github.com/geraintluff/tv4.git",
+      "filter": ["tv4.js", "tv4.min.js"]
+    }
   },
   "scripts": {
     "prestart": "node init.js"
