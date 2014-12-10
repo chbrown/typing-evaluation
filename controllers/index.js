@@ -26,6 +26,6 @@ R.any(/^\/admin/, function(req, res) {
   });
 });
 
-// R.any(/^\/api/, require('./api'));
+R.any(/^\/api/, require('./api'));
 
 module.exports = R.route.bind(R);

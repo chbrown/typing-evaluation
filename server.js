@@ -9,10 +9,12 @@ var server = module.exports = http.createServer(function(req, res) {
   root_controller(req, res);
 })
 .on('listening', function() {
-  var parts = server._connectionKey.split(':');
-  logger.info('server listening on http://%s:%d', parts[1], parts[2]);
+  var address = server.address();
+  logger.info('server listening on http://%s:%d', address.address, address.port);
 });
 
 if (require.main === module) {
-  server.listen(parseInt(process.env.PORT), process.env.HOSTNAME);
+  server.listen(parseInt(process.env.PORT) || 0, process.env.HOSTNAME);
+  logger.level = process.env.VERBOSE ? 'debug' : 'info';
+  require('./db').logger = logger;
 }

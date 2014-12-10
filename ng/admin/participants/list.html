@@ -1,0 +1,20 @@
+<table class="fill">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Demographics</th>
+      <th>Created</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="participant in participants">
+      <td><a ui-sref="participant({id: participant.id})">{{participant.id}}</a></td>
+      <td><pre>{{participant.demographics | json:'  '}}</pre></td>
+      <td><time>{{participant.created | date:"MMM d, y"}}</time></td>
+      <td>
+        <button ng-click="delete(participant)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

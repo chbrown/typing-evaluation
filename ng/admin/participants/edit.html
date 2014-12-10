@@ -1,0 +1,27 @@
+<section class="hpad">
+  <h1>Participant[{{participant.id}}]</h1>
+  <div>Created <time>{{participant.created | date:"MMM d, y"}}</time></div>
+  <h3>Demographics</h3>
+  <pre>{{participant.demographics | json:'  '}}</pre>
+
+  <h1>Responses</h1>
+
+  <div ng-repeat="response in responses">
+    <h3>Response[{{response.id}}]</h3>
+    <div>Created <time>{{response.created | date:"MMM d, y"}}</time></div>
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Key</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="keystroke in response.keystrokes">
+          <td>{{keystroke.timestamp}}</td>
+          <td>{{keystroke.key}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

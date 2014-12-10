@@ -1,0 +1,128 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #FEFEFE;
+}
+code {
+  font-family: monospace;
+}
+input, button, textarea {
+  box-sizing: border-box;
+}
+pre {
+  margin: 0;
+}
+section {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.hpad {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.outset-shadow {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+form {
+  font-size: 90%;
+  .description {
+    font-weight: bold;
+  }
+  .block {
+    display: block;
+    margin: 10px;
+  }
+  textarea {
+    width: 100%;
+    min-height: 50px;
+  }
+}
+
+.sentence-container {
+  margin: 10px 0;
+  span {
+    white-space: pre-wrap;
+  }
+}
+
+.caret {
+  border-left: 1px solid black;
+}
+
+.flash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000; // only needs to be greater than the nav's z-index
+
+  height: 25px;
+  padding: 5px;
+  vertical-align: middle;
+  text-align: center;
+  color: #DDD;
+  background-color: rgba(0, 0, 0, 66%); // semi-transparent black
+  pointer-events: none; // allows click through to elements underneath
+  img, span {
+    vertical-align: middle;
+  }
+}
+
+.admin {
+  font-size: 80%;
+
+  a[ng-click] {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    background-color: #222;
+    z-index: 100;
+    a {
+      display: inline-block;
+      color: #EEE;
+      padding: 6px 10px 8px;
+      font-size: 18px;
+      font-weight: 100;
+      &:hover {
+        background-color: #444;
+      }
+      &.current {
+        background-color: #FEFEFE;
+        color: #444;
+        text-decoration: none;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  table {
+    border-collapse: collapse;
+
+    td, th {
+      text-align: left;
+      vertical-align: top;
+    }
+    td {
+      padding: 0 6px 1px 0;
+    }
+    th {
+      padding: 3px 6px 2px 0;
+    }
+    &.fill {
+      width: 100%;
+      td, th {
+        &:first-child { padding-left: 10px; }
+        &:last-child { padding-right: 10px; }
+      }
+    }
+  }
+}

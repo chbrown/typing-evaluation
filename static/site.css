@@ -1,0 +1,30 @@
+body{margin:0;font-family:Arial,sans-serif;background-color:#FEFEFE}
+code{font-family:monospace}
+input,button,textarea{box-sizing:border-box}
+pre{margin:0}
+section{padding-top:10px;padding-bottom:10px}
+.hpad{padding-left:10px;padding-right:10px}
+.outset-shadow{box-shadow:0 0 5px rgba(0,0,0,.05)}
+form{font-size:90%}
+form .description{font-weight:700}
+form .block{display:block;margin:10px}
+form textarea{width:100%;min-height:50px}
+.sentence-container{margin:10px 0}
+.sentence-container span{white-space:pre-wrap}
+.caret{border-left:1px solid #000}
+.flash{position:fixed;top:0;left:0;right:0;z-index:1000;height:25px;padding:5px;vertical-align:middle;text-align:center;color:#DDD;background-color:rgba(0,0,0,.66);pointer-events:none}
+.flash img,.flash span{vertical-align:middle}
+.admin{font-size:80%}
+.admin a[ng-click]{text-decoration:underline;cursor:pointer}
+.admin nav{position:fixed;left:0;right:0;background-color:#222;z-index:100}
+.admin nav a{display:inline-block;color:#EEE;padding:6px 10px 8px;font-size:18px;font-weight:100}
+.admin nav a:hover{background-color:#444}
+.admin nav a.current{background-color:#FEFEFE;color:#444;text-decoration:none}
+.admin nav a.current:hover{text-decoration:underline}
+.admin table{border-collapse:collapse}
+.admin table td,.admin table th{text-align:left;vertical-align:top}
+.admin table td{padding:0 6px 1px 0}
+.admin table th{padding:3px 6px 2px 0}
+.admin table.fill{width:100%}
+.admin table.fill td:first-child,.admin table.fill th:first-child{padding-left:10px}
+.admin table.fill td:last-child,.admin table.fill th:last-child{padding-right:10px}

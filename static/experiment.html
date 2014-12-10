@@ -4,8 +4,13 @@
   <title>Typing Evaluation Experiment</title>
   <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
   <link href="/static/site.css" rel="stylesheet" type="text/css">
-  <script src="/static/lib.max.js"></script>
+  <script src="/static/lib.min.js"></script>
+  <script src="/static/loggedinput.js"></script>
+  <script src="/ng/models.js"></script>
   <script src="/ng/experiment/app.js"></script>
   <base href="/experiment/">
 </head>
-<body ng-app="experimentApp" ui-view></body>
+<body ng-app="experimentApp">
+  <flash></flash>
+  <ui-view></ui-view>
+</body>

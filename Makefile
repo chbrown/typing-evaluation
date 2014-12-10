@@ -9,7 +9,7 @@ static/lib/%.min.js: | static/lib/%.js
 
 SCRIPTS = angular angular-resource \
 	angular-ui-router ngStorage angular-plugins angular-translate \
-	lodash textarea cookies tv4
+	lodash textarea cookies
 static/lib.min.js: $(SCRIPTS:%=static/lib/%.min.js)
 	closure-compiler --language_in ECMASCRIPT5 --warning_level QUIET --js $+ > $@
 static/lib.max.js: $(SCRIPTS:%=static/lib/%.js)

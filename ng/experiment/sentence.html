@@ -1,0 +1,11 @@
+<section class="hpad">
+  <div style="text-align: right">Sentence #{{sentence.id}}</div>
+
+  <div style="margin: 20px 0; font-size: 200%">
+    <div class="sentence-container"><span>{{sentence.text}}</span></div>
+    <div class="sentence-container" style="color: #00A44C">
+      <span ng-repeat="character in logged_input.characters track by $index"
+        ng-bind="character"></span><span class="caret">&nbsp;</span>
+    </div>
+  </div>
+</section>

@@ -3,7 +3,7 @@ var path = require('path');
 var migrate = require('sqlcmd/migrate');
 var logger = require('loge');
 
-var db = require('../db');
+var db = require('./db');
 
 function die(err) {
   logger.error('Encountered error while initializing: %s', err);
@@ -14,7 +14,7 @@ function die(err) {
 db.createDatabaseIfNotExists(function(err, exists) {
   if (err) return die(err);
 
-  var migrations_dirpath = path.join(__dirname, '..', 'migrations');
+  var migrations_dirpath = path.join(__dirname, 'migrations');
   migrate(db, '_migrations', migrations_dirpath, function(err) {
     if (err) return die(err);
 

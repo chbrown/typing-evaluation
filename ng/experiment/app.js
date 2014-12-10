@@ -1,15 +1,10 @@
-/*jslint browser: true */ /*globals _, angular */
+/*jslint browser: true */ /*globals _, angular, cookies, LoggedInput */
 var app = angular.module('experimentApp', [
   'ui.router',
   'pascalprecht.translate', // for $translateProvider and | translate filters
   'ngResource',
+  'typing-evaluation-models',
 ]);
-
-app.service('User', function($resource) {
-  return $resource('/api/users/:id', {
-    id: '@id',
-  });
-});
 
 app.config(function($translateProvider) {
   // http://angular-translate.github.io/docs/#/guide
@@ -27,13 +22,12 @@ app.config(function($translateProvider) {
 });
 
 app.config(function($urlRouterProvider, $stateProvider, $locationProvider) {
-  $urlRouterProvider.otherwise('/experiment/instructions');
+  $urlRouterProvider.otherwise('/instructions');
 
   $stateProvider
   .state('instructions', {
     url: '/instructions',
     templateUrl: '/ng/experiment/instructions.html',
-    controller: 'instructions',
   })
   .state('demographics', {
     url: '/demographics',
@@ -48,24 +42,75 @@ app.config(function($urlRouterProvider, $stateProvider, $locationProvider) {
   .state('conclusion', {
     url: '/conclusion',
     templateUrl: '/ng/experiment/conclusion.html',
-    controller: 'conclusion'
   });
 
   $locationProvider.html5Mode(true);
 });
 
-app.controller('instructions', function($scope) {
-  // not very complicated at the moment; might need i18n, though
-});
-
-app.controller('demographics', function($scope, $http, $state) {
-  // $http.get('/ng/experiment/demographics.schema.json').then(function(res) {
-  //   $scope.schema = res.data;
-  // }, function(res) {
-  //   console.error('Error loading demographics schema');
-  // });
+app.controller('demographics', function($scope, $state, Participant) {
+  // For debugging:
+  // $('[name=gender]').checked = true; $('[name=date_of_birth]').value = '1991-01-01'
 
   $scope.submit = function(ev) {
-    $state.go('sentence', {id: 1});
+    var participant = new Participant({
+      demographics: $scope.demographics,
+    });
+
+    participant.$save().then(function(res) {
+      cookies.set('participant_id', participant.id);
+      $state.go('sentence', {id: 'next'});
+    }, function(res) {
+      console.error(res);
+    });
+  };
+});
+
+app.controller('sentence', function($scope, $state, Sentence, Participant, Response) {
+  $scope.participant = Participant.get({
+    id: cookies.get('participant_id'),
+  }, function() {
+    $scope.sentence = Sentence.get({
+      id: $state.params.id,
+      participant_id: $scope.participant.id,
+    });
+
+    $scope.sentence.$promise.then(function(res) {
+      $state.go('.', {id: $scope.sentence.id}, {notify: false});
+    }, function(res) {
+      if (res.status == 404) {
+        return $state.go('conclusion');
+      }
+      console.error('$scope.sentence.$promise error', res);
+    });
+  });
+
+  $scope.logged_input = new LoggedInput();
+
+  document.addEventListener('keydown', function(ev) {
+    // pass over (ignore) all meta (super/command) keys; only intercept non-meta keys
+    $scope.$apply(function() {
+      if (event.which == 13) { // enter/return key
+        $scope.submit(ev);
+      }
+      if (!ev.metaKey) {
+        ev.preventDefault();
+        $scope.logged_input.applyKey(ev.which, ev.shiftKey, ev.timeStamp);
+      }
+    });
+  });
+
+  $scope.submit = function(ev) {
+    var response = new Response({
+      sentence_id: $scope.sentence.id,
+      participant_id: $scope.participant.id,
+      keystrokes: $scope.logged_input.events,
+    });
+
+    response.$save().then(function(res) {
+      $state.go('sentence', {id: 'next'});
+    }, function(res) {
+      console.error(res);
+      // return 'Error saving sentence. ' + stringifyResponse(res);
+    });
   };
 });
