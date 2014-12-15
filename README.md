@@ -22,6 +22,13 @@ Functionality available in the admin tool:
 * View participants and their responses
 
 
+## Contributors
+
+* Tom Stafford <t.stafford@sheffield.ac.uk>
+* Colin Bannard <colinbannard@gmail.com>
+* Christopher Brown <audiere@gmail.com>
+
+
 ## License
 
 Copyright 2014 Christopher Brown. [MIT Licensed](http://opensource.org/licenses/MIT).
