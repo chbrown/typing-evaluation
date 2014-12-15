@@ -1,4 +1,7 @@
-all: static/lib.min.js static/lib.max.js
+all: static/lib.min.js static/lib.max.js static/site.css
+
+%.css: %.less
+	lessc $+ | cleancss --keep-line-breaks --skip-advanced -o $@
 
 # ng/experiment/demographics.schema.json: demographics.schema.yaml
 # 	<$+ yaml2json | jq . >$@
