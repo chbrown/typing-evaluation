@@ -89,7 +89,7 @@ app.controller('sentence', function($scope, $state, Sentence, Participant, Respo
   document.addEventListener('keydown', function(ev) {
     // pass over (ignore) all meta (super/command) keys; only intercept non-meta keys
     $scope.$apply(function() {
-      if (event.which == 13) { // enter/return key
+      if (ev.which == 13) { // enter/return key
         $scope.submit(ev);
       }
       if (!ev.metaKey) {
