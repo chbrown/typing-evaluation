@@ -19,8 +19,8 @@ CREATE TABLE participants (
 CREATE TABLE responses (
   id SERIAL PRIMARY KEY,
 
-  participant_id INTEGER REFERENCES participants(id) NOT NULL ON DELETE CASCADE,
-  sentence_id INTEGER REFERENCES sentences(id) NOT NULL ON DELETE CASCADE,
+  participant_id INTEGER REFERENCES participants(id) ON DELETE CASCADE NOT NULL,
+  sentence_id INTEGER REFERENCES sentences(id) ON DELETE CASCADE NOT NULL,
 
   -- keystrokes: Array<{timestamp: number, key: string}>
   keystrokes JSON NOT NULL,
