@@ -101,7 +101,7 @@ R.post(/^\/api\/sentences\/(\d+)$/, function(req, res, m) {
 
       db.Update('sentences')
       .whereEqual({id: m[1]})
-      .set(data)
+      .setEqual(data)
       .execute(function(err, rows) {
         if (err) return res.error(err, req.headers);
 

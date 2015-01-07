@@ -16,5 +16,4 @@ var server = module.exports = http.createServer(function(req, res) {
 if (require.main === module) {
   server.listen(parseInt(process.env.PORT) || 80, process.env.HOSTNAME);
   logger.level = process.env.VERBOSE ? 'debug' : 'info';
-  require('./db').logger = logger;
 }
