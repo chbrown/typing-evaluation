@@ -20,6 +20,9 @@ section {
   padding-left: 10px;
   padding-right: 10px;
 }
+time, .nowrap {
+  white-space: nowrap;
+}
 
 .outset-shadow {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
@@ -103,25 +106,28 @@ form {
       }
     }
   }
+  .fixedflow-placeholder {
+    margin-bottom: 5px;
+  }
 
   table {
     border-collapse: collapse;
 
-    td, th {
+    th, td {
       text-align: left;
       vertical-align: top;
-    }
-    td {
-      padding: 0 6px 1px 0;
-    }
-    th {
-      padding: 3px 6px 2px 0;
+      padding: 2px 6px 2px 2px;
     }
     &.fill {
       width: 100%;
-      td, th {
+      th, td {
         &:first-child { padding-left: 10px; }
         &:last-child { padding-right: 10px; }
+      }
+    }
+    &.lined {
+      th, td {
+        border-bottom: 1px solid #DDD;
       }
     }
   }

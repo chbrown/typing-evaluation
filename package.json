@@ -19,7 +19,7 @@
     "regex-router": "*",
     "request": "*",
     "send": "*",
-    "sqlcmd-pg": "~0.2.1",
+    "sqlcmd-pg": "~0.2.2",
     "streaming": "~0.3.13",
     "sv": "*"
   },

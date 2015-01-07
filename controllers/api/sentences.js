@@ -44,6 +44,7 @@ R.post(/^\/api\/sentences$/, function(req, res) {
 
       db.Insert('sentences')
       .set(data)
+      .returning('*')
       .execute(function(err, rows) {
         if (err) return res.error(err, req.headers);
 
@@ -102,6 +103,7 @@ R.post(/^\/api\/sentences\/(\d+)$/, function(req, res, m) {
       db.Update('sentences')
       .whereEqual({id: m[1]})
       .setEqual(data)
+      .returning('*')
       .execute(function(err, rows) {
         if (err) return res.error(err, req.headers);
 

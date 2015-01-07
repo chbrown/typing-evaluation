@@ -43,6 +43,7 @@ R.post(/^\/api\/participants$/, function(req, res) {
 
     db.Insert('participants')
     .set(data)
+    .returning('*')
     .execute(function(err, rows) {
       if (err) return res.error(err, req.headers);
 
@@ -78,6 +79,7 @@ R.post(/^\/api\/participants\/(\d+)$/, function(req, res, m) {
       db.Update('participants')
       .whereEqual({id: m[1]})
       .setEqual(data)
+      .returning('*')
       .execute(function(err, rows) {
         if (err) return res.error(err, req.headers);
 

@@ -44,6 +44,7 @@ R.post(/^\/api\/responses$/, function(req, res) {
 
     db.Insert('responses')
     .set(data)
+    .returning('*')
     .execute(function(err, rows) {
       if (err) return res.error(err, req.headers);
 
