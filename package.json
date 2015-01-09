@@ -29,8 +29,8 @@
     "angular-translate": {
       "url": "git://github.com/angular-translate/bower-angular-translate.git",
       "filter": [
-        " angular-translate.js",
-        " angular-translate.min.js"
+        "angular-translate.js",
+        "angular-translate.min.js"
       ]
     },
     "angular-ui-router": "*",

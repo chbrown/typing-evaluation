@@ -26,6 +26,16 @@ R.any(/^\/admin/, function(req, res) {
   });
 });
 
+R.get('/info', function(req, res) {
+  var package_json = require('../package.json');
+  var info = {
+    name: package_json.name,
+    version: package_json.version,
+    description: package_json.description,
+  };
+  res.json(info);
+});
+
 R.any(/^\/api/, require('./api'));
 
 module.exports = R.route.bind(R);
