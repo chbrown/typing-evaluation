@@ -1,4 +1,4 @@
-/*jslint browser: true */ /*globals _, angular, cookies, LoggedInput */
+/*jslint browser: true */ /*globals _, angular, cookies, LoggedInput, stringifyResponse */
 var app = angular.module('experimentApp', [
   'ui.router',
   'pascalprecht.translate', // for $translateProvider and | translate filters
@@ -50,6 +50,7 @@ app.config(function($urlRouterProvider, $stateProvider, $locationProvider) {
 app.controller('demographics', function($scope, $state, Participant) {
   // For debugging:
   // $('[name=gender]').checked = true; $('[name=date_of_birth]').value = '1991-01-01'
+  $scope.demographics = {};
 
   $scope.submit = function(ev) {
     var participant = new Participant({
@@ -63,6 +64,10 @@ app.controller('demographics', function($scope, $state, Participant) {
       console.error(res);
     });
   };
+
+  // remove once demographics are re-enabled:
+  $scope.submit();
+
 });
 
 app.controller('sentence', function($scope, $state, Sentence, Participant, Response) {
