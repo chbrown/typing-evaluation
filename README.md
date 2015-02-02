@@ -71,6 +71,22 @@ After that initialization process, you can update to the latest version of the a
     docker run -d --name app --link db:db -p 80:80 chbrown/typing-evaluation
 
 
+## Development
+
+Copy the live database to your local machine:
+
+First, set up an ssh tunnel, so that we don't have to rely on `pg_dump` being available on the remote machine.
+
+    ssh-add ~/.docker/hosts/typing-evaluation/id_rsa
+    machine active typing-evaluation
+    ssh -L 15432:localhost:5432 root@$(machine ip) &
+
+Then prepare the local database and dump the remote database into it:
+
+    dropdb typing-evaluation; createdb typing-evaluation
+    pg_dump -p 15432 -U postgres typing-evaluation | psql typing-evaluation
+
+
 ## License
 
 Copyright 2014-2015 Christopher Brown. [MIT Licensed](http://opensource.org/licenses/MIT).
