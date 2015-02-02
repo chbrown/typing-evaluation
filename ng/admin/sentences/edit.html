@@ -4,6 +4,16 @@
       <div><b>Text</b></div>
       <textarea enhance ng-model="sentence.text" style="width: 100%; min-height: 100px;"></textarea>
     </label>
-    <button>Submit</button>
+    <label>
+      <div><input type="checkbox" ng-model="sentence.active"> <b>Active</b></div>
+    </label>
+    <label>
+      <div><b>Language</b></div>
+      <input ng-model="sentence.language">
+    </label>
+
+    <div class="vpad">
+      <button>Submit</button>
+    </div>
   </form>
 </section>

@@ -1,3 +1,5 @@
+<h3 class="hpad">{{sentences.length}} Sentences</h3>
+
 <table class="fill lined">
   <thead>
     <tr>
@@ -12,7 +14,7 @@
   <tbody>
     <tr ng-repeat="sentence in sentences">
       <td>{{sentence.id}}</td>
-      <td><a ui-sref="sentence({id: sentence.id})">{{sentence.text}}</a></td>
+      <td><a ui-sref="sentences.edit({id: sentence.id})">{{sentence.text}}</a></td>
       <td>{{sentence.language}}</td>
       <td>{{sentence.active}}</td>
       <td><time>{{sentence.created | date:"MMM d, y"}}</time></td>

@@ -11,10 +11,9 @@
 </head>
 <body class="admin" ng-app="adminApp">
   <flash></flash>
-  <nav fixedflow activate-current-anchor>
-    <a ui-sref="sentences">Sentences</a>
-    <a ui-sref="sentence({id: 'new'})">Add sentence</a>
-    <a ui-sref="participants">Participants</a>
+  <nav fixedflow>
+    <a ui-sref="sentences.list" ui-sref-active="current" class="tab">Sentences</a>
+    <a ui-sref="participants.list" ui-sref-active="current" class="tab">Participants</a>
   </nav>
   <ui-view></ui-view>
 </body>

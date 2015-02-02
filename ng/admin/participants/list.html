@@ -1,3 +1,5 @@
+<h3 class="hpad">{{participants.length}} Participants</h3>
+
 <table class="fill">
   <thead>
     <tr>
@@ -9,7 +11,7 @@
   </thead>
   <tbody>
     <tr ng-repeat="participant in participants">
-      <td><a ui-sref="participant({id: participant.id})">{{participant.id}}</a></td>
+      <td><a ui-sref="participants.edit({id: participant.id})">{{participant.id}}</a></td>
       <td><pre>{{participant.demographics | json:'  '}}</pre></td>
       <td><time>{{participant.created | date:"MMM d, y"}}</time></td>
       <td>

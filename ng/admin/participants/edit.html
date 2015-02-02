@@ -7,7 +7,8 @@
   <h1>Responses</h1>
 
   <div ng-repeat="response in responses">
-    <h3>Response[{{response.id}}]</h3>
+    <h3>Response[{{response.id}}]
+      (<a href="sentences.edit({id: response.sentence_id})">Sentence[{{response.sentence_id}}]</a>)</h3>
     <div>Created <time>{{response.created | date:"MMM d, y"}}</time></div>
     <table>
       <thead>

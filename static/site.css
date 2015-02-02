@@ -1,10 +1,10 @@
 body{margin:0;font-family:Arial,sans-serif;background-color:#FEFEFE}
 code{font-family:monospace}
-input,button,textarea{box-sizing:border-box}
+button,input,textarea{box-sizing:border-box}
 pre{margin:0}
-section{padding-top:10px;padding-bottom:10px}
-.hpad{padding-left:10px;padding-right:10px}
-time,.nowrap{white-space:nowrap}
+.vpad,section{padding-top:10px;padding-bottom:10px}
+.hpad,article{padding-left:10px;padding-right:10px}
+.nowrap,time{white-space:nowrap}
 .outset-shadow{box-shadow:0 0 5px rgba(0,0,0,.05)}
 form{font-size:90%}
 form .description{font-weight:700}
@@ -13,19 +13,24 @@ form textarea{width:100%;min-height:50px}
 .sentence-container{margin:10px 0}
 .sentence-container span{white-space:pre-wrap}
 .caret{border-left:1px solid #000}
-.flash{position:fixed;top:0;left:0;right:0;z-index:1000;height:25px;padding:5px;vertical-align:middle;text-align:center;color:#DDD;background-color:rgba(0,0,0,.66);pointer-events:none}
-.flash img,.flash span{vertical-align:middle}
+.flash{position:fixed;top:0;left:0;right:0;z-index:1000;height:35px;vertical-align:middle;text-align:center;color:#DDD;background-color:rgba(0,0,0,.66);pointer-events:none}
+.flash img,.flash span{display:inline-block;vertical-align:middle;margin:6px}
 .admin{font-size:80%}
 .admin a[ng-click]{text-decoration:underline;cursor:pointer}
-.admin nav{position:fixed;left:0;right:0;background-color:#222;z-index:100}
-.admin nav a{display:inline-block;color:#EEE;padding:6px 10px 8px;font-size:18px;font-weight:100}
-.admin nav a:hover{background-color:#444}
-.admin nav a.current{background-color:#FEFEFE;color:#444;text-decoration:none}
-.admin nav a.current:hover{text-decoration:underline}
-.admin .fixedflow-placeholder{margin-bottom:5px}
+.admin nav{position:fixed;left:0;right:0;background-color:#222;z-index:10}
+.admin nav.sub{background-color:#FEFEFE;z-index:100;border-bottom:1px solid #CCC}
+.admin nav a{padding:5px;display:inline-block}
+.admin nav .tab{padding:6px 10px 8px;font-size:18px;font-weight:100;color:#EEE}
+.admin nav .tab:hover{background-color:#444}
+.admin nav .tab.current{background-color:#FEFEFE;color:#444;text-decoration:none}
+.admin nav .tab.current:hover{text-decoration:underline}
+.admin nav .button{margin:5px;padding:2px 5px;border-radius:3px;background-color:#DDD;border:1px solid #CCC}
+.admin nav .button:hover{background:0 0;border:1px solid #DDD}
+.admin nav .button.current{background:0 0;border:1px solid #EEE;text-decoration:none}
+.admin nav .button.current:hover{text-decoration:underline}
 .admin table{border-collapse:collapse}
-.admin table th,.admin table td{text-align:left;vertical-align:top;padding:2px 6px 2px 2px}
+.admin table td,.admin table th{text-align:left;vertical-align:top;padding:2px 6px 2px 2px}
 .admin table.fill{width:100%}
-.admin table.fill th:first-child,.admin table.fill td:first-child{padding-left:10px}
-.admin table.fill th:last-child,.admin table.fill td:last-child{padding-right:10px}
-.admin table.lined th,.admin table.lined td{border-bottom:1px solid #DDD}
+.admin table.fill td:first-child,.admin table.fill th:first-child{padding-left:10px}
+.admin table.fill td:last-child,.admin table.fill th:last-child{padding-right:10px}
+.admin table.lined td,.admin table.lined th{border-bottom:1px solid #DDD}

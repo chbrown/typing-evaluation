@@ -12,11 +12,11 @@ input, button, textarea {
 pre {
   margin: 0;
 }
-section {
+section, .vpad {
   padding-top: 10px;
   padding-bottom: 10px;
 }
-.hpad {
+article, .hpad {
   padding-left: 10px;
   padding-right: 10px;
 }
@@ -61,15 +61,17 @@ form {
   right: 0;
   z-index: 1000; // only needs to be greater than the nav's z-index
 
-  height: 25px;
-  padding: 5px;
+  height: 35px;
   vertical-align: middle;
   text-align: center;
   color: #DDD;
   background-color: rgba(0, 0, 0, 66%); // semi-transparent black
   pointer-events: none; // allows click through to elements underneath
+
   img, span {
+    display: inline-block;
     vertical-align: middle;
+    margin: 6px;
   }
 }
 
@@ -85,17 +87,32 @@ form {
     position: fixed;
     left: 0;
     right: 0;
+
     background-color: #222;
-    z-index: 100;
+    z-index: 10;
+
+    &.sub {
+      background-color: #FEFEFE;
+      z-index: 100;
+
+      border-bottom: 1px solid #CCC;
+    }
+
     a {
+      padding: 5px;
       display: inline-block;
-      color: #EEE;
+    }
+
+    .tab {
       padding: 6px 10px 8px;
       font-size: 18px;
       font-weight: 100;
+      color: #EEE;
+
       &:hover {
         background-color: #444;
       }
+
       &.current {
         background-color: #FEFEFE;
         color: #444;
@@ -105,9 +122,30 @@ form {
         }
       }
     }
-  }
-  .fixedflow-placeholder {
-    margin-bottom: 5px;
+
+    .button {
+      margin: 5px;
+      padding: 2px 5px;
+      border-radius: 3px;
+
+      background-color: #DDD;
+      border: 1px solid #CCC;
+
+      &:hover {
+        background: none;
+        border: 1px solid #DDD;
+      }
+
+      &.current {
+        background: none;
+        border: 1px solid #EEE;
+
+        text-decoration: none;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
   }
 
   table {
