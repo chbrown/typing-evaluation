@@ -27,7 +27,7 @@ R.get(/^\/api\/sentences(\?|$)/, function(req, res) {
 Get blank (empty) sentence
 */
 R.get(/^\/api\/sentences\/new$/, function(req, res) {
-  res.json({id: null, created: new Date()});
+  res.json({id: null, active: true, language: 'en', created: new Date()});
 });
 
 /** POST /api/sentences
@@ -40,7 +40,7 @@ R.post(/^\/api\/sentences$/, function(req, res) {
     req.readData(function(err, data) {
       if (err) return res.error(err, req.headers);
 
-      data = _.omit(data, ['id', 'created']);
+      data = _.pick(data, ['text', 'language', 'active']);
 
       db.Insert('sentences')
       .set(data)
@@ -59,6 +59,7 @@ Get single sentence
 */
 R.get(/^\/api\/sentences\/(\d+)/, function(req, res, m) {
   db.Select('sentences')
+  .add('sentences.*', '(SELECT COUNT(*) FROM sentences) AS total')
   .whereEqual({id: m[1]})
   .limit(1)
   .execute(function(err, rows) {
@@ -78,6 +79,7 @@ R.get(/^\/api\/sentences\/next/, function(req, res, m) {
   var urlObj = url.parse(req.url, true);
 
   db.Select('sentences')
+  .add('sentences.*', '(SELECT COUNT(*) FROM sentences) AS total')
   .where('id NOT IN (SELECT sentence_id FROM responses WHERE participant_id = ?)', urlObj.query.participant_id)
   .limit(1)
   .execute(function(err, rows) {
@@ -99,6 +101,8 @@ R.post(/^\/api\/sentences\/(\d+)$/, function(req, res, m) {
 
     req.readData(function(err, data) {
       if (err) return res.error(err, req.headers);
+
+      data = _.pick(data, ['text', 'language', 'active']);
 
       db.Update('sentences')
       .whereEqual({id: m[1]})
