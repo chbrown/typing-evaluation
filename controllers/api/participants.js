@@ -24,7 +24,6 @@ R.get(/^\/api\/participants$/, function(req, res) {
   });
 });
 
-
 /** GET /api/participants/new
 Get blank (unsaved) participant
 */
@@ -39,7 +38,7 @@ R.post(/^\/api\/participants$/, function(req, res) {
   req.readData(function(err, data) {
     if (err) return res.error(err, req.headers);
 
-    data = _.omit(data, ['id', 'created']);
+    data = _.pick(data, ['demographics']);
 
     db.Insert('participants')
     .set(data)
@@ -75,6 +74,8 @@ R.post(/^\/api\/participants\/(\d+)$/, function(req, res, m) {
 
     req.readData(function(err, data) {
       if (err) return res.error(err, req.headers);
+
+      data = _.pick(data, ['demographics']);
 
       db.Update('participants')
       .whereEqual({id: m[1]})
