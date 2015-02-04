@@ -74,7 +74,7 @@ Supposing that the Docker Hub registry isn't responding to your `pull` commands,
 
     export DOCKER_HOST=$(machine url usa) DOCKER_AUTH=identity
     docker pull chbrown/typing-evaluation
-    docker save | docker load --host $(machine url typing-evaluation)
+    docker save chbrown/typing-evaluation | docker --host $(machine url typing-evaluation) load
 
 
 ## Development
