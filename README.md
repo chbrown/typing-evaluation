@@ -70,6 +70,12 @@ After that initialization process, you can update to the latest version of the a
     docker rm -f app
     docker run -d --name app --link db:db -p 80:80 chbrown/typing-evaluation
 
+Supposing that the Docker Hub registry isn't responding to your `pull` commands, or is failing with "i/o timeout" errors, you can push over the new image manually with `docker save` and `docker load` and another machine instance that _can_ connect to the Docker registry:
+
+    export DOCKER_HOST=$(machine url usa) DOCKER_AUTH=identity
+    docker pull chbrown/typing-evaluation
+    docker save | docker load --host $(machine url typing-evaluation)
+
 
 ## Development
 
@@ -79,12 +85,12 @@ First, set up an ssh tunnel, so that we don't have to rely on `pg_dump` being av
 
     ssh-add ~/.docker/hosts/typing-evaluation/id_rsa
     machine active typing-evaluation
-    ssh -L 15432:localhost:5432 root@$(machine ip) &
+    ssh -N -L 15432:localhost:5432 root@$(machine ip) &
 
 Then prepare the local database and dump the remote database into it:
 
     dropdb typing-evaluation; createdb typing-evaluation
-    pg_dump -p 15432 -U postgres typing-evaluation | psql typing-evaluation
+    pg_dump -h localhost -p 15432 -U postgres typing-evaluation | psql typing-evaluation
 
 
 ## License
