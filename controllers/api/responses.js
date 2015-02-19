@@ -1,4 +1,3 @@
-/*jslint node: true */
 var _ = require('lodash');
 var logger = require('loge');
 var url = require('url');

@@ -1,4 +1,3 @@
-/*jslint node: true */
 var http = require('http-enhanced');
 var logger = require('loge');
 

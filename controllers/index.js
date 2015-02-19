@@ -1,4 +1,3 @@
-/*jslint node: true */
 var Router = require('regex-router');
 var send = require('send');
 
