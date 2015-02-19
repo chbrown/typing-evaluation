@@ -77,6 +77,34 @@ Supposing that the Docker Hub registry isn't responding to your `pull` commands,
     docker save chbrown/typing-evaluation | docker --host $(machine url typing-evaluation) load
 
 
+## DO API
+
+An `Authorization` header must be sent with all requests, so we might as well make it reusable:
+
+    export DO_AUTH="Authorization: Bearer $DO_TOKEN"
+    export DO_API=https://api.digitalocean.com/v2
+
+List droplets:
+
+    curl -H "$DO_AUTH" -X GET $DO_API/droplets | jq .
+
+List domains:
+
+    curl -H "$DO_AUTH" -X GET $DO_API/domains | jq .
+
+Create domain:
+
+    curl -H "$DO_AUTH" -X POST -d "name=typingexperiment.com&ip_address=178.62.68.168" $DO_API/domains | jq .
+
+Check it out (DO automatically creates one SOA record, three NS records, and a single A record):
+
+    curl -H "$DO_AUTH" -X GET $DO_API/domains/typingexperiment.com | jq .
+
+Add a CNAME record for `www`:
+
+    curl -H "$DO_AUTH" -X POST -d "type=CNAME&name=www&data=@" $DO_API/domains/typingexperiment.com/records | jq .
+
+
 ## Development
 
 Copy the live database to your local machine:
