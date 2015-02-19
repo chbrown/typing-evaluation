@@ -1,7 +1,14 @@
 var Router = require('regex-router');
 var send = require('send');
+var url = require('url');
 
 var R = new Router(function(req, res) {
+  var urlObj = url.parse(req.url);
+  urlObj.pathname = '/experiment/';
+  res.redirect(url.format(urlObj));
+});
+
+R.any(/^\/experiment/, function(req, res) {
   req.url = '/ng/experiment/layout.html';
   R.route(req, res);
 });

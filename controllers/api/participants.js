@@ -37,7 +37,7 @@ R.post(/^\/api\/participants$/, function(req, res) {
   req.readData(function(err, data) {
     if (err) return res.error(err, req.headers);
 
-    data = _.pick(data, ['demographics']);
+    data = _.pick(data, ['demographics', 'parameters']);
 
     db.Insert('participants')
     .set(data)
@@ -74,7 +74,7 @@ R.post(/^\/api\/participants\/(\d+)$/, function(req, res, m) {
     req.readData(function(err, data) {
       if (err) return res.error(err, req.headers);
 
-      data = _.pick(data, ['demographics']);
+      data = _.pick(data, ['demographics', 'parameters']);
 
       db.Update('participants')
       .whereEqual({id: m[1]})

@@ -1,10 +1,28 @@
-<section class="hpad">
-  <h1>Conclusions</h1>
+<section class="hpad" ng-hide="turkSubmitTo">
+  <h1>Conclusion</h1>
 
   <p>Thank you for participating in this experiment.</p>
 
   <p>Your responses have been recorded, and you may now close this page,
     or return to the <a ui-sref="instructions">instructions page</a> to repeat the experiment.
   </p>
+</section>
 
+<section class="hpad" ng-show="turkSubmitTo">
+  <h3>HIT complete</h3>
+
+  <form method="POST" action="{{turkSubmitTo + '/mturk/externalSubmit' | trustResourceUrl}}">
+    <input type="hidden" name="assignmentId" value="{{assignmentId}}">
+
+    <p>Thank you for completing this HIT.</p>
+
+    <p>The questions below are <b>optional</b>. If you do not want to answer them, simply skip to the bottom and click "Submit."</p>
+
+    <p>Was this task unclear, mispriced, or frustrating? If we could make it better, let us know!</p>
+    <div><label><textarea rows="4" cols="80" name="comments"></textarea></label></div>
+
+    <p>
+      <button>Submit</button>
+    </p>
+  </form>
 </section>
