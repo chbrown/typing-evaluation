@@ -8,6 +8,12 @@
     "url": "git://github.com/chbrown/typing-evaluation.git"
   },
   "author": "Christopher Brown <io@henrian.com>",
+  "bin": {
+    "typing-evaluation": "bin/typing-evaluation"
+  },
+  "scripts": {
+    "start": "node bin/typing-evaluation"
+  },
   "dependencies": {
     "async": "*",
     "cookies": "git://github.com/chbrown/cookies.git",
@@ -42,8 +48,5 @@
         "tv4.min.js"
       ]
     }
-  },
-  "scripts": {
-    "prestart": "node init.js"
   }
 }

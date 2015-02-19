@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+var path = require('path');
+var logger = require('loge');
+
+var yargs = require('yargs')
+  .describe({
+    hostname: 'hostname to listen on',
+    port: 'port to listen on',
+
+    help: 'print this help message',
+    verbose: 'print extra output',
+    version: 'print version',
+  })
+  .boolean(['help', 'verbose', 'version'])
+  .default({
+    port: parseInt(process.env.PORT) || 80,
+  });
+
+var argv = yargs.argv;
+logger.level = argv.verbose ? 'debug' : 'info';
+
+if (argv.help) {
+  yargs.showHelp();
+}
+else if (argv.version) {
+  console.log(require('../package').version);
+}
+else {
+  var db = require('../db');
+  db.createDatabaseIfNotExists(function(err, exists) {
+    if (err) throw err;
+
+    var migrations_dirpath = path.join(__dirname, '..', 'migrations');
+    db.executePatches('_migrations', migrations_dirpath, function(err) {
+      if (err) throw err;
+
+      require('../server').listen(argv.port, argv.hostname);
+    });
+  });
+}
