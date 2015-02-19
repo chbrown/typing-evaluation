@@ -2,12 +2,12 @@ var Router = require('regex-router');
 var send = require('send');
 
 var R = new Router(function(req, res) {
-  req.url = '/static/experiment.html';
+  req.url = '/ng/experiment/layout.html';
   R.route(req, res);
 });
 
 R.any(/^\/admin/, function(req, res) {
-  req.url = '/static/admin.html';
+  req.url = '/ng/admin/layout.html';
   R.route(req, res);
 });
 
