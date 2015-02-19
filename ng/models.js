@@ -1,7 +1,5 @@
 /*jslint browser: true */ /*globals _, angular */
 
-// var p = console.log.bind(console);
-
 function t_(url) {
   return url + '?t_=' + (Math.random() * 1000 | 0);
 }
@@ -46,5 +44,4 @@ cookies.defaults = function() {
       id: '@id',
     });
   });
-
 })(angular);
