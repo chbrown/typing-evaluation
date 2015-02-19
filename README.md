@@ -3,8 +3,7 @@
 
 ## Getting started
 
-1. Install Node.js and NPM
-2. Install PostgreSQL, change your local DNS to point the hostname `db` to your PostgreSQL server, add a superuser "postgres", and allow trusted local socket connections for that user.
+1. Install Node.js, NPM, PostgreSQL (listening at 127.0.0.1:5432, with a superuser named "postgres"),
 2. Run `npm start`
 3. The command line output will say something like `... listening on http://0.0.0.0:8080`.
 4. Open `http://localhost:8080` in your browser.
