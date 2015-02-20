@@ -13,7 +13,7 @@ The `npm start` command will handle creating the database and setting up the tab
 
 ## Administration
 
-Go to `http://localhost:8080/admin`
+Go to `http://localhost:8080/admin/`
 
 Functionality available in the admin tool:
 
@@ -61,19 +61,60 @@ That machine will now be the "active" one (`cat ~/.docker/hosts/.active`), so yo
 Docker commands will now affect the docker host on that machine. Start up the required containers:
 
     docker run -d --name db -p 127.0.0.1:5432:5432 postgres:9.3
-    docker run -d --name app --link db:db -p 80:80 chbrown/typing-evaluation
+    docker run -d --name app --link db:db chbrown/typing-evaluation
+
+Now configure the nginx server to serve http/https. Create a basic nginx config layout:
+
+    etc/nginx/conf.d/default.conf
+    etc/nginx/certs/typingexperiment-com.crt
+    etc/nginx/certs/typingexperiment-com.key
+
+And sync your config to the remote machine:
+
+    rsync -r -e "machine ssh" etc/nginx/ typing-evaluation:/etc/nginx/
+
+And start nginx, mounting those directories as volumes in the nginx container:
+
+    docker run -d --name nginx --link app:app -p 80:80 -p 443:443 \
+      -v /etc/nginx/certs:/etc/nginx/certs -v /etc/nginx/conf.d:/etc/nginx/conf.d nginx
 
 After that initialization process, you can update to the latest version of the app with a few more commands:
 
     docker pull chbrown/typing-evaluation
     docker rm -f app
     docker run -d --name app --link db:db -p 80:80 chbrown/typing-evaluation
+    # actually, you'll need to restart nginx now, too. sorry.
 
 Supposing that the Docker Hub registry isn't responding to your `pull` commands, or is failing with "i/o timeout" errors, you can push over the new image manually with `docker save` and `docker load` and another machine instance that _can_ connect to the Docker registry:
 
     export DOCKER_HOST=$(machine url usa) DOCKER_AUTH=identity
     docker pull chbrown/typing-evaluation
     docker save chbrown/typing-evaluation | docker --host $(machine url typing-evaluation) load
+
+
+## Migrating
+
+Need to move to a new server but DNS is slow to update?
+
+Suppose the new server is at `174.59.58.144`.
+
+Create a new nginx config file, e.g., `proxy.conf`:
+
+    server {
+      listen 80;
+      location / {
+        proxy_pass http://174.59.58.144;
+      }
+    }
+
+Write that file to the obsolete machine:
+
+    cat proxy.conf | machine ssh typing-evaluation 'mkdir -p /etc/nginx/conf.d; cat - > /etc/nginx/conf.d/default.conf'
+
+Now back on your machine (with the obsolete machine still active):
+
+    docker rm -f app
+    docker run -d --name proxy -p 80:80 -v /etc/nginx/conf.d:/etc/nginx/conf.d nginx
 
 
 ## DO API
@@ -95,13 +136,22 @@ Create domain:
 
     curl -H "$DO_AUTH" -X POST -d "name=typingexperiment.com&ip_address=178.62.68.168" $DO_API/domains | jq .
 
-Check it out (DO automatically creates one SOA record, three NS records, and a single A record):
+Check out the resulting zone file (DO automatically creates one SOA record, three NS records, and a single A record):
 
     curl -H "$DO_AUTH" -X GET $DO_API/domains/typingexperiment.com | jq .
+
+View DO's internal records that produced the zone file:
+
+    curl -H "$DO_AUTH" -X GET $DO_API/domains/typingexperiment.com/records | jq .
 
 Add a CNAME record for `www`:
 
     curl -H "$DO_AUTH" -X POST -d "type=CNAME&name=www&data=@" $DO_API/domains/typingexperiment.com/records | jq .
+
+Add MX records for FastMail:
+
+    curl -H "$DO_AUTH" -X POST -d "type=MX&data=in1-smtp.messagingengine.com.&priority=10" $DO_API/domains/typingexperiment.com/records | jq .
+    curl -H "$DO_AUTH" -X POST -d "type=MX&data=in2-smtp.messagingengine.com.&priority=20" $DO_API/domains/typingexperiment.com/records | jq .
 
 
 ## Development
