@@ -53,6 +53,11 @@ R.get(/^\/api\/responses(\?|$)/, function(req, res) {
   if (urlObj.query.participant_id) {
     query = query.whereEqual({participant_id: urlObj.query.participant_id});
   }
+  if (urlObj.query.limit) {
+    query = query.limit(urlObj.query.limit);
+    // and add the full count
+    query = query.add('responses.*', 'COUNT(responses.id) OVER() AS count');
+  }
 
   query.execute(function(err, result) {
     if (err) return res.error(err, req.headers);
@@ -84,6 +89,24 @@ R.post(/^\/api\/responses$/, function(req, res) {
     });
   });
 });
+
+/** DELETE /api/responses/:id
+Delete response
+*/
+R.delete(/^\/api\/responses\/(\d+)$/, function(req, res, m) {
+  auth.assertUserAuthorization(req, function(err, user) {
+    if (err) return res.error(err, req.headers);
+
+    db.Delete('responses')
+    .whereEqual({id: m[1]})
+    .execute(function(err) {
+      if (err) return res.error(err, req.headers);
+
+      res.status(204).end();
+    });
+  });
+});
+
 
 /** flattenValues(obj: Object)
 

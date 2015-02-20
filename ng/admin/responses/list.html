@@ -1,0 +1,46 @@
+
+<section class="hpad">
+  <h3>Keystrokes</h3>
+
+  <label>
+    <div><b>Export format</b></div>
+    <select ng-model="accept">
+      <option value="application/json;+boundary=LF">application/json; boundary=LF</option>
+      <option value="application/json">application/json</option>
+      <option value="text/csv">text/csv</option>
+      <option value="text/plain">text/plain</option>
+    </select>
+  </label>
+
+  <p>
+    <a href="/api/responses/keystrokes?accept={{accept}}">Export {{accept}}</a>
+  </p>
+</section>
+
+<h3 class="hpad">Showing {{responses.length}} out of {{responses[0].count}} Responses</h3>
+
+<table class="fill">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Participant ID</th>
+      <th>Sentence ID</th>
+      <th>Keystrokes</th>
+      <th>Created</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="response in responses">
+      <td>{{response.id}}</td>
+      <td>{{response.participant_id}}</td>
+      <td>{{response.sentence_id}}</td>
+      <td>
+        <div ng-repeat="keystroke in response.keystrokes">
+          {{keystroke.timestamp}}: {{keystroke.key}}
+        </div>
+      </td>
+      <td><time>{{response.created | date:"medium"}}</time></td>
+    </tr>
+  </tbody>
+</table>

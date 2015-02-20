@@ -1,4 +1,4 @@
-/*jslint browser: true */ /*globals _, angular, stringifyResponse */
+/*jslint browser: true */ /*globals _, angular, stringifyResponse, cookies */
 var app = angular.module('adminApp', [
   'ngResource',
   'ngStorage',
@@ -8,7 +8,10 @@ var app = angular.module('adminApp', [
 ]);
 
 app.config(function($stateProvider, $locationProvider, $urlRouterProvider) {
-  $urlRouterProvider.otherwise('/sentences/');
+  $urlRouterProvider.otherwise(function($injector, $location) {
+    // the returned value should be a url expressed relative to the page's base[href]
+    return 'sentences/';
+  });
 
   $stateProvider
   .state('login', {
@@ -53,6 +56,17 @@ app.config(function($stateProvider, $locationProvider, $urlRouterProvider) {
     url: '/{id}',
     templateUrl: '/ng/admin/participants/edit.html',
     controller: 'participants.edit'
+  })
+  // responses
+  .state('responses', {
+    url: '/responses',
+    templateUrl: '/ng/admin/responses/layout.html',
+    abstract: true,
+  })
+  .state('responses.list', {
+    url: '/',
+    templateUrl: '/ng/admin/responses/list.html',
+    controller: 'responses.list',
   });
 
   $locationProvider.html5Mode(true);
@@ -174,4 +188,20 @@ app.controller('participants.list', function($scope, $flash, Participant) {
 app.controller('participants.edit', function($scope, $flash, $state, Participant, Response) {
   $scope.participant = Participant.get({id: $state.params.id});
   $scope.responses = Response.query({participant_id: $state.params.id});
+});
+
+
+app.controller('responses.list', function($scope, $flash, Response) {
+  $scope.responses = Response.query({limit: 100});
+  $scope.accept = 'application/json;+boundary=LF'; // default
+
+  $scope.delete = function(response) {
+    var promise = response.$delete().then(function(res) {
+      $scope.responses.splice($scope.responses.indexOf(response), 1);
+      return 'Deleted response.';
+    }, function(res) {
+      return 'Error deleting response. ' + stringifyResponse(res);
+    });
+    $flash(promise);
+  };
 });
