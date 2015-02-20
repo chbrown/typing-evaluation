@@ -116,7 +116,7 @@ R.post(/^\/api\/sentences\/(\d+)$/, function(req, res, m) {
   });
 });
 
-/** DELETE /api/sentence/:id
+/** DELETE /api/sentences/:id
 Delete sentence
 */
 R.delete(/^\/api\/sentences\/(\d+)$/, function(req, res, m) {
