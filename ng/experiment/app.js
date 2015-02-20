@@ -48,7 +48,7 @@ app.config(function($urlRouterProvider, $stateProvider, $locationProvider) {
     return 'instructions' + window.location.search;
   });
 
-  var PARAMS = '?' + ['assignmentId', 'hitId', 'workerId', 'turkSubmitTo', 'demographics'].join('&');
+  var PARAMS = '?' + ['assignmentId', 'hitId', 'workerId', 'turkSubmitTo', 'demographics', 'batch'].join('&');
 
   // the url value in each state is interpreted relative to the page's
   // base[href] value, despite being an absolute path
