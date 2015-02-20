@@ -5,6 +5,7 @@
     <tr>
       <th>ID</th>
       <th>Demographics</th>
+      <th>Parameters</th>
       <th>Created</th>
       <th></th>
     </tr>
@@ -13,6 +14,7 @@
     <tr ng-repeat="participant in participants">
       <td><a ui-sref="participants.edit({id: participant.id})">{{participant.id}}</a></td>
       <td><pre>{{participant.demographics | json:'  '}}</pre></td>
+      <td><pre>{{participant.parameters | json:'  '}}</pre></td>
       <td><time>{{participant.created | date:"MMM d, y"}}</time></td>
       <td>
         <button ng-click="delete(participant)">Delete</button>

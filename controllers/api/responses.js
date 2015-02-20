@@ -126,6 +126,7 @@ R.get(/^\/api\/responses\/keystrokes(\?|$)/, function(req, res) {
     'responses.created AS response_created',
     'participants.id AS participant_id',
     'participants.demographics AS participant_demographics',
+    'participants.parameters AS participant_parameters',
     'sentences.id AS sentence_id',
     'sentences.text AS sentence_text',
   ])
@@ -156,6 +157,9 @@ R.get(/^\/api\/responses\/keystrokes(\?|$)/, function(req, res) {
 
         flattenValues(row.participant_demographics);
         extendPrefixed(keystroke, 'demographics_', row.participant_demographics);
+
+        flattenValues(row.participant_parameters);
+        extendPrefixed(keystroke, 'parameters_', row.participant_parameters);
 
         stringifier.write(keystroke);
       });
