@@ -33,6 +33,12 @@ cookies.defaults = function() {
     });
   });
 
+  app.service('Administrator', function($resource) {
+    return $resource('/api/administrators/:id', {
+      id: '@id',
+    });
+  });
+
   app.service('Participant', function($resource) {
     return $resource('/api/participants/:id', {
       id: '@id',

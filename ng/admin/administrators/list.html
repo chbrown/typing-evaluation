@@ -1,0 +1,22 @@
+<h3 class="hpad">{{administrators.length}} Administrators</h3>
+
+<table class="fill">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Email</th>
+      <th>Created</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="administrator in administrators">
+      <td><a ui-sref="administrators.edit({id: administrator.id})">{{administrator.id}}</a></td>
+      <td>{{administrator.email}}</td>
+      <td><time>{{administrator.created | date:"MMM d, y"}}</time></td>
+      <td>
+        <button ng-click="delete(administrator)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

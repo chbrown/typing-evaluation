@@ -41,6 +41,22 @@ app.config(function($stateProvider, $locationProvider, $urlRouterProvider) {
     templateUrl: '/ng/admin/sentences/edit.html',
     controller: 'sentences.edit'
   })
+  // administrators
+  .state('administrators', {
+    url: '/administrators',
+    templateUrl: '/ng/admin/administrators/layout.html',
+    abstract: true,
+  })
+  .state('administrators.list', {
+    url: '/',
+    templateUrl: '/ng/admin/administrators/list.html',
+    controller: 'administrators.list',
+  })
+  .state('administrators.edit', {
+    url: '/{id}',
+    templateUrl: '/ng/admin/administrators/edit.html',
+    controller: 'administrators.edit'
+  })
   // participants
   .state('participants', {
     url: '/participants',
@@ -164,6 +180,36 @@ app.controller('sentences.import', function($scope, $q, $flash, $state, Sentence
       return 'Inserted ' + res.length + ' sentences.';
     }, function(res) {
       return 'Error saving sentence. ' + stringifyResponse(res);
+    });
+    $flash(promise);
+  };
+});
+
+
+app.controller('administrators.list', function($scope, $flash, Administrator) {
+  $scope.administrators = Administrator.query();
+
+  $scope.delete = function(administrator) {
+    var promise = administrator.$delete().then(function(res) {
+      $scope.administrators.splice($scope.administrators.indexOf(administrator), 1);
+      return 'Deleted administrator.';
+    }, function(res) {
+      return 'Error deleting administrator. ' + stringifyResponse(res);
+    });
+    $flash(promise);
+  };
+});
+
+
+app.controller('administrators.edit', function($scope, $flash, $state, Administrator) {
+  $scope.administrator = Administrator.get({id: $state.params.id});
+
+  $scope.submit = function(ev) {
+    var promise = $scope.administrator.$save().then(function(res) {
+      $state.go('.', {id: $scope.administrator.id}, {notify: false});
+      return 'Saved administrator.';
+    }, function(res) {
+      return 'Error saving administrator. ' + stringifyResponse(res);
     });
     $flash(promise);
   };
