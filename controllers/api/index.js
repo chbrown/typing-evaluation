@@ -5,6 +5,7 @@ var R = new Router(function(req, res) {
 });
 
 R.any(/^\/api\/responses/, require('./responses'));
+R.any(/^\/api\/administrators/, require('./administrators'));
 R.any(/^\/api\/participants/, require('./participants'));
 R.any(/^\/api\/sentences/, require('./sentences'));
 
