@@ -94,9 +94,7 @@ R.post(/^\/api\/responses$/, function(req, res) {
 Delete response
 */
 R.delete(/^\/api\/responses\/(\d+)$/, function(req, res, m) {
-  auth.assertUserAuthorization(req, function(err, user) {
-    if (err) return res.error(err, req.headers);
-
+  auth.assertAuthorization(req, res, function() {
     db.Delete('responses')
     .whereEqual({id: m[1]})
     .execute(function(err) {

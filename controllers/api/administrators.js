@@ -13,9 +13,7 @@ var R = new Router(function(req, res) {
 List all administrators
 */
 R.get(/^\/api\/administrators(\?|$)/, function(req, res) {
-  auth.assertUserAuthorization(req, function(err, user) {
-    if (err) return res.error(err, req.headers);
-
+  auth.assertAuthorization(req, res, function() {
     db.Select('administrators')
     .orderBy('id')
     .execute(function(err, rows) {
@@ -29,9 +27,7 @@ R.get(/^\/api\/administrators(\?|$)/, function(req, res) {
 Get blank (empty) administrator
 */
 R.get(/^\/api\/administrators\/new$/, function(req, res) {
-  auth.assertUserAuthorization(req, function(err, user) {
-    if (err) return res.error(err, req.headers);
-
+  auth.assertAuthorization(req, res, function() {
     res.json({created: new Date()});
   });
 });
@@ -40,9 +36,7 @@ R.get(/^\/api\/administrators\/new$/, function(req, res) {
 Insert new administrator.
 */
 R.post(/^\/api\/administrators$/, function(req, res) {
-  auth.assertUserAuthorization(req, function(err, user) {
-    if (err) return res.error(err, req.headers);
-
+  auth.assertAuthorization(req, res, function() {
     req.readData(function(err, data) {
       if (err) return res.error(err, req.headers);
 
@@ -65,9 +59,7 @@ R.post(/^\/api\/administrators$/, function(req, res) {
 Get single administrator
 */
 R.get(/^\/api\/administrators\/(\d+)/, function(req, res, m) {
-  auth.assertUserAuthorization(req, function(err, user) {
-    if (err) return res.error(err, req.headers);
-
+  auth.assertAuthorization(req, res, function() {
     db.Select('administrators')
     .whereEqual({id: m[1]})
     .limit(1)
@@ -83,9 +75,7 @@ R.get(/^\/api\/administrators\/(\d+)/, function(req, res, m) {
 Update existing administrator (should be PUT)
 */
 R.post(/^\/api\/administrators\/(\d+)$/, function(req, res, m) {
-  auth.assertUserAuthorization(req, function(err, user) {
-    if (err) return res.error(err, req.headers);
-
+  auth.assertAuthorization(req, res, function() {
     req.readData(function(err, data) {
       if (err) return res.error(err, req.headers);
 
@@ -108,9 +98,7 @@ R.post(/^\/api\/administrators\/(\d+)$/, function(req, res, m) {
 Delete administrator
 */
 R.delete(/^\/api\/administrators\/(\d+)$/, function(req, res, m) {
-  auth.assertUserAuthorization(req, function(err, user) {
-    if (err) return res.error(err, req.headers);
-
+  auth.assertAuthorization(req, res, function() {
     db.Delete('administrators')
     .whereEqual({id: m[1]})
     .execute(function(err) {

@@ -26,16 +26,16 @@ R.get(/^\/api\/sentences(\?|$)/, function(req, res) {
 Get blank (empty) sentence
 */
 R.get(/^\/api\/sentences\/new$/, function(req, res) {
-  res.json({id: null, active: true, language: 'en', created: new Date()});
+  auth.assertAuthorization(req, res, function() {
+    res.json({id: null, active: true, language: 'en', created: new Date()});
+  });
 });
 
 /** POST /api/sentences
 Insert new sentence
 */
 R.post(/^\/api\/sentences$/, function(req, res) {
-  auth.assertUserAuthorization(req, function(err, user) {
-    if (err) return res.error(err, req.headers);
-
+  auth.assertAuthorization(req, res, function() {
     req.readData(function(err, data) {
       if (err) return res.error(err, req.headers);
 
@@ -95,9 +95,7 @@ R.get(/^\/api\/sentences\/next/, function(req, res, m) {
 Update existing sentence (should be PUT)
 */
 R.post(/^\/api\/sentences\/(\d+)$/, function(req, res, m) {
-  auth.assertUserAuthorization(req, function(err, user) {
-    if (err) return res.error(err, req.headers);
-
+  auth.assertAuthorization(req, res, function() {
     req.readData(function(err, data) {
       if (err) return res.error(err, req.headers);
 
@@ -120,9 +118,7 @@ R.post(/^\/api\/sentences\/(\d+)$/, function(req, res, m) {
 Delete sentence
 */
 R.delete(/^\/api\/sentences\/(\d+)$/, function(req, res, m) {
-  auth.assertUserAuthorization(req, function(err, user) {
-    if (err) return res.error(err, req.headers);
-
+  auth.assertAuthorization(req, res, function() {
     db.Delete('sentences')
     .whereEqual({id: m[1]})
     .execute(function(err) {

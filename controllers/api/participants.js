@@ -68,9 +68,7 @@ R.get(/^\/api\/participants\/(\d+)$/, function(req, res, m) {
 Update existing participant (should be PUT)
 */
 R.post(/^\/api\/participants\/(\d+)$/, function(req, res, m) {
-  auth.assertUserAuthorization(req, function(err, user) {
-    if (err) return res.error(err, req.headers);
-
+  auth.assertAuthorization(req, res, function() {
     req.readData(function(err, data) {
       if (err) return res.error(err, req.headers);
 
@@ -89,13 +87,11 @@ R.post(/^\/api\/participants\/(\d+)$/, function(req, res, m) {
   });
 });
 
-/** DELETE /api/posts/:id
-Delete post
+/** DELETE /api/participants/:id
+Delete participant
 */
 R.delete(/^\/api\/participants\/(\d+)$/, function(req, res, m) {
-  auth.assertUserAuthorization(req, function(err, user) {
-    if (err) return res.error(err, req.headers);
-
+  auth.assertAuthorization(req, res, function() {
     db.Delete('participants')
     .whereEqual({id: m[1]})
     .execute(function(err) {

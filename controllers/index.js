@@ -1,6 +1,8 @@
+var url = require('url');
 var Router = require('regex-router');
 var send = require('send');
-var url = require('url');
+
+var auth = require('../auth');
 
 var R = new Router(function(req, res) {
   var urlObj = url.parse(req.url);
@@ -14,8 +16,10 @@ R.any(/^\/experiment/, function(req, res) {
 });
 
 R.any(/^\/admin/, function(req, res) {
-  req.url = '/ng/admin/layout.html';
-  R.route(req, res);
+  auth.assertAuthorization(req, res, function() {
+    req.url = '/ng/admin/layout.html';
+    R.route(req, res);
+  });
 });
 
 ['ng', 'static'].forEach(function(root) {

@@ -1,37 +1,54 @@
 var util = require('util');
+var logger = require('loge');
+var db = require('./db');
 
-var AuthError = exports.AuthError = function(message, statusCode) {
-  Error.call(this);
-  this.name = 'AuthError';
-  Error.captureStackTrace(this, this.constructor);
-  this.message = message;
-  this.statusCode = (statusCode !== undefined) ? statusCode : 401;
-};
-util.inherits(AuthError, Error);
+/** authenticatedAdministrator(req: http.IncomingMessage,
+                               callback: (error: Error, administrator: Administrator))
 
-var authenticatedUser = exports.authenticatedUser = function(req, callback) {
-  /** Return a dummy user.
+Return the authenticated administrator.
+*/
+function authenticatedAdministrator(req, callback) {
+  var basic_auth_match = (req.headers.authorization || '').match(/^Basic\s+(.+)$/);
+  if (basic_auth_match) {
+    var basic_auth_pair = new Buffer(basic_auth_match[1], 'base64').toString('utf8').split(':');
 
-      callback: (error: Error, user: User)
-  */
-  setImmediate(function() {
-    return callback(null, {id: 1, created: new Date()});
-  });
-};
+    db.Select('administrators')
+    .whereEqual({
+      email: basic_auth_pair[0],
+      password: basic_auth_pair[1],
+    })
+    .limit(1)
+    .execute(function(err, rows) {
+      if (err) return callback(err);
 
-var assertUserAuthorization = exports.assertUserAuthorization = function(req, callback) {
-  /** Try to get the authenticated user.
-  1. If no user is available, raise an error.
-  2. If there is one, return the user object.
+      callback(null, rows[0]);
+    });
+  }
+  else {
+    callback(null, null);
+  }
+}
 
-      callback: (error: Error, user: User)
-  */
-  authenticatedUser(req, function(err, user) {
-    if (err) return callback(err);
-    if (user === null) {
-      err = new AuthError('Authorization failed; you must login first.', 401);
-      return callback(err);
+/** assertAuthorization(req: http.IncomingMessage,
+                        res: http.ServerResponse,
+                        callback: (administrator: Administrator))
+
+Try to get the authenticated administrator.
+
+1. If no administrator is available, raise an error.
+2. If there is one, return the user object.
+*/
+exports.assertAuthorization = function(req, res, callback) {
+  authenticatedAdministrator(req, function(err, administrator) {
+    if (err) {
+      return res.error(err, req.headers);
     }
-    callback(null, user);
+    if (!administrator) {
+      res.statusCode = 401;
+      res.setHeader('WWW-Authenticate', 'Basic realm="admin"');
+
+      return res.text('Authorization failed; you must login first.');
+    }
+    callback(administrator);
   });
 };
