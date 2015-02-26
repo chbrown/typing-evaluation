@@ -82,8 +82,11 @@ After that initialization process, you can update to the latest version of the a
 
     docker pull chbrown/typing-evaluation
     docker rm -f app
-    docker run -d --name app --link db:db -p 80:80 chbrown/typing-evaluation
+    docker run -d --name app --link db:db chbrown/typing-evaluation
     # actually, you'll need to restart nginx now, too. sorry.
+    docker rm -f nginx
+    docker run -d --name nginx --link app:app -p 80:80 -p 443:443 \
+      -v /etc/nginx/certs:/etc/nginx/certs -v /etc/nginx/conf.d:/etc/nginx/conf.d nginx
 
 Supposing that the Docker Hub registry isn't responding to your `pull` commands, or is failing with "i/o timeout" errors, you can push over the new image manually with `docker save` and `docker load` and another machine instance that _can_ connect to the Docker registry:
 
