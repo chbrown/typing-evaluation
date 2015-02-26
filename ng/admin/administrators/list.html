@@ -11,8 +11,8 @@
   </thead>
   <tbody>
     <tr ng-repeat="administrator in administrators">
-      <td><a ui-sref="administrators.edit({id: administrator.id})">{{administrator.id}}</a></td>
-      <td>{{administrator.email}}</td>
+      <td>{{administrator.id}}</td>
+      <td><a ui-sref="administrators.edit({id: administrator.id})">{{administrator.email}}</a></td>
       <td><time>{{administrator.created | date:"MMM d, y"}}</time></td>
       <td>
         <button ng-click="delete(administrator)">Delete</button>
