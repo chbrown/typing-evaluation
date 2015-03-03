@@ -1,3 +1,4 @@
+var async = require('async');
 var _ = require('lodash');
 var Router = require('regex-router');
 var url = require('url');
@@ -55,33 +56,54 @@ R.post(/^\/api\/sentences$/, function(req, res) {
   });
 });
 
-/** GET /api/sentences/:id
+/** GET /api/sentences/:id?participant_id=:participant_id
 Get single sentence
+
+Returns more than just the sentence, though.
 */
 R.get(/^\/api\/sentences\/(\d+)/, function(req, res, m) {
-  db.Select('sentences')
-  .add('sentences.*', '(SELECT COUNT(*) FROM sentences) AS total')
-  .whereEqual({id: m[1]})
-  .limit(1)
-  .execute(function(err, rows) {
+  var urlObj = url.parse(req.url, true);
+
+  async.parallel({
+    sentences: function(callback) {
+      db.Select('sentences')
+      .whereEqual({id: m[1]})
+      .limit(1)
+      .execute(callback);
+    },
+    completed: function(callback) {
+      db.Select('responses')
+      .add('COUNT(*)::int')
+      .whereEqual({participant_id: urlObj.query.participant_id})
+      .execute(callback);
+    },
+    total: function(callback) {
+      // without ::int, the `total` count would otherwise come out as a string
+      db.Select('sentences').add('COUNT(*)::int').execute(callback);
+    }
+  }, function(err, results) {
     if (err) return res.error(err, req.headers);
 
-    res.json(rows[0]);
+    var sentence = results.sentences[0] || {};
+    sentence.participant_completed = (results.completed[0] || {}).count || 0;
+    sentence.participant_total = (results.total[0] || {}).count || 0;
+
+    res.json(sentence);
   });
 });
-
 
 /** GET /api/sentences/next?participant_id=:participant_id
 Get single sentence for participant
 
-Non-REST
+Non-REST, but forwards to the proper REST endpoint
 */
 R.get(/^\/api\/sentences\/next/, function(req, res, m) {
   var urlObj = url.parse(req.url, true);
 
   db.Select('sentences')
-  .add('sentences.*', '(SELECT COUNT(*) FROM sentences) AS total')
+  .add('id')
   .where('id NOT IN (SELECT sentence_id FROM responses WHERE participant_id = ?)', urlObj.query.participant_id)
+  .orderBy('id ASC')
   .limit(1)
   .execute(function(err, rows) {
     if (err) return res.error(err, req.headers);
@@ -89,7 +111,8 @@ R.get(/^\/api\/sentences\/next/, function(req, res, m) {
       return res.error({message: 'No more sentences are available.', statusCode: 404}, req.headers);
     }
 
-    res.json(rows[0]);
+    urlObj.pathname = '/api/sentences/' + rows[0].id;
+    res.redirect(url.format(urlObj));
   });
 });
 

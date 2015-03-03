@@ -116,25 +116,30 @@ app.controller('demographics', function($scope, $state, Participant) {
 });
 
 app.controller('sentence', function($scope, $state, Sentence, Participant, Response) {
-  $scope.participant = Participant.get({
-    id: cookies.get('participant_id'),
-  }, function() {
-    $scope.sentence = Sentence.get({
-      id: $state.params.id,
-      participant_id: $scope.participant.id,
-    });
+  // we don't need to load the whole participant
+  $scope.participant = new Participant({id: cookies.get('participant_id')});
+  $scope.sentence = Sentence.get({
+    id: $state.params.id,
+    participant_id: $scope.participant.id,
+  }, sentenceLoaded, sentenceFailed);
 
-    $scope.sentence.$promise.then(function(res) {
-      $state.goRel('.', {id: $scope.sentence.id}, {notify: false});
-    }, function(res) {
-      if (res.status == 404) {
-        return $state.goRel('conclusion');
-      }
-      console.error('$scope.sentence.$promise error', res);
-    });
+  function sentenceLoaded(value, responseHeaders) {
+    // reset input
+    $scope.logged_input = new LoggedInput();
+  }
+
+  function sentenceFailed(res) {
+    if (res.status == 404) {
+      return $state.goRel('conclusion');
+    }
+    console.error('Failed to fetch sentence', res);
+  }
+
+  $scope.$watch('sentence.id', function(newVal, oldVal) {
+    if ($scope.sentence.$resolved) {
+      $state.goRel('sentence', {id: $scope.sentence.id}, {notify: false});
+    }
   });
-
-  $scope.logged_input = new LoggedInput();
 
   document.addEventListener('keydown', function(ev) {
     // pass over (ignore) all meta (super/command) keys; only intercept non-meta keys
@@ -150,17 +155,15 @@ app.controller('sentence', function($scope, $state, Sentence, Participant, Respo
   });
 
   $scope.submit = function(ev) {
-    var response = new Response({
+    Response.save({
       sentence_id: $scope.sentence.id,
       participant_id: $scope.participant.id,
       keystrokes: $scope.logged_input.events,
-    });
-
-    response.$save().then(function(res) {
-      $state.goRel('sentence', {id: 'next'});
-    }, function(res) {
-      console.error(res);
-      // return 'Error saving sentence. ' + stringifyResponse(res);
+    }, function() {
+      $scope.sentence.$get({
+        id: 'next',
+        participant_id: $scope.participant.id
+      }, sentenceLoaded, sentenceFailed);
     });
   };
 });
