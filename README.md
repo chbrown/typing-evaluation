@@ -163,9 +163,7 @@ Copy the live database to your local machine:
 
 First, set up an ssh tunnel, so that we don't have to rely on `pg_dump` being available on the remote machine.
 
-    ssh-add ~/.docker/hosts/typing-evaluation/id_rsa
-    machine active typing-evaluation
-    ssh -N -L 15432:localhost:5432 root@$(machine ip) &
+    machine ssh typing-evaluation -N -L 15432:localhost:5432 &
 
 Then prepare the local database and dump the remote database into it:
 
