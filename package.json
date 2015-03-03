@@ -40,13 +40,6 @@
     "angular-ui-router": "*",
     "lo-dash": "*",
     "misc-js": "git://github.com/chbrown/misc-js.git",
-    "ng-storage": "*",
-    "tv4": {
-      "url": "git://github.com/geraintluff/tv4.git",
-      "filter": [
-        "tv4.js",
-        "tv4.min.js"
-      ]
-    }
+    "ng-storage": "*"
   }
 }
