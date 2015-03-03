@@ -13,12 +13,14 @@ var R = new Router(function(req, res) {
 List all sentences
 */
 R.get(/^\/api\/sentences(\?|$)/, function(req, res) {
-  db.Select('sentences')
-  .orderBy('id')
-  .execute(function(err, rows) {
-    if (err) return res.error(err, req.headers);
+  auth.assertAuthorization(req, res, function() {
+    db.Select('sentences')
+    .orderBy('id')
+    .execute(function(err, rows) {
+      if (err) return res.error(err, req.headers);
 
-    res.ngjson(rows);
+      res.ngjson(rows);
+    });
   });
 });
 
