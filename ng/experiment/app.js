@@ -45,14 +45,19 @@ app.config(function($urlRouterProvider, $stateProvider, $locationProvider) {
     // the current url is not under the current base[href]
 
     // the returned value should be a url expressed relative to the page's base[href]
-    return 'instructions' + window.location.search;
+    return 'consent' + window.location.search;
   });
 
-  var PARAMS = '?' + ['assignmentId', 'hitId', 'workerId', 'turkSubmitTo', 'demographics', 'batch'].join('&');
+  var PARAMS = '?' + ['assignmentId', 'hitId', 'workerId', 'turkSubmitTo', 'demographics', 'consent', 'batch'].join('&');
 
   // the url value in each state is interpreted relative to the page's
   // base[href] value, despite being an absolute path
   $stateProvider
+  .state('consent', {
+    url: '/consent' + PARAMS,
+    templateUrl: '/ng/experiment/consent.html',
+    controller: 'consent',
+  })
   .state('instructions', {
     url: '/instructions' + PARAMS,
     templateUrl: '/ng/experiment/instructions.html',
@@ -88,6 +93,21 @@ app.directive('uiSrefRel', function($state) {
       el.attr('href', $state.href(attrs.uiSrefRel, $state.params));
     }
   };
+});
+
+app.controller('consent', function($scope, $state) {
+  $scope.mturk_preview = $state.params.assignmentId == 'ASSIGNMENT_ID_NOT_AVAILABLE';
+
+  $scope.submit = function(ev) {
+    $state.goRel('instructions');
+  };
+
+  if ($state.params.consent == 'skip') {
+    $scope.submit();
+  }
+  else {
+    $scope.enabled = true;
+  }
 });
 
 app.controller('demographics', function($scope, $state, Participant) {

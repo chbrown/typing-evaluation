@@ -1,0 +1,42 @@
+<section class="hpad" ng-show="enabled" style="margin: 0 auto; max-width: 600px">
+  <table style="width: 100%; font-size: 80%;">
+    <tr>
+      <td>IRB APPROVED ON: 06/17/2014</td>
+      <td style="text-align: right">EXPIRES ON: 04/03/2015</td>
+    </tr>
+    <tr>
+      <td>IRB STUDY NUMBER: 2010-10-0051</td>
+    </tr>
+  </table>
+
+  <h3>Informed Consent Document</h3>
+
+  <p>You are invited to participate in a research study, entitled "Learning in Social Networks". The study is being conducted by Colin Bannard in the Linguistics department of The University of Texas at Austin.
+
+  <p>Department of Linguistics<br/>
+  University of Texas at Austin,<br/>
+  305 E. 23rd Street B5100,<br/>
+  Austin, TX 78712, USA<br/>
+  (512) 471-9022
+
+  <p>The purpose of this study is to examine how people learn. You will be paid approximately 13¢ / minute ($8 / hour) on successful completion of the task; the actual price of the task is determined by trial runs and observed rates. You are free to contact the investigator at the above address and phone number to discuss the survey.
+
+  <p>Risks to participants are considered minimal. There will be no costs for participating. You will be paid for each HIT you complete, but will not otherwise benefit from participating. Your Amazon Mechanical Turk identification will be kept while we collect data for tracking purposes only. A limited number of research team members will have access to the data during data collection. This information will be stripped from the final dataset.
+
+  <p>Your participation in this survey is voluntary. You may decline to answer any question and you have the right to withdraw from participation at any time without penalty. If you wish to withdraw from the study or have any questions, contact the investigator listed above.
+
+  <p>If you have any questions, please email Colin Bannard at bannard@utexas.edu. You may also request a hard copy of the survey from the contact information above.
+
+  <p>This study has been reviewed and approved by The University of Texas at Austin Institutional Review Board (IRB Study Number 2010-10-0051). If you have questions about your rights as a study participant, or are dissatisfied at any time with any aspect of this study, you may contact - anonymously, if you wish - the Institutional Review Board by phone at (512) 471-8871 or email at orsc@uts.cc.utexas.edu.
+
+  <p>If it becomes necessary for the Institutional Review Board to review the study records, information that can be linked to you will be protected to the extent permitted by law. Your research records will not be released without your consent unless required by law or a court order. The data resulting from your participation may be made available to other researchers in the future for research purposes not detailed within this consent form. In these cases, the data will contain no identifying information that could associate it with you, or with your participation in any study.
+
+  <p style="color: red">If you have read this information and would like to participate in the study, click the button below.
+
+  <form ng-submit="submit($event)" style="width: 600px">
+    <div style="text-align: center">
+      <button ng-disabled="mturk_preview">I Consent</button>
+      <span ng-if="mturk_preview">(Disabled when previewing)</span>
+    </div>
+  </form>
+</div>
