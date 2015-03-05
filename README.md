@@ -36,16 +36,22 @@ Functionality available in the admin tool:
     wget https://bfirsh.s3.amazonaws.com/docker/darwin/docker-1.3.1-dev-identity-auth
     chmod +x docker-1.3.1-dev-identity-auth
 
-I'll assume that the alias and environment variable below apply throughout the rest of the deployment process.
+I'll assume for the rest of the deployment process that you've aliased docker like so:
 
     alias docker=docker-1.3.1-dev-identity-auth
-    export DO_TOKEN=6c4a0280d36dc219n0t4ctua11ymydigital0ceant0k3n9186729fe910b157bb
 
 Run that client to generate the required keys (it won't look like it did anything, but `~/.docker/public-key.json` should now exist):
 
     docker
 
-Now you can spin up the Digital Ocean "droplet" (which is just what Digital Ocean calls their virtual machines). This will fail if a droplet with that name is already running.
+
+### Initial deployment (to Digital Ocean) via `machine` + `docker`
+
+We're going to deploy to Digital Ocean, so we need a API (v2) token, e.g.:
+
+    export DO_TOKEN=6c4a0280d36dc219n0t4ctua11ymydigital0ceant0k3n9186729fe910b157bb
+
+Now you can spin up the Digital Ocean "droplet" (which is just what Digital Ocean calls their virtual machines).
 
     machine create -d digitalocean \
       --digitalocean-access-token=$DO_TOKEN \
@@ -54,14 +60,16 @@ Now you can spin up the Digital Ocean "droplet" (which is just what Digital Ocea
       --digitalocean-size=512mb \
       typing-evaluation
 
-That machine will now be the "active" one (`cat ~/.docker/hosts/.active`), so you can run the following to point your docker controller at that host:
+That machine will now be the "active" one (`machine ls` or `cat ~/.docker/hosts/.active`), so you can run the following to point your docker controller at that host:
 
     export DOCKER_HOST=$(machine url) DOCKER_AUTH=identity
 
-Docker commands will now affect the docker host on that machine. Start up the required containers (this will pull the `chbrown/typing-evaluation` Docker container image from [Docker Hub](https://registry.hub.docker.com/u/chbrown/typing-evaluation/), so it might take a while):
+Docker commands will now affect the docker host on that machine. Start up the required containers:
 
     docker run -d --name db -p 127.0.0.1:5432:5432 postgres:9.3
     docker run -d --name app --link db:db chbrown/typing-evaluation
+
+That will pull the `chbrown/typing-evaluation` Docker container image from [Docker Hub](https://registry.hub.docker.com/u/chbrown/typing-evaluation/), so it might take a while.
 
 Now configure the nginx server to serve http/https. Create a basic nginx config layout:
 
@@ -78,15 +86,23 @@ And start nginx, mounting those directories as volumes in the nginx container:
     docker run -d --name nginx --link app:app -p 80:80 -p 443:443 \
       -v /etc/nginx/certs:/etc/nginx/certs -v /etc/nginx/conf.d:/etc/nginx/conf.d nginx
 
-After that initialization process, you can update to the latest version of the app with a few more commands:
 
+### Updates via `machine` + `docker`
+
+After the first deploy, you can update to the latest version of the app with a shorter sequence of commands:
+
+    export DOCKER_HOST=$(machine url) DOCKER_AUTH=identity
     docker pull chbrown/typing-evaluation
+    # restart the app
     docker rm -f app
     docker run -d --name app --link db:db chbrown/typing-evaluation
-    # actually, you'll need to restart nginx now, too. sorry.
+    # restart nginx, since it is still pointing to the previous app container's hostname
     docker rm -f nginx
     docker run -d --name nginx --link app:app -p 80:80 -p 443:443 \
       -v /etc/nginx/certs:/etc/nginx/certs -v /etc/nginx/conf.d:/etc/nginx/conf.d nginx
+
+
+### Manual docker image `pull` + `save` + `load` process
 
 Supposing that the Docker Hub registry isn't responding to your `pull` commands, or is failing with "i/o timeout" errors, you can push over the new image manually with `docker save` and `docker load` and another machine instance that _can_ connect to the Docker registry:
 
@@ -159,7 +175,7 @@ Add MX records for FastMail:
 
 ## Development
 
-Copy the live database to your local machine:
+### Copy the live database to your local machine
 
 First, set up an ssh tunnel, so that we don't have to rely on `pg_dump` being available on the remote machine.
 
