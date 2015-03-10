@@ -99,10 +99,11 @@ Non-REST, but forwards to the proper REST endpoint
 */
 R.get(/^\/api\/sentences\/next/, function(req, res, m) {
   var urlObj = url.parse(req.url, true);
+  var participant_id = urlObj.query.participant_id || null;
 
   db.Select('sentences')
   .add('id')
-  .where('id NOT IN (SELECT sentence_id FROM responses WHERE participant_id = ?)', urlObj.query.participant_id)
+  .where('id NOT IN (SELECT sentence_id FROM responses WHERE participant_id = ?)', participant_id)
   .orderBy('id ASC')
   .limit(1)
   .execute(function(err, rows) {
