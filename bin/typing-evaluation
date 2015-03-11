@@ -1,11 +1,15 @@
 #!/usr/bin/env node
+var os = require('os');
 var path = require('path');
 var logger = require('loge');
+var cluster = require('cluster');
+var db = require('../db');
 
 var yargs = require('yargs')
   .describe({
     hostname: 'hostname to listen on',
     port: 'port to listen on',
+    forks: 'number of workers to spawn',
 
     help: 'print this help message',
     verbose: 'print extra output',
@@ -14,6 +18,7 @@ var yargs = require('yargs')
   .boolean(['help', 'verbose', 'version'])
   .default({
     port: parseInt(process.env.PORT) || 80,
+    forks: os.cpus().length,
   });
 
 var argv = yargs.argv;
@@ -25,8 +30,10 @@ if (argv.help) {
 else if (argv.version) {
   console.log(require('../package').version);
 }
+else if (cluster.isWorker) {
+  require('../server').listen(argv.port, argv.hostname);
+}
 else {
-  var db = require('../db');
   db.createDatabaseIfNotExists(function(err, exists) {
     if (err) throw err;
 
@@ -34,7 +41,14 @@ else {
     db.executePatches('_migrations', migrations_dirpath, function(err) {
       if (err) throw err;
 
-      require('../server').listen(argv.port, argv.hostname);
+      logger.info('Cluster master forking %d initial workers.', argv.forks);
+      for (var i = 0; i < argv.forks; i++) {
+        cluster.fork();
+      }
+      cluster.on('disconnect', function(worker) {
+        logger.error('Worker[%s] died. Forking a new worker.', worker.id);
+        cluster.fork();
+      });
     });
   });
 }
