@@ -3,6 +3,7 @@
 <table class="fill lined">
   <thead>
     <tr>
+      <th></th>
       <th>ID</th>
       <th>Text</th>
       <th>Language</th>
@@ -12,8 +13,9 @@
       <th></th>
     </tr>
   </thead>
-  <tbody>
-    <tr ng-repeat="sentence in sentences">
+  <tbody checkbox-sequence>
+    <tr ng-repeat="sentence in sentences" ng-hide="sentence.deleted">
+      <td><input type="checkbox" ng-model="sentence.selected"></td>
       <td>{{sentence.id}}</td>
       <td><a ui-sref="sentences.edit({id: sentence.id})">{{sentence.text}}</a></td>
       <td>{{sentence.language}}</td>
@@ -26,3 +28,7 @@
     </tr>
   </tbody>
 </table>
+
+<div class="hpad vpad">
+  <button ng-click="deleteSelected()">Delete Selected</button>
+</div>

@@ -1,4 +1,4 @@
-/*jslint browser: true */ /*globals angular, stringifyResponse, cookies */
+/*jslint browser: true */ /*globals angular, CheckboxSequence, cookies */
 var app = angular.module('adminApp', [
   'ngResource',
   'ngStorage',
@@ -19,63 +19,11 @@ function stringifyResponse(res) {
 }
 
 app.directive('checkboxSequence', function() {
-  /** Use like:
-
-    <ul checkbox-sequence>
-      <li ng-repeat="user in users">
-        <label><input type="checkbox" ng-model="user.selected"> {{user.name}}</label>
-      </li>
-    </ul>
-
-  */
   return {
     restrict: 'A',
     link: function(scope, el, attrs) {
-      var previous_checkbox = null;
-      // previous_action == true means the last selection was to change
-      // a checkbox from unchecked to checked
-      var previous_action = null;
-
-      // addEventListener('DOMSubtreeModified', function()
-      // requires jQuery (not just jQ-lite) for the selector stuff
-      var sel = 'input[type="checkbox"]';
-      el.on('click', function(ev) {
-        console.log('click', ev);
-        // var action = ev.target.checked; // true = just checked, false = just unchecked
-        if (false && ev.shiftKey) {
-          if (action === previous_action && previous_checkbox) {
-            var checkboxes = el.find(sel);
-            var inside = false;
-            // select all entries between the two, inclusive
-            for (var i = 0, l = checkboxes.length; i < l; i++) {
-              var checkbox = checkboxes[i];
-              var boundary = checkbox == previous_checkbox || checkbox == ev.target;
-              if (boundary) {
-                if (inside === false) {
-                  // the first boundary we hit puts us inside
-                  inside = true;
-                }
-                else {
-                  // the secondary boundary puts us outside, so we break out
-                  break;
-                }
-              }
-              else if (inside) {
-                checkbox.checked = action;
-                // checkbox.dispatchEvent(new Event('input', true, true));
-                // angular.element(checkbox).trigger('click');
-                // angular.element(checkbox).trigger('change');
-                // angular.element(checkbox).prop('checked', action);
-                angular.element(checkbox).triggerHandler('click');
-              }
-            }
-          }
-        }
-        previous_checkbox = ev.target;
-        // previous_action = action;
-      });
-
-    },
+      scope.checkbox_sequence = new CheckboxSequence(el[0]);
+    }
   };
 });
 
@@ -201,15 +149,28 @@ app.controller('login', function($scope, $flash, $window, AccessToken) {
   };
 });
 
-app.controller('sentences.list', function($scope, $flash, Sentence) {
+app.controller('sentences.list', function($scope, $q, $flash, Sentence) {
   $scope.sentences = Sentence.query({active: true});
 
   $scope.delete = function(sentence) {
-    var promise = sentence.$delete().then(function(res) {
-      $scope.sentences.splice($scope.sentences.indexOf(sentence), 1);
+    var promise = sentence.$delete(function() {
+      sentence.deleted = true;
+    }).then(function() {
       return 'Deleted sentence.';
-    }, function(res) {
-      return 'Error deleting sentence. ' + stringifyResponse(res);
+    });
+    $flash(promise);
+  };
+
+  $scope.deleteSelected = function() {
+    var promises = $scope.sentences.filter(function(sentence) {
+      return sentence.selected && !sentence.deleted;
+    }).map(function(sentence) {
+      return sentence.$delete(function() {
+        sentence.deleted = true;
+      });
+    });
+    var promise = $q.all(promises).then(function(res) {
+      return 'Deleted ' + promises.length + ' sentences.';
     });
     $flash(promise);
   };
