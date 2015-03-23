@@ -7,6 +7,7 @@
       <th>Text</th>
       <th>Language</th>
       <th>Active</th>
+      <th>View Order</th>
       <th>Created</th>
       <th></th>
     </tr>
@@ -17,6 +18,7 @@
       <td><a ui-sref="sentences.edit({id: sentence.id})">{{sentence.text}}</a></td>
       <td>{{sentence.language}}</td>
       <td>{{sentence.active}}</td>
+      <td>{{sentence.view_order}}</td>
       <td><time>{{sentence.created | date:"MMM d, y"}}</time></td>
       <td>
         <button ng-click="delete(sentence)">Delete</button>

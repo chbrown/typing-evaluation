@@ -10,14 +10,44 @@ var R = new Router(function(req, res) {
   res.status(404).die('No resource at: ' + req.url);
 });
 
-/** GET /api/sentences
+/** GET /api/sentences?
+
+query: {
+  order: string = 'view_order';
+  direction: string = 'ASC';
+  limit?: number;
+}
+
 List all sentences
 */
 R.get(/^\/api\/sentences(\?|$)/, function(req, res) {
   auth.assertAuthorization(req, res, function() {
-    db.Select('sentences')
-    .orderBy('id')
-    .execute(function(err, rows) {
+    var urlObj = url.parse(req.url, true);
+
+    // prepare the query
+    var select = db.Select('sentences');
+
+    // set ORDER BY clause (this is kind of verbose, to avoid sql injection
+    // vulnerability)
+    var orderBy_column = 'view_order';
+    if (urlObj.query.order == 'id') {
+      orderBy_column = 'id';
+    }
+    else if (urlObj.query.order == 'language') {
+      orderBy_column = 'language';
+    }
+    else if (urlObj.query.order == 'created') {
+      orderBy_column = 'created';
+    }
+    var orderBy_direction = (urlObj.query.direction == 'DESC') ? 'DESC' : 'ASC';
+    select = select.orderBy(orderBy_column + ' ' + orderBy_direction);
+
+    // set LIMIT clause
+    if (urlObj.query.limit) {
+      select = select.limit(urlObj.query.limit);
+    }
+
+    select.execute(function(err, rows) {
       if (err) return res.error(err, req.headers);
 
       res.ngjson(rows);
@@ -30,7 +60,20 @@ Get blank (empty) sentence
 */
 R.get(/^\/api\/sentences\/new$/, function(req, res) {
   auth.assertAuthorization(req, res, function() {
-    res.json({id: null, active: true, language: 'en', created: new Date()});
+    db.Select('sentences')
+    .add('MAX(view_order) AS max')
+    .execute(function(err, rows) {
+      if (err) return res.error(err, req.headers);
+
+      var max_view_order = (rows.length > 0) ? rows[0].max : 0;
+      res.json({
+        id: null,
+        active: true,
+        language: 'en',
+        view_order: max_view_order + 1,
+        created: new Date(),
+      });
+    });
   });
 });
 
@@ -42,7 +85,7 @@ R.post(/^\/api\/sentences$/, function(req, res) {
     req.readData(function(err, data) {
       if (err) return res.error(err, req.headers);
 
-      data = _.pick(data, ['text', 'language', 'active']);
+      data = _.pick(data, ['text', 'language', 'active', 'view_order']);
 
       db.Insert('sentences')
       .set(data)
@@ -104,7 +147,7 @@ R.get(/^\/api\/sentences\/next/, function(req, res, m) {
   db.Select('sentences')
   .add('id')
   .where('id NOT IN (SELECT sentence_id FROM responses WHERE participant_id = ?)', participant_id)
-  .orderBy('id ASC')
+  .orderBy('view_order ASC')
   .limit(1)
   .execute(function(err, rows) {
     if (err) return res.error(err, req.headers);
@@ -125,7 +168,7 @@ R.post(/^\/api\/sentences\/(\d+)$/, function(req, res, m) {
     req.readData(function(err, data) {
       if (err) return res.error(err, req.headers);
 
-      data = _.pick(data, ['text', 'language', 'active']);
+      data = _.pick(data, ['text', 'language', 'active', 'view_order']);
 
       db.Update('sentences')
       .whereEqual({id: m[1]})

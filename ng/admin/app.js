@@ -163,11 +163,19 @@ app.controller('sentences.import', function($scope, $q, $flash, $state, Sentence
 
   $scope.prepare = function(ev) {
     var texts = $scope.input.trim().split(/\n/);
-    $scope.sentences = texts.map(function(text) {
-      return new Sentence({
-        text: text,
-        language: $scope.language,
-        active: $scope.active,
+
+    // find the maximum view_order in the sentences table
+    Sentence.query({order: 'view_order', direction: 'DESC', limit: 1}, function(sentences) {
+      var max_view_order = (sentences.length > 0) ? sentences[0].view_order : 0;
+      var next_view_order = max_view_order + 1;
+      // now construct all the sentences that will be inserted (if submitted)
+      $scope.sentences = texts.map(function(text, i) {
+        return new Sentence({
+          text: text,
+          language: $scope.language,
+          active: $scope.active,
+          view_order: next_view_order + i,
+        });
       });
     });
   };
