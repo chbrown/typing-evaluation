@@ -1,19 +1,8 @@
-all: static/lib.min.js static/lib.max.js static/site.css
+all: ui/compiled/experiment.min.js ui/site.css
 
 %.css: %.less
 	lessc $+ | cleancss --keep-line-breaks --skip-advanced -o $@
 
-# ng/experiment/demographics.schema.json: demographics.schema.yaml
-# 	<$+ yaml2json | jq . >$@
-
-# Use | (order-only prerequisites) to skip existing files
-static/lib/%.min.js: | static/lib/%.js
-	ng-annotate -a $| | closure-compiler --language_in ECMASCRIPT5 --warning_level QUIET > $@
-
-SCRIPTS = angular angular-resource \
-	angular-ui-router ngStorage angular-plugins angular-translate \
-	lodash textarea cookies
-static/lib.min.js: $(SCRIPTS:%=static/lib/%.min.js)
-	closure-compiler --language_in ECMASCRIPT5 --warning_level QUIET --js $+ > $@
-static/lib.max.js: $(SCRIPTS:%=static/lib/%.js)
-	cat $+ > $@
+ui/compiled/experiment.min.js: ui/lib/angular.min.js ui/lib/angular-resource.min.js ui/lib/angular-ui-router.min.js \
+		ui/lib/angular-translate.min.js ui/lib/cookies.js ui/loggedinput.js ui/models.js ui/experiment/app.js
+	cat $+ | ng-annotate -a - | closure-compiler --language_in ECMASCRIPT5 --warning_level QUIET > $@

@@ -1,11 +1,83 @@
-/*jslint browser: true */ /*globals _, angular, stringifyResponse, cookies */
+/*jslint browser: true */ /*globals angular, stringifyResponse, cookies */
 var app = angular.module('adminApp', [
   'ngResource',
   'ngStorage',
   'ui.router',
-  'misc-js/angular-plugins',
+  'pascalprecht.translate', // for $translateProvider and | translate filters
   'typing-evaluation-models',
+  'misc-js/angular-plugins',
 ]);
+
+function stringifyResponse(res) {
+  if (res.data.message) {
+    return res.data.message;
+  }
+  if (typeof res.data === 'string')  {
+    return res.data;
+  }
+  return JSON.stringify(res.data);
+}
+
+app.directive('checkboxSequence', function() {
+  /** Use like:
+
+    <ul checkbox-sequence>
+      <li ng-repeat="user in users">
+        <label><input type="checkbox" ng-model="user.selected"> {{user.name}}</label>
+      </li>
+    </ul>
+
+  */
+  return {
+    restrict: 'A',
+    link: function(scope, el, attrs) {
+      var previous_checkbox = null;
+      // previous_action == true means the last selection was to change
+      // a checkbox from unchecked to checked
+      var previous_action = null;
+
+      // addEventListener('DOMSubtreeModified', function()
+      // requires jQuery (not just jQ-lite) for the selector stuff
+      var sel = 'input[type="checkbox"]';
+      el.on('click', function(ev) {
+        console.log('click', ev);
+        // var action = ev.target.checked; // true = just checked, false = just unchecked
+        if (false && ev.shiftKey) {
+          if (action === previous_action && previous_checkbox) {
+            var checkboxes = el.find(sel);
+            var inside = false;
+            // select all entries between the two, inclusive
+            for (var i = 0, l = checkboxes.length; i < l; i++) {
+              var checkbox = checkboxes[i];
+              var boundary = checkbox == previous_checkbox || checkbox == ev.target;
+              if (boundary) {
+                if (inside === false) {
+                  // the first boundary we hit puts us inside
+                  inside = true;
+                }
+                else {
+                  // the secondary boundary puts us outside, so we break out
+                  break;
+                }
+              }
+              else if (inside) {
+                checkbox.checked = action;
+                // checkbox.dispatchEvent(new Event('input', true, true));
+                // angular.element(checkbox).trigger('click');
+                // angular.element(checkbox).trigger('change');
+                // angular.element(checkbox).prop('checked', action);
+                angular.element(checkbox).triggerHandler('click');
+              }
+            }
+          }
+        }
+        previous_checkbox = ev.target;
+        // previous_action = action;
+      });
+
+    },
+  };
+});
 
 app.config(function($stateProvider, $locationProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise(function($injector, $location) {
@@ -16,72 +88,72 @@ app.config(function($stateProvider, $locationProvider, $urlRouterProvider) {
   $stateProvider
   .state('login', {
     url: '/login',
-    templateUrl: '/ng/admin/login.html',
+    templateUrl: '/ui/admin/login.html',
     controller: 'login',
   })
   // sentences
   .state('sentences', {
     url: '/sentences',
-    templateUrl: '/ng/admin/sentences/layout.html',
+    templateUrl: '/ui/admin/sentences/layout.html',
     abstract: true,
   })
   .state('sentences.list', {
     url: '/',
-    templateUrl: '/ng/admin/sentences/list.html',
+    templateUrl: '/ui/admin/sentences/list.html',
     controller: 'sentences.list',
   })
   .state('sentences.import', {
     url: '/import',
-    templateUrl: '/ng/admin/sentences/import.html',
+    templateUrl: '/ui/admin/sentences/import.html',
     controller: 'sentences.import'
   })
   // matches /import, so edit must come after import
   .state('sentences.edit', {
     url: '/{id}',
-    templateUrl: '/ng/admin/sentences/edit.html',
+    templateUrl: '/ui/admin/sentences/edit.html',
     controller: 'sentences.edit'
   })
   // administrators
   .state('administrators', {
     url: '/administrators',
-    templateUrl: '/ng/admin/administrators/layout.html',
+    templateUrl: '/ui/admin/administrators/layout.html',
     abstract: true,
   })
   .state('administrators.list', {
     url: '/',
-    templateUrl: '/ng/admin/administrators/list.html',
+    templateUrl: '/ui/admin/administrators/list.html',
     controller: 'administrators.list',
   })
   .state('administrators.edit', {
     url: '/{id}',
-    templateUrl: '/ng/admin/administrators/edit.html',
+    templateUrl: '/ui/admin/administrators/edit.html',
     controller: 'administrators.edit'
   })
   // participants
   .state('participants', {
     url: '/participants',
-    templateUrl: '/ng/admin/participants/layout.html',
+    templateUrl: '/ui/admin/participants/layout.html',
     abstract: true,
   })
   .state('participants.list', {
     url: '/',
-    templateUrl: '/ng/admin/participants/list.html',
+    templateUrl: '/ui/admin/participants/list.html',
     controller: 'participants.list',
   })
   .state('participants.edit', {
     url: '/{id}',
-    templateUrl: '/ng/admin/participants/edit.html',
+    templateUrl: '/ui/admin/participants/edit.html',
     controller: 'participants.edit'
   })
   // responses
   .state('responses', {
     url: '/responses',
-    templateUrl: '/ng/admin/responses/layout.html',
+    templateUrl: '/ui/admin/responses/layout.html',
     abstract: true,
   })
   .state('responses.list', {
     url: '/',
-    templateUrl: '/ng/admin/responses/list.html',
+    templateUrl: '/ui/admin/responses/list.html',
     controller: 'responses.list',
   });
 

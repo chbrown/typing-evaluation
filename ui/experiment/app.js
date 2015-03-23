@@ -1,8 +1,8 @@
-/*jslint browser: true */ /*globals _, angular, cookies, LoggedInput, stringifyResponse */
+/*jslint browser: true */ /*globals angular, cookies, LoggedInput */
 var app = angular.module('experimentApp', [
+  'ngResource',
   'ui.router',
   'pascalprecht.translate', // for $translateProvider and | translate filters
-  'ngResource',
   'typing-evaluation-models',
 ]);
 
@@ -55,26 +55,26 @@ app.config(function($urlRouterProvider, $stateProvider, $locationProvider) {
   $stateProvider
   .state('consent', {
     url: '/consent' + PARAMS,
-    templateUrl: '/ng/experiment/consent.html',
+    templateUrl: '/ui/experiment/consent.html',
     controller: 'consent',
   })
   .state('instructions', {
     url: '/instructions' + PARAMS,
-    templateUrl: '/ng/experiment/instructions.html',
+    templateUrl: '/ui/experiment/instructions.html',
   })
   .state('demographics', {
     url: '/demographics' + PARAMS,
-    templateUrl: '/ng/experiment/demographics.html',
+    templateUrl: '/ui/experiment/demographics.html',
     controller: 'demographics',
   })
   .state('sentence', {
     url: '/sentence/{id}' + PARAMS,
-    templateUrl: '/ng/experiment/sentence.html',
+    templateUrl: '/ui/experiment/sentence.html',
     controller: 'sentence',
   })
   .state('conclusion', {
     url: '/conclusion' + PARAMS,
-    templateUrl: '/ng/experiment/conclusion.html',
+    templateUrl: '/ui/experiment/conclusion.html',
     controller: 'conclusion',
   });
 

@@ -27,7 +27,7 @@
     "sv": "*",
     "yargs": "*"
   },
-  "staticPattern": "static/lib/{file}",
+  "staticPattern": "ui/lib/{file}",
   "staticDependencies": {
     "angular": "*",
     "angular-translate": {
@@ -39,7 +39,10 @@
     },
     "angular-ui-router": "*",
     "lodash": "*",
-    "misc-js": "git://github.com/chbrown/misc-js.git",
+    "misc-js": {
+      "url": "git://github.com/chbrown/misc-js.git",
+      "filter": ["angular-plugins.js", "cookies.js", "textarea.js"]
+    },
     "ng-storage": "*"
   }
 }

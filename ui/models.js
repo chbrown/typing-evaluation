@@ -1,17 +1,7 @@
-/*jslint browser: true */ /*globals _, angular */
+/*jslint browser: true */ /*globals _, angular, cookies */
 
 function t_(url) {
   return url + '?t_=' + (Math.random() * 1000 | 0);
-}
-
-function stringifyResponse(res) {
-  if (res.data.message) {
-    return res.data.message;
-  }
-  if (typeof res.data === 'string')  {
-    return res.data;
-  }
-  return JSON.stringify(res.data);
 }
 
 cookies.defaults = function() {
