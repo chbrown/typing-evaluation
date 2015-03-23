@@ -4,7 +4,7 @@ button,input,textarea{box-sizing:border-box}
 pre{margin:0}
 .vpad,section{padding-top:10px;padding-bottom:10px}
 .hpad,article{padding-left:10px;padding-right:10px}
-.nowrap,time{white-space:nowrap}
+.nowrap,th,time{white-space:nowrap}
 .outset-shadow{box-shadow:0 0 5px rgba(0,0,0,.05)}
 form{font-size:90%}
 form .description{font-weight:700}
