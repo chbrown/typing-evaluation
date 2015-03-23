@@ -41,7 +41,7 @@
     "lodash": "*",
     "misc-js": {
       "url": "git://github.com/chbrown/misc-js.git",
-      "filter": ["angular-plugins.js", "cookies.js", "textarea.js"]
+      "filter": ["angular-plugins.js", "checkbox-sequence.js", "cookies.js", "textarea.js"]
     },
     "ng-storage": "*"
   }
