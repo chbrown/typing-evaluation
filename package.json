@@ -38,7 +38,7 @@
       ]
     },
     "angular-ui-router": "*",
-    "lo-dash": "*",
+    "lodash": "*",
     "misc-js": "git://github.com/chbrown/misc-js.git",
     "ng-storage": "*"
   }
