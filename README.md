@@ -67,7 +67,7 @@ That machine will now be the "active" one (`machine ls` or `cat ~/.docker/hosts/
 Docker commands will now affect the docker host on that machine. Start up the required containers:
 
     docker run -d --name db -p 127.0.0.1:5432:5432 postgres:9.3
-    docker run -d --name app --link db:db chbrown/typing-evaluation
+    docker run -d --name app --link db:db --restart always chbrown/typing-evaluation
 
 That will pull the `chbrown/typing-evaluation` Docker container image from [Docker Hub](https://registry.hub.docker.com/u/chbrown/typing-evaluation/), so it might take a while.
 
@@ -95,7 +95,7 @@ After the first deploy, you can update to the latest version of the app with a s
     docker pull chbrown/typing-evaluation
     # restart the app
     docker rm -f app
-    docker run -d --name app --link db:db chbrown/typing-evaluation
+    docker run -d --name app --link db:db --restart always chbrown/typing-evaluation
     # restart nginx, since it is still pointing to the previous app container's hostname
     docker rm -f nginx
     docker run -d --name nginx --link app:app -p 80:80 -p 443:443 \
