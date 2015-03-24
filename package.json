@@ -1,6 +1,6 @@
 {
   "name": "typing-evaluation",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "University of Sheffield Typing Evaluation Project",
   "private": true,
   "repository": {
@@ -41,7 +41,12 @@
     "lodash": "*",
     "misc-js": {
       "url": "git://github.com/chbrown/misc-js.git",
-      "filter": ["angular-plugins.js", "checkbox-sequence.js", "cookies.js", "textarea.js"]
+      "filter": [
+        "angular-plugins.js",
+        "checkbox-sequence.js",
+        "cookies.js",
+        "textarea.js"
+      ]
     },
     "ng-storage": "*"
   }
