@@ -1,4 +1,4 @@
-/*jslint browser: true */ /*globals angular, cookies, LoggedInput */
+/*jslint browser: true */ /*globals angular, cookies */
 var app = angular.module('experimentApp', [
   'ngResource',
   'ui.router',
@@ -145,7 +145,8 @@ app.controller('sentence', function($scope, $state, Sentence, Participant, Respo
 
   function sentenceLoaded(value, responseHeaders) {
     // reset input
-    $scope.logged_input = new LoggedInput();
+    $scope.characters = [];
+    $scope.events = [];
   }
 
   function sentenceFailed(res) {
@@ -162,15 +163,33 @@ app.controller('sentence', function($scope, $state, Sentence, Participant, Respo
   });
 
   document.addEventListener('keydown', function(ev) {
-    // pass over (ignore) all meta (super/command) keys; only intercept non-meta keys
-    $scope.$apply(function() {
-      if (ev.which == 13) { // enter/return key
+    // handle special characters that don't equate to a keypress event
+    if (ev.which == 8) { // backspace
+      // backspace is a special case: it's the only logged control character
+      ev.preventDefault();
+      $scope.$apply(function() {
+        $scope.characters.pop();
+        $scope.events.push({timestamp: ev.timeStamp, key: 'backspace'});
+      });
+    }
+    else if (ev.which == 13) { // enter
+      ev.preventDefault();
+      $scope.$apply(function() {
         $scope.submit(ev);
-      }
-      if (!ev.metaKey) {
-        ev.preventDefault();
-        $scope.logged_input.applyKey(ev.which, ev.shiftKey, ev.timeStamp);
-      }
+      });
+    }
+    // but most key events should drop through to the keypress handler below
+  });
+  document.addEventListener('keypress', function(ev) {
+    // keypress is only called for non-meta keys (not for shift / ctrl / super / command)
+    $scope.$apply(function() {
+      ev.preventDefault();
+      // most modern browsers have ev.charCode for keypress events, but `which`
+      // and `keyCode` can serve as fallbacks
+      var charCode = (ev.charCode !== null) ? ev.charCode : (ev.which || ev.keyCode);
+      var string = String.fromCharCode(charCode);
+      $scope.characters.push(string);
+      $scope.events.push({timestamp: ev.timeStamp, key: string});
     });
   });
 
@@ -178,7 +197,7 @@ app.controller('sentence', function($scope, $state, Sentence, Participant, Respo
     Response.save({
       sentence_id: $scope.sentence.id,
       participant_id: $scope.participant.id,
-      keystrokes: $scope.logged_input.events,
+      keystrokes: $scope.events,
     }, function() {
       $scope.sentence.$get({
         id: 'next',
