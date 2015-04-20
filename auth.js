@@ -1,5 +1,3 @@
-var util = require('util');
-var logger = require('loge');
 var db = require('./db');
 
 /** authenticatedAdministrator(req: http.IncomingMessage,
