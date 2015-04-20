@@ -1,0 +1,19 @@
+{
+  "title": "Typing Experiment (v.01)",
+  "description": "Retype some simple sentences quickly",
+  "reward": 0.25,
+  "assignments": 10,
+  "duration": "30 min",
+  "keywords": [
+    "typing",
+    "experiment",
+    "science"
+  ],
+  "lifetime": "3 d",
+  "approval_delay": "1 d",
+  "qualifications": [
+    "PercentAssignmentsApproved > 90"
+  ],
+  "question_url": "https://typingexperiment.com/experiment/instructions",
+  "question_frame_height": 600
+}
