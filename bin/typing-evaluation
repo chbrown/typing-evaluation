@@ -34,7 +34,7 @@ else if (cluster.isWorker) {
   require('../server').listen(argv.port, argv.hostname);
 }
 else {
-  db.createDatabaseIfNotExists(function(err, exists) {
+  db.createDatabaseIfNotExists(function(err) {
     if (err) throw err;
 
     var migrations_dirpath = path.join(__dirname, '..', 'migrations');

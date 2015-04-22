@@ -21,14 +21,14 @@ function stringifyResponse(res) {
 app.directive('checkboxSequence', function() {
   return {
     restrict: 'A',
-    link: function(scope, el, attrs) {
+    link: function(scope, el) {
       scope.checkbox_sequence = new CheckboxSequence(el[0]);
     }
   };
 });
 
 app.config(function($stateProvider, $locationProvider, $urlRouterProvider) {
-  $urlRouterProvider.otherwise(function($injector, $location) {
+  $urlRouterProvider.otherwise(function() {
     // the returned value should be a url expressed relative to the page's base[href]
     return 'sentences/';
   });
@@ -123,19 +123,19 @@ app.config(function($httpProvider) {
 });
 
 app.run(function($rootScope, $state) {
-  $rootScope.$on('unauthorized', function(event, res) {
+  $rootScope.$on('unauthorized', function() {
     $state.go('login');
   });
 });
 
 app.controller('login', function($scope, $flash, $window, AccessToken) {
-  $scope.submit = function(ev) {
+  $scope.submit = function() {
     var access_token = AccessToken.authenticateUser({
       email: $scope.email,
       password: $scope.password
     });
 
-    var promise = access_token.$promise.then(function(res) {
+    var promise = access_token.$promise.then(function() {
       cookies.set('user_access_token', access_token.token);
       setTimeout(function() {
         $window.history.back();
@@ -169,7 +169,7 @@ app.controller('sentences.list', function($scope, $q, $flash, Sentence) {
         sentence.deleted = true;
       });
     });
-    var promise = $q.all(promises).then(function(res) {
+    var promise = $q.all(promises).then(function() {
       return 'Deleted ' + promises.length + ' sentences.';
     });
     $flash(promise);
@@ -179,8 +179,8 @@ app.controller('sentences.list', function($scope, $q, $flash, Sentence) {
 app.controller('sentences.edit', function($scope, $flash, $state, Sentence) {
   $scope.sentence = Sentence.get($state.params);
 
-  $scope.submit = function(ev) {
-    var promise = $scope.sentence.$save().then(function(res) {
+  $scope.submit = function() {
+    var promise = $scope.sentence.$save().then(function() {
       $state.go('.', {id: $scope.sentence.id}, {notify: false});
       return 'Saved sentence.';
     }, function(res) {
@@ -194,7 +194,7 @@ app.controller('sentences.import', function($scope, $q, $flash, $state, Sentence
   $scope.active = true;
   $scope.language = 'en';
 
-  $scope.prepare = function(ev) {
+  $scope.prepare = function() {
     var texts = $scope.input.trim().split(/\n/);
 
     // find the maximum view_order in the sentences table
@@ -213,7 +213,7 @@ app.controller('sentences.import', function($scope, $q, $flash, $state, Sentence
     });
   };
 
-  $scope.submit = function(ev) {
+  $scope.submit = function() {
     var promises = $scope.sentences.map(function(sentence) {
       return sentence.$save();
     });
@@ -231,7 +231,7 @@ app.controller('administrators.list', function($scope, $flash, Administrator) {
   $scope.administrators = Administrator.query();
 
   $scope.delete = function(administrator) {
-    var promise = administrator.$delete().then(function(res) {
+    var promise = administrator.$delete().then(function() {
       $scope.administrators.splice($scope.administrators.indexOf(administrator), 1);
       return 'Deleted administrator.';
     }, function(res) {
@@ -245,8 +245,8 @@ app.controller('administrators.list', function($scope, $flash, Administrator) {
 app.controller('administrators.edit', function($scope, $flash, $state, Administrator) {
   $scope.administrator = Administrator.get({id: $state.params.id});
 
-  $scope.submit = function(ev) {
-    var promise = $scope.administrator.$save().then(function(res) {
+  $scope.submit = function() {
+    var promise = $scope.administrator.$save().then(function() {
       $state.go('.', {id: $scope.administrator.id}, {notify: false});
       return 'Saved administrator.';
     }, function(res) {
@@ -261,7 +261,7 @@ app.controller('participants.list', function($scope, $flash, Participant) {
   $scope.participants = Participant.query();
 
   $scope.delete = function(participant) {
-    var promise = participant.$delete().then(function(res) {
+    var promise = participant.$delete().then(function() {
       $scope.participants.splice($scope.participants.indexOf(participant), 1);
       return 'Deleted participant.';
     }, function(res) {
@@ -283,7 +283,7 @@ app.controller('responses.list', function($scope, $flash, Response) {
   $scope.accept = 'application/json;+boundary=LF'; // default
 
   $scope.delete = function(response) {
-    var promise = response.$delete().then(function(res) {
+    var promise = response.$delete().then(function() {
       $scope.responses.splice($scope.responses.indexOf(response), 1);
       return 'Deleted response.';
     }, function(res) {
