@@ -29,7 +29,14 @@
   },
   "staticPattern": "ui/lib/{file}",
   "staticDependencies": {
-    "angular": "*",
+    "angular": {
+      "filter": [
+        "angular.js",
+        "angular.min.js",
+        "angular-resource.js",
+        "angular-resource.min.js"
+      ]
+    },
     "angular-translate": {
       "url": "git://github.com/angular-translate/bower-angular-translate.git",
       "filter": [
