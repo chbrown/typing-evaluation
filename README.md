@@ -66,13 +66,11 @@ Running `docker ps` now should work, but will only print a list of headers since
 
 ### Run the containers
 
-We'll use a stock PostgreSQL 9.4, but open it up to localhost connections in case we want to get a database dump later:
+We'll use a stock PostgreSQL 9.4, and name it `db`:
 
-    docker run -d --name db -p 127.0.0.1:5432:5432 postgres:9.4
+    docker run -d --name db postgres:9.4
 
-Next, we'll configure nginx.
-
-If you have an SSL/TLS key and certificate, put them into `/etc/nginx/certs/` on the droplet:
+Before starting nginx, if you have an SSL/TLS key and certificate, put them into `/etc/nginx/certs/` on the droplet:
 
     docker-machine ssh typing-evaluation 'mkdir -p /etc/nginx/certs/'
     cat typingexperiment.com.key | docker-machine ssh typing-evaluation 'cat - > /etc/nginx/certs/typingexperiment.com.key'
@@ -80,14 +78,17 @@ If you have an SSL/TLS key and certificate, put them into `/etc/nginx/certs/` on
 
 It's not too hard to configure the stock `nginx` Dockerfile, but there's a handy auto-configuring container called [`jwilder/nginx-proxy`](https://github.com/jwilder/nginx-proxy) that we'll use instead:
 
-    docker run -d -p 80:80 -p 443:443 -v /etc/nginx/certs:/etc/nginx/certs -v /var/run/docker.sock:/tmp/docker.sock --name nginx jwilder/nginx-proxy
+    docker run -d -p 80:80 -p 443:443 -v /etc/nginx/certs:/etc/nginx/certs \
+        -v /var/run/docker.sock:/tmp/docker.sock --name nginx jwilder/nginx-proxy
 
 Finally, start the actual web application container:
 
     # set VIRTUAL_HOST to the hostname you want the app to respond to
     # ADMIN_USER and ADMIN_PASS are optional, but they're an easy way to
-    # initialize some valid credentials to allow logging into the admin pages
-    docker run -d -e VIRTUAL_HOST=typingexperiment.com -e ADMIN_USER=open -e ADMIN_PASS=sesame --name app --link db:db --restart always chbrown/typing-evaluation
+    # initialize some valid credentials to allow logging into the admin pages.
+    # Of course, you should change them to something else before running this command.
+    docker run -d -e VIRTUAL_HOST=typingexperiment.com -e ADMIN_USER=open -e ADMIN_PASS=sesame \
+        --name app --link db:db --restart always chbrown/typing-evaluation
 
 That will pull the `chbrown/typing-evaluation` Docker container image from [Docker Hub](https://registry.hub.docker.com/u/chbrown/typing-evaluation/), so it might take a while (around five minutes).
 
@@ -101,7 +102,8 @@ After the first deploy, you can update to the latest version of the app with a s
     eval "$(docker-machine env typing-evaluation)"
     docker pull chbrown/typing-evaluation
     docker rm -f app
-    docker run -d -e VIRTUAL_HOST=typingexperiment.com --name app --link db:db --restart always chbrown/typing-evaluation
+    docker run -d -e VIRTUAL_HOST=typingexperiment.com --link db:db --restart always \
+        --name app chbrown/typing-evaluation
 
 
 ## DO API
