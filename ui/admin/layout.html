@@ -23,10 +23,18 @@
 <body class="admin" ng-app="adminApp">
   <flash></flash>
   <nav fixedflow>
-    <a ui-sref="sentences.list" ui-sref-active="current" class="tab">Sentences</a>
-    <a ui-sref="participants.list" ui-sref-active="current" class="tab">Participants</a>
-    <a ui-sref="responses.list" ui-sref-active="current" class="tab">Responses</a>
-    <a ui-sref="administrators.list" ui-sref-active="current" class="tab">Administrators</a>
+    <span ui-sref-active-any="{current: 'sentences'}" class="tab">
+      <a ui-sref="sentences.list">Sentences</a>
+    </span>
+    <span ui-sref-active-any="{current: 'participants'}" class="tab">
+      <a ui-sref="participants.list">Participants</a>
+    </span>
+    <span ui-sref-active-any="{current: 'responses'}" class="tab">
+      <a ui-sref="responses.list">Responses</a>
+    </span>
+    <span ui-sref-active-any="{current: 'administrators'}" class="tab">
+      <a ui-sref="administrators.list">Administrators</a>
+    </span>
   </nav>
   <ui-view></ui-view>
 </body>

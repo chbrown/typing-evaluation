@@ -19,15 +19,15 @@ form textarea{width:100%;min-height:50px}
 .admin a[ng-click]{text-decoration:underline;cursor:pointer}
 .admin nav{position:fixed;left:0;right:0;background-color:#222;z-index:10}
 .admin nav.sub{background-color:#FEFEFE;z-index:100;border-bottom:1px solid #CCC}
-.admin nav a{padding:5px;display:inline-block}
-.admin nav .tab{padding:6px 10px 8px;font-size:18px;font-weight:100;color:#EEE}
-.admin nav .tab:hover{background-color:#444}
-.admin nav .tab.current{background-color:#FEFEFE;color:#444;text-decoration:none}
-.admin nav .tab.current:hover{text-decoration:underline}
-.admin nav .button{margin:5px;padding:2px 5px;border-radius:3px;background-color:#DDD;border:1px solid #CCC}
-.admin nav .button:hover{background:0 0;border:1px solid #DDD}
-.admin nav .button.current{background:0 0;border:1px solid #EEE;text-decoration:none}
-.admin nav .button.current:hover{text-decoration:underline}
+.admin nav a{display:inline-block}
+.admin nav .tab a{font-size:18px;padding:6px 10px 8px;color:#EEE}
+.admin nav .tab a:hover{background-color:#444}
+.admin nav .tab.current a{color:#444;background-color:#FEFEFE;text-decoration:none}
+.admin nav .tab.current a:hover{text-decoration:underline}
+.admin nav .button a{margin:5px;padding:2px 5px;background-color:#DDD;border-radius:3px;border:1px solid #CCC}
+.admin nav .button a:hover{background:0 0;border:1px solid #DDD}
+.admin nav .button.current a{background:0 0;border:1px solid #EEE;text-decoration:none}
+.admin nav .button.current a:hover{text-decoration:underline}
 .admin table{border-collapse:collapse}
 .admin table td,.admin table th{text-align:left;vertical-align:top;padding:2px 6px 2px 2px}
 .admin table.fill{width:100%}

@@ -1,6 +1,12 @@
 <nav fixedflow class="sub">
-  <a ui-sref="sentences.list" ui-sref-active="current" class="button">List sentences</a>
-  <a ui-sref="sentences.edit({id: 'new'})" ui-sref-active="current" class="button">Add sentence</a>
-  <a ui-sref="sentences.import" ui-sref-active="current" class="button">Import sentences</a>
+  <span ui-sref-active="current" class="button">
+    <a ui-sref="sentences.list">List sentences</a>
+  </span>
+  <span ui-sref-active="current" class="button">
+    <a ui-sref="sentences.edit({id: 'new'})">Add sentence</a>
+  </span>
+  <span ui-sref-active="current" class="button">
+    <a ui-sref="sentences.import">Import sentences</a>
+  </span>
 </nav>
 <ui-view></ui-view>

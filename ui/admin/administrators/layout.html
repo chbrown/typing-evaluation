@@ -1,5 +1,9 @@
 <nav fixedflow class="sub">
-  <a ui-sref="administrators.list" ui-sref-active="current" class="button">List administrators</a>
-  <a ui-sref="administrators.edit({id: 'new'})" ui-sref-active="current" class="button">Add administrator</a>
+  <span ui-sref-active="current" class="button">
+    <a ui-sref="administrators.list">List administrators</a>
+  </span>
+  <span ui-sref-active="current" class="button">
+    <a ui-sref="administrators.edit({id: 'new'})">Add administrator</a>
+  </span>
 </nav>
 <ui-view></ui-view>

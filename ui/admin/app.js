@@ -27,6 +27,25 @@ app.directive('checkboxSequence', function() {
   };
 });
 
+app.directive('uiSrefActiveAny', function($state) {
+  return {
+    restrict: 'A',
+    scope: {
+      uiSrefActiveAny: '=',
+    },
+    link: function(scope, el) {
+      var activeClasses = scope.uiSrefActiveAny;
+      function updateSrefActiveAny() {
+        for (var key in activeClasses) {
+          var match = $state.includes(activeClasses[key]);
+          el.toggleClass(key, match);
+        }
+      }
+      scope.$on('$stateChangeSuccess', updateSrefActiveAny);
+    }
+  };
+});
+
 app.config(function($stateProvider, $locationProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise(function() {
     // the returned value should be a url expressed relative to the page's base[href]

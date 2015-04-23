@@ -99,50 +99,53 @@ form {
     }
 
     a {
-      padding: 5px;
       display: inline-block;
     }
 
     .tab {
-      padding: 6px 10px 8px;
-      font-size: 18px;
-      font-weight: 100;
-      color: #EEE;
-
-      &:hover {
-        background-color: #444;
+      a {
+        font-size: 18px;
+        padding: 6px 10px 8px;
+        color: #EEE;
+        &:hover {
+          background-color: #444;
+        }
       }
 
       &.current {
-        background-color: #FEFEFE;
-        color: #444;
-        text-decoration: none;
-        &:hover {
-          text-decoration: underline;
+        a {
+          color: #444;
+          background-color: #FEFEFE;
+          text-decoration: none;
+          &:hover {
+            text-decoration: underline;
+          }
         }
       }
     }
 
     .button {
-      margin: 5px;
-      padding: 2px 5px;
-      border-radius: 3px;
-
-      background-color: #DDD;
-      border: 1px solid #CCC;
-
-      &:hover {
-        background: none;
-        border: 1px solid #DDD;
+      a {
+        margin: 5px;
+        padding: 2px 5px;
+        background-color: #DDD;
+        border-radius: 3px;
+        border: 1px solid #CCC;
+        &:hover {
+          background: none;
+          border: 1px solid #DDD;
+        }
       }
 
       &.current {
-        background: none;
-        border: 1px solid #EEE;
+        a {
+          background: none;
+          border: 1px solid #EEE;
 
-        text-decoration: none;
-        &:hover {
-          text-decoration: underline;
+          text-decoration: none;
+          &:hover {
+            text-decoration: underline;
+          }
         }
       }
     }
