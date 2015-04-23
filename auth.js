@@ -9,12 +9,20 @@ function authenticatedAdministrator(req, callback) {
   var basic_auth_match = (req.headers.authorization || '').match(/^Basic\s+(.+)$/);
   if (basic_auth_match) {
     var basic_auth_pair = new Buffer(basic_auth_match[1], 'base64').toString('utf8').split(':');
+    var email = basic_auth_pair[0];
+    var password = basic_auth_pair[1];
+
+    // check if the ADMIN_* environment variables have been set
+    if (process.env.ADMIN_USER && process.env.ADMIN_PASS) {
+      // if so, check that they match the basic auth pair
+      if (email === process.env.ADMIN_USER && password === process.env.ADMIN_PASS) {
+        // return a non-empty object for the administrator
+        return callback(null, {id: 'env'});
+      }
+    }
 
     db.Select('administrators')
-    .whereEqual({
-      email: basic_auth_pair[0],
-      password: basic_auth_pair[1],
-    })
+    .whereEqual({email: email, password: password})
     .limit(1)
     .execute(function(err, rows) {
       if (err) return callback(err);
