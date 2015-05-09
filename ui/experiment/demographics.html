@@ -4,7 +4,7 @@
 
   <form name="form" ng-submit="submit($event)" style="max-width: 600px">
     <div class="block">
-      <div class="description">Gender</div>
+      <div class="description">Gender (required)</div>
       <div><label><input type="radio" name="gender" ng-model="demographics.gender" value="Male" required> Male</label></div>
       <div><label><input type="radio" name="gender" ng-model="demographics.gender" value="Female" required> Female</label></div>
       <div>
@@ -15,7 +15,7 @@
       </div>
     </div>
     <label class="block">
-      <div class="description">Date of birth</div>
+      <div class="description">Date of birth (required)</div>
       <div>
         <input name="date_of_birth" type="date" ng-model="demographics.date_of_birth" required>
       </div>
@@ -72,6 +72,50 @@
       <div class="description">(Parkinson's Disease patients only) Date of confirmed diagnosis</div>
       <div>
         <input name="date_of_confirmed_diagnosis" type="date" ng-model="demographics.date_of_confirmed_diagnosis">
+      </div>
+    </label>
+
+    <!-- new items as of 2015-05-08 -->
+    <label class="block">
+      <div class="description">Handedness</div>
+      <div>
+        <input name="handedness" type="text" ng-model="demographics.handedness">
+      </div>
+    </label>
+    <label class="block">
+      <div class="description">Laterality of symptom onset</div>
+      <div>
+        <input name="laterality" type="text" ng-model="demographics.laterality">
+      </div>
+    </label>
+    <label class="block">
+      <div class="description">UPDRS-III</div>
+      <div>
+        <input name="updrs_iii" type="text" ng-model="demographics.updrs_iii">
+      </div>
+    </label>
+    <label class="block">
+      <div class="description">H&amp;Y</div>
+      <div>
+        <input name="h_and_y" type="text" ng-model="demographics.h_and_y">
+      </div>
+    </label>
+    <label class="block">
+      <div class="description">MMSE</div>
+      <div>
+        <input name="mmse" type="text" ng-model="demographics.mmse">
+      </div>
+    </label>
+    <label class="block">
+      <div class="description">On/Off state (including testing scenario)</div>
+      <div>
+        <input name="on_off_state" type="text" ng-model="demographics.on_off_state">
+      </div>
+    </label>
+    <label class="block">
+      <div class="description">Notes</div>
+      <div>
+        <textarea name="notes" ng-model="demographics.notes"></textarea>
       </div>
     </label>
 
