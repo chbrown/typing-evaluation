@@ -127,7 +127,6 @@ app.controller('demographics', function($scope, $state, Participant) {
   $scope.submit = function() {
     $scope.participant.demographics = $scope.demographics;
     $scope.participant.$save().then(function() {
-      cookies.set('participant_id', $scope.participant.id);
       $state.goRel('sentence', {id: 'next'});
     }, function(res) {
       console.error(res);
