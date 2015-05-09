@@ -66,23 +66,24 @@ R.get(/^\/api\/participants\/(\d+)$/, function(req, res, m) {
 
 /** POST /api/participants/:id
 Update existing participant (should be PUT)
+
+Cannot require auth since we now have to create the participant before the
+demographics get filled in.
 */
 R.post(/^\/api\/participants\/(\d+)$/, function(req, res, m) {
-  auth.assertAuthorization(req, res, function() {
-    req.readData(function(err, data) {
+  req.readData(function(err, data) {
+    if (err) return res.error(err, req.headers);
+
+    data = _.pick(data, ['demographics', 'parameters']);
+
+    db.Update('participants')
+    .whereEqual({id: m[1]})
+    .setEqual(data)
+    .returning('*')
+    .execute(function(err, rows) {
       if (err) return res.error(err, req.headers);
 
-      data = _.pick(data, ['demographics', 'parameters']);
-
-      db.Update('participants')
-      .whereEqual({id: m[1]})
-      .setEqual(data)
-      .returning('*')
-      .execute(function(err, rows) {
-        if (err) return res.error(err, req.headers);
-
-        res.json(rows[0]);
-      });
+      res.json(rows[0]);
     });
   });
 });

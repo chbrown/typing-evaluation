@@ -40,7 +40,7 @@ app.config(function($translateProvider) {
 });
 
 app.config(function($urlRouterProvider, $stateProvider, $locationProvider) {
-  $urlRouterProvider.otherwise(function($injector, $location) {
+  $urlRouterProvider.otherwise(function() {
     // $location is kind of broken (its getter functions return undefined) if
     // the current url is not under the current base[href]
 
@@ -95,11 +95,21 @@ app.directive('uiSrefRel', function($state) {
   };
 });
 
-app.controller('consent', function($scope, $state) {
+app.controller('consent', function($scope, $state, Participant) {
   $scope.mturk_preview = $state.params.assignmentId == 'ASSIGNMENT_ID_NOT_AVAILABLE';
 
-  $scope.submit = function(ev) {
-    $state.goRel('instructions');
+  $scope.submit = function() {
+    var participant = new Participant({
+      parameters: $state.params,
+      demographics: {},
+    });
+
+    participant.$save().then(function() {
+      cookies.set('participant_id', participant.id);
+      $state.goRel('instructions');
+    }, function(res) {
+      console.error(res);
+    });
   };
 
   if ($state.params.consent == 'skip') {
@@ -111,16 +121,13 @@ app.controller('consent', function($scope, $state) {
 });
 
 app.controller('demographics', function($scope, $state, Participant) {
+  $scope.participant = new Participant({id: cookies.get('participant_id')});
   $scope.demographics = {};
 
-  $scope.submit = function(ev) {
-    var participant = new Participant({
-      demographics: $scope.demographics,
-      parameters: $state.params,
-    });
-
-    participant.$save().then(function(res) {
-      cookies.set('participant_id', participant.id);
+  $scope.submit = function() {
+    $scope.participant.demographics = $scope.demographics;
+    $scope.participant.$save().then(function() {
+      cookies.set('participant_id', $scope.participant.id);
       $state.goRel('sentence', {id: 'next'});
     }, function(res) {
       console.error(res);
@@ -143,7 +150,7 @@ app.controller('sentence', function($scope, $state, Sentence, Participant, Respo
     participant_id: $scope.participant.id,
   }, sentenceLoaded, sentenceFailed);
 
-  function sentenceLoaded(value, responseHeaders) {
+  function sentenceLoaded() {
     // reset input
     $scope.characters = [];
     $scope.events = [];
@@ -156,7 +163,7 @@ app.controller('sentence', function($scope, $state, Sentence, Participant, Respo
     console.error('Failed to fetch sentence', res);
   }
 
-  $scope.$watch('sentence.id', function(newVal, oldVal) {
+  $scope.$watch('sentence.id', function() {
     if ($scope.sentence.$resolved) {
       $state.goRel('sentence', {id: $scope.sentence.id}, {notify: false});
     }
@@ -193,7 +200,7 @@ app.controller('sentence', function($scope, $state, Sentence, Participant, Respo
     });
   });
 
-  $scope.submit = function(ev) {
+  $scope.submit = function() {
     Response.save({
       sentence_id: $scope.sentence.id,
       participant_id: $scope.participant.id,
