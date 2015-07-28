@@ -117,6 +117,10 @@ List droplets:
 
     curl -s -H "$DO_AUTH" -X GET $DO_API/droplets | jq
 
+Delete a droplet:
+
+    curl -s -H "$DO_AUTH" -X DELETE $DO_API/droplets/<droplet_id>
+
 List domains:
 
     curl -s -H "$DO_AUTH" -X GET $DO_API/domains | jq
