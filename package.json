@@ -3,10 +3,7 @@
   "version": "0.1.3",
   "description": "University of Sheffield Typing Evaluation Project",
   "private": true,
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/chbrown/typing-evaluation.git"
-  },
+  "repository": "git://github.com/chbrown/typing-evaluation.git",
   "author": "Christopher Brown <io@henrian.com>",
   "bin": {
     "typing-evaluation": "bin/typing-evaluation"
@@ -15,17 +12,17 @@
     "start": "node bin/typing-evaluation"
   },
   "dependencies": {
-    "async": "*",
+    "async": "0.9.0",
     "cookies": "git://github.com/chbrown/cookies.git",
     "http-enhanced": "~0.5.3",
-    "lodash": "*",
-    "loge": "*",
-    "regex-router": "*",
-    "send": "*",
+    "lodash": "3.2.0",
+    "loge": "0.0.3",
+    "regex-router": "0.2.0",
+    "send": "0.12.1",
     "sqlcmd-pg": "~0.2.3",
     "streaming": "~0.3.13",
-    "sv": "*",
-    "yargs": "*"
+    "sv": "0.3.6",
+    "yargs": "3.0.4"
   },
   "staticPattern": "ui/lib/{file}",
   "staticDependencies": {
