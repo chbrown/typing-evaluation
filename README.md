@@ -90,7 +90,7 @@ Finally, start the actual web application container:
     docker run -d -e VIRTUAL_HOST=typingexperiment.com -e ADMIN_USER=open -e ADMIN_PASS=sesame \
         --name app --link db:db --restart always chbrown/typing-evaluation
 
-That will pull the `chbrown/typing-evaluation` Docker container image from [Docker Hub](https://registry.hub.docker.com/u/chbrown/typing-evaluation/), so it might take a while (around five minutes).
+That will pull the `chbrown/typing-evaluation` Docker container image from [Docker Hub](https://hub.docker.com/r/chbrown/typing-evaluation/), so it might take a while (around five minutes).
 
 The nginx process will have detected the new app container and its `VIRTUAL_HOST` variable, rewriting its configuration to direct requests for `VIRTUAL_HOST` to the application itself.
 
