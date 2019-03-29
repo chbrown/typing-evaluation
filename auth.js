@@ -8,7 +8,7 @@ Return the authenticated administrator.
 function authenticatedAdministrator(req, callback) {
   const basic_auth_match = (req.headers.authorization || '').match(/^Basic\s+(.+)$/)
   if (basic_auth_match) {
-    const basic_auth_pair = new Buffer(basic_auth_match[1], 'base64').toString('utf8').split(':')
+    const basic_auth_pair = Buffer.from(basic_auth_match[1], 'base64').toString('utf8').split(':')
     const email = basic_auth_pair[0]
     const password = basic_auth_pair[1]
 
