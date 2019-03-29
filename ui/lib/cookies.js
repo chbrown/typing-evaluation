@@ -38,81 +38,81 @@ const Cookies = (function() {
     The `defaults` should never override any values in `target` (even null or undefined).
     */
     // if `defaults` is a function, call it to get an object we can iterate over
-    if (target === undefined) target = {};
-    const source = defaults.call ? defaults() : defaults;
+    if (target === undefined) target = {}
+    const source = defaults.call ? defaults() : defaults
     for (const key in source) {
       if (source.hasOwnProperty(key) && !target.hasOwnProperty(key)) {
-        target[key] = source[key];
+        target[key] = source[key]
       }
     }
-    return target;
+    return target
   }
 
   const Cookies = function(defaults) {
-    this.defaults = defaults || {};
-  };
-  Cookies.version = '0.3.0';
+    this.defaults = defaults || {}
+  }
+  Cookies.version = '0.3.0'
 
   Cookies.prototype.get = function(name, opts) {
     // get() called without parameters (or with null) defers to all()
-    if (name === undefined || name === null) return this.all(opts);
+    if (name === undefined || name === null) return this.all(opts)
 
     // otherwise, simply returns a single string value
-    opts = mergeDefaults(opts, this.defaults);
+    opts = mergeDefaults(opts, this.defaults)
 
-    const document_cookie = document.cookie;
-    const cookies = (document_cookie && document_cookie !== '') ? document_cookie.split(/\s*;\s*/) : [];
+    const document_cookie = document.cookie
+    const cookies = (document_cookie && document_cookie !== '') ? document_cookie.split(/\s*;\s*/) : []
     for (var i = 0, cookie; (cookie = cookies[i]); i++) {
       // Does this cookie string begin with the name we want?
       if (cookie.slice(0, name.length + 1) == (name + '=')) {
-        const raw = cookie.slice(name.length + 1);
-        return opts.raw ? raw : decodeURIComponent(raw);
+        const raw = cookie.slice(name.length + 1)
+        return opts.raw ? raw : decodeURIComponent(raw)
       }
     }
-  };
+  }
 
   Cookies.prototype.set = function(name, value, opts) {
-    opts = mergeDefaults(opts, this.defaults);
+    opts = mergeDefaults(opts, this.defaults)
 
     const encode = opts.raw ? function(s) {
-      return s;
-    } : encodeURIComponent;
+      return s
+    } : encodeURIComponent
 
-    const pairs = [[encode(name), encode(value.toString())]];
-    if (opts.expires) pairs.push(['expires', opts.expires.toUTCString ? opts.expires.toUTCString() : opts.expires]);
-    if (opts.path) pairs.push(['path', opts.path]);
-    if (opts.domain) pairs.push(['domain', opts.domain]);
-    if (opts.secure) pairs.push(['secure']);
+    const pairs = [[encode(name), encode(value.toString())]]
+    if (opts.expires) pairs.push(['expires', opts.expires.toUTCString ? opts.expires.toUTCString() : opts.expires])
+    if (opts.path) pairs.push(['path', opts.path])
+    if (opts.domain) pairs.push(['domain', opts.domain])
+    if (opts.secure) pairs.push(['secure'])
     const cookie = pairs.map((pair) => {
-      return pair.join('=');
-    }).join('; ');
-    document.cookie = cookie;
-    return cookie;
-  };
+      return pair.join('=')
+    }).join('; ')
+    document.cookie = cookie
+    return cookie
+  }
 
   Cookies.prototype.del = function(name, opts) {
-    opts = mergeDefaults(opts, this.defaults);
+    opts = mergeDefaults(opts, this.defaults)
 
     // delete by setting the expirartion date to the UNIX epoch (Thu, 01 Jan 1970 00:00:00 GMT)
-    return this.set(name, '', {expires: new Date(0)});
-  };
+    return this.set(name, '', {expires: new Date(0)})
+  }
 
   Cookies.prototype.all = function(opts) {
-    opts = mergeDefaults(opts, this.defaults);
+    opts = mergeDefaults(opts, this.defaults)
 
-    const cookies = {};
-    const document_cookie = document.cookie;
-    const cookies_list = (document_cookie && document_cookie !== '') ? document_cookie.split(/\s*;\s*/) : [];
-    const cookies_length = cookies_list.length;
+    const cookies = {}
+    const document_cookie = document.cookie
+    const cookies_list = (document_cookie && document_cookie !== '') ? document_cookie.split(/\s*;\s*/) : []
+    const cookies_length = cookies_list.length
     for (let i = 0; i < cookies_length; i++) {
-      const cookie = cookies_list[i];
-      const cookie_parts = cookie.split('=');
-      const cookie_value = cookie_parts.slice(1).join('=');
-      cookies[cookie_parts[0]] = opts.raw ? cookie_value : decodeURIComponent(cookie_value);
+      const cookie = cookies_list[i]
+      const cookie_parts = cookie.split('=')
+      const cookie_value = cookie_parts.slice(1).join('=')
+      cookies[cookie_parts[0]] = opts.raw ? cookie_value : decodeURIComponent(cookie_value)
     }
-    return cookies;
-  };
+    return cookies
+  }
 
-  return Cookies;
-}());
-const cookies = new Cookies();
+  return Cookies
+}())
+const cookies = new Cookies()

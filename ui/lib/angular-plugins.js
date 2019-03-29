@@ -19,13 +19,13 @@ angular.module('misc-js/angular-plugins', [])
 
   */
   return function(string) {
-    return $sce.trustAsHtml(string);
-  };
+    return $sce.trustAsHtml(string)
+  }
 })
 .filter('trustResourceUrl', ($sce) => {
   return function(string) {
-    return $sce.trustAsResourceUrl(string);
-  };
+    return $sce.trustAsResourceUrl(string)
+  }
 })
 // # Directives
 .directive('help', () => {
@@ -42,16 +42,16 @@ angular.module('misc-js/angular-plugins', [])
     transclude: true,
     scope: {},
     link: function(scope, el, attrs) {
-      const summary_el = el.children().eq(0);
-      const full_el = el.children().eq(1);
-      scope.expanded = false;
+      const summary_el = el.children().eq(0)
+      const full_el = el.children().eq(1)
+      scope.expanded = false
 
       // var content = el.text().trim();
-      const content = full_el.text().trim();
-      const summary = content.slice(0, 50) + ((content.length > 50) ? '...' : '');
-      summary_el.text(summary);
+      const content = full_el.text().trim()
+      const summary = content.slice(0, 50) + ((content.length > 50) ? '...' : '')
+      summary_el.text(summary)
     },
-  };
+  }
 })
 .directive('fixedflow', () => {
   /** This directive is intended to be used with a <nav> element, so that it
@@ -67,15 +67,15 @@ angular.module('misc-js/angular-plugins', [])
     restrict: 'A',
     link: function(scope, el, attrs) {
       // set the el to "position: fixed" in case that's not in the css
-      el.css('position', 'fixed');
+      el.css('position', 'fixed')
       // placeholder is just a super simple empty shadow element
-      const height = getComputedStyle(el[0]).height;
-      const placeholder = angular.element('<div>');
-      placeholder.css('height', height);
-      placeholder.addClass('fixedflow-placeholder');
-      el.after(placeholder);
+      const height = getComputedStyle(el[0]).height
+      const placeholder = angular.element('<div>')
+      placeholder.css('height', height)
+      placeholder.addClass('fixedflow-placeholder')
+      el.after(placeholder)
     },
-  };
+  }
 })
 .directive('activateCurrentAnchor', ($window, $rootScope) => {
   /** This directive is also intended to be used with a <nav> element. It will
@@ -97,36 +97,36 @@ angular.module('misc-js/angular-plugins', [])
       activateCurrentAnchor: '@',
     },
     link: function(scope, element, attrs) {
-      const className = scope.activateCurrentAnchor || 'current';
+      const className = scope.activateCurrentAnchor || 'current'
       const updateCurrent = function(anchor) {
         if (scope.current_anchor) {
-          scope.current_anchor.classList.remove(className);
+          scope.current_anchor.classList.remove(className)
         }
-        anchor.classList.add(className);
-        scope.current_anchor = anchor;
-      };
+        anchor.classList.add(className)
+        scope.current_anchor = anchor
+      }
       const refresh = function() {
-        const window_pathname = $window.location.pathname;
-        const anchors = element.find('a');
-        let i; let anchor;
+        const window_pathname = $window.location.pathname
+        const anchors = element.find('a')
+        let i; let anchor
         // try for exact matches first
         for (i = 0; (anchor = anchors[i]); i++) {
           if (window_pathname == anchor.pathname) {
-            return updateCurrent(anchor);
+            return updateCurrent(anchor)
           }
         }
         // then for anchors with a prefix of the current url
         for (i = 0; (anchor = anchors[i]); i++) {
           if (window_pathname.indexOf(anchor.pathname) === 0) {
-            return updateCurrent(anchor);
+            return updateCurrent(anchor)
           }
         }
-      };
+      }
 
-      $rootScope.$on('$locationChangeSuccess', refresh); // function(ev, newUrl, oldUrl)
-      refresh();
+      $rootScope.$on('$locationChangeSuccess', refresh) // function(ev, newUrl, oldUrl)
+      refresh()
     },
-  };
+  }
 })
 .directive('jsonTransform', () => {
   /** parser/serializer to edit a JSON object within a textarea or input[type=text] */
@@ -137,44 +137,44 @@ angular.module('misc-js/angular-plugins', [])
       // set up communicating from DOM to model
       el.on('blur keyup change', () => {
         scope.$apply(() => {
-          ngModel.$setViewValue(el.val());
+          ngModel.$setViewValue(el.val())
           // if we wanted to read from page's html before from the model, we'd
           // run this function at the link level (but usually we want the model)
-        });
-      });
+        })
+      })
       // set up communicating from model to DOM
       ngModel.$render = function() {
-        el.val(ngModel.$viewValue);
+        el.val(ngModel.$viewValue)
         // this would trigger a textarea to resizeToFit, for example. kind of awkward, though.
-        el[0].dispatchEvent(new Event('input'));
-      };
+        el[0].dispatchEvent(new Event('input'))
+      }
 
       // set up translations
       ngModel.$formatters.push((value) => {
         if (value === null) {
-          return '';
+          return ''
         }
         // signature: angular.toJson(obj, [pretty]);
-        return angular.toJson(value, true);
-      });
+        return angular.toJson(value, true)
+      })
       ngModel.$parsers.push((value) => {
         // we'll interpret the empty string as 'null'
         if (value === '') {
-          value = null;
+          value = null
         }
 
         try {
-          ngModel.$setValidity('json', true);
+          ngModel.$setValidity('json', true)
           // angular uses an unwrapped JSON.parse, so it'll throw on failure
-          return angular.fromJson(value);
+          return angular.fromJson(value)
         }
         catch (exc) {
-          ngModel.$setValidity('json', false);
+          ngModel.$setValidity('json', false)
           // return undefined;
         }
-      });
+      })
     },
-  };
+  }
 })
 .directive('enhance', () => {
   /** Only use this if you've loaded misc-js/textarea.js! */
@@ -184,13 +184,13 @@ angular.module('misc-js/angular-plugins', [])
     scope: {},
     link: function(scope, el, attrs, ngModel) {
       // enhance textarea (check if it's a textarea)
-      const textarea = el[0];
+      const textarea = el[0]
       if (textarea.tagName.toLowerCase() == 'textarea') {
         if (window.Textarea) {
-          window.Textarea.enhance(textarea);
+          window.Textarea.enhance(textarea)
         }
         else {
-          console.error('Cannot enhance <textarea> without first loading textarea.js', textarea);
+          console.error('Cannot enhance <textarea> without first loading textarea.js', textarea)
         }
       }
 
@@ -199,21 +199,21 @@ angular.module('misc-js/angular-plugins', [])
         // I think the built-in ng-model will handle actually setting the value?
         ngModel.$render = function() {
           // handle undefined input value by representing it as the empty string
-          textarea.value = (ngModel.$viewValue === undefined || ngModel.$viewValue === null) ? '' : ngModel.$viewValue;
+          textarea.value = (ngModel.$viewValue === undefined || ngModel.$viewValue === null) ? '' : ngModel.$viewValue
           // jump out of the $digest in case a different ng-model controller is listening
           setTimeout(() => {
             // but we need to trigger an 'input' event so that the enhanced Textarea triggers a resize
-            textarea.dispatchEvent(new Event('input'));
-          }, 0);
-        };
+            textarea.dispatchEvent(new Event('input'))
+          }, 0)
+        }
         el.on('blur keyup change', () => {
           scope.$apply(() => {
-            ngModel.$setViewValue(textarea.value);
-          });
-        });
+            ngModel.$setViewValue(textarea.value)
+          })
+        })
       }
     },
-  };
+  }
 })
 .directive('score', () => {
   /** Use like:
@@ -247,23 +247,23 @@ angular.module('misc-js/angular-plugins', [])
       score: '=',
     },
     link: function(scope, el, attrs) {
-      el.addClass('score');
+      el.addClass('score')
       // bound between 0 and 100
-      let bounded_score = scope.score;
-      const css = {};
+      let bounded_score = scope.score
+      const css = {}
       if (scope.score < 0) {
-        bounded_score = 0;
-        css.borderLeft = '1px dotted rgba(0, 0, 0, 0.2)';
+        bounded_score = 0
+        css.borderLeft = '1px dotted rgba(0, 0, 0, 0.2)'
       }
       else if (scope.score > 100) {
-        bounded_score = 100;
-        css.borderRight = '1px dotted black';
+        bounded_score = 100
+        css.borderRight = '1px dotted black'
       }
-      css.width = bounded_score + '%';
-      css.backgroundColor = 'hsl(' + (bounded_score * 1.2).toFixed(2) + ', 100%, 50%)';
-      el.css(css);
+      css.width = bounded_score + '%'
+      css.backgroundColor = 'hsl(' + (bounded_score * 1.2).toFixed(2) + ', 100%, 50%)'
+      el.css(css)
     },
-  };
+  }
 })
 // .directive('time', function() {
 //   /**  <time> is the HTML5 standard element
@@ -311,7 +311,7 @@ angular.module('misc-js/angular-plugins', [])
       scope.submit = function(ev) {
         // standard html <form> can only handle POST and GET, so we hijack everything else
         if (attrs.method != 'POST' && attrs.method != 'GET') {
-          ev.preventDefault();
+          ev.preventDefault()
           // var data = serializeForm(ev.target); // TODO
           $http({
             method: attrs.method,
@@ -321,11 +321,11 @@ angular.module('misc-js/angular-plugins', [])
             // window.location = window.location;
           }, () => {
 
-          });
+          })
         }
-      };
+      }
     },
-  };
+  }
 })
 .directive('mapObject', () => {
   /** Use like:
@@ -344,7 +344,7 @@ angular.module('misc-js/angular-plugins', [])
     scope: {
       mapObject: '=',
     },
-  };
+  }
 })
 .directive('onUpload', ($parse) => {
   /** AngularJS documentation for the input directive:
@@ -367,7 +367,7 @@ angular.module('misc-js/angular-plugins', [])
   return {
     restrict: 'A',
     compile: function(el, attrs) {
-      const fn = $parse(attrs.onUpload);
+      const fn = $parse(attrs.onUpload)
       return function(scope, element, attr) {
         // the element we listen to inside the link function should not be the
         // element from the compile function signature; that one may match up
@@ -375,19 +375,19 @@ angular.module('misc-js/angular-plugins', [])
         // directly in the DOM, e.g., if it's inside a ng-repeat or ng-if.
         element.on('change', (event) => {
           scope.$apply(() => {
-            const context = {$event: event};
+            const context = {$event: event}
             if (attrs.multiple) {
-              context.$files = event.target.files;
+              context.$files = event.target.files
             }
             else {
-              context.$file = event.target.files[0];
+              context.$file = event.target.files[0]
             }
-            fn(scope, context);
-          });
-        });
-      };
+            fn(scope, context)
+          })
+        })
+      }
     },
-  };
+  }
 })
 // services
 .service('$flash', ($rootScope) => {
@@ -395,9 +395,9 @@ angular.module('misc-js/angular-plugins', [])
   return function(value, timeout) {
     // value can be a string or a promise
     // default to a 3 second timeout, but allow permanent flashes
-    if (timeout === undefined) timeout = 3000;
-    $rootScope.$broadcast('flash', value, timeout);
-  };
+    if (timeout === undefined) timeout = 3000
+    $rootScope.$broadcast('flash', value, timeout)
+  }
 })
 .directive('flash', ($timeout, $q) => {
   /**
@@ -415,60 +415,60 @@ angular.module('misc-js/angular-plugins', [])
     replace: true,
     scope: {messages: '&'},
     link: function(scope, el, attrs) {
-      scope.messages = [];
+      scope.messages = []
 
       scope.add = function(message) {
-        scope.messages.push(message);
-      };
+        scope.messages.push(message)
+      }
       scope.remove = function(message) {
-        const index = scope.messages.indexOf(message);
-        scope.messages.splice(index, 1);
-      };
+        const index = scope.messages.indexOf(message)
+        scope.messages.splice(index, 1)
+      }
 
       scope.$on('flash', (ev, value, timeout) => {
-        scope.add('...');
+        scope.add('...')
 
         // for some reason, .finally() doesn't get the promise's value,
         // so we have to use .then(a, a)
         const done = function(message) {
           // so we recreate
-          scope.remove('...');
-          scope.add(message);
+          scope.remove('...')
+          scope.add(message)
 
           // if timeout is null, for example, leave the message permanently
           if (timeout) {
             $timeout(() => {
-              scope.remove(message);
-            }, timeout);
+              scope.remove(message)
+            }, timeout)
           }
-        };
+        }
         // wrap value with .when() to support both strings and promises of strings
-        $q.when(value).then(done, done);
-      });
+        $q.when(value).then(done, done)
+      })
     },
-  };
+  }
 })
 // # factories
 .factory('$laghttp', ($q, $http) => {
   // factories are instance generators, i.e., this function is run once and
   // should return a function that generates an instance
   return function(config) {
-    const deferred = $q.defer();
+    const deferred = $q.defer()
     setTimeout(() => {
-      $http(config).then(deferred.resolve.bind(deferred), deferred.reject.bind(deferred));
-    }, 250);
-    return deferred.promise;
-  };
+      $http(config).then(deferred.resolve.bind(deferred), deferred.reject.bind(deferred))
+    }, 250)
+    return deferred.promise
+  }
 })
 .factory('$httpqueue', ($q, $http) => {
-  const deferred = $q.defer();
-  let http_queue_promise = deferred.promise;
-  deferred.resolve();
+  const deferred = $q.defer()
+  let http_queue_promise = deferred.promise
+  deferred.resolve()
   return function($http_options) {
     http_queue_promise = http_queue_promise.then(() => {
-      return $http($http_options);
-    });
-    return http_queue_promise;
-  };
-});
+      return $http($http_options)
+    })
+    return http_queue_promise
+  }
+})
 // .config(function () {})

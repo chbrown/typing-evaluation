@@ -13,40 +13,40 @@ Your textarea can specify min-height and max-height, but not height.
 */
 const Textarea = (function() {
   function extend(target /*, source_0, source_1, ... */) {
-    if (target === undefined) target = {};
+    if (target === undefined) target = {}
     for (let source_i = 1, l = arguments.length; source_i < l; source_i++) {
-      const source = arguments[source_i];
+      const source = arguments[source_i]
       for (const key in source) {
         if (source.hasOwnProperty(key)) {
-          target[key] = source[key];
+          target[key] = source[key]
         }
       }
     }
-    return target;
+    return target
   }
 
   function fill(n, character) {
-    const arr = new Array(n);
+    const arr = new Array(n)
     for (let i = 0; i < n; i++) {
-      arr[i] = character;
+      arr[i] = character
     }
-    return arr.join('');
+    return arr.join('')
   }
 
   function copyStyle(source, target) {
     // also consider: window.getDefaultComputedStyle instead?
-    const css_style_declaration = window.getComputedStyle(source);
+    const css_style_declaration = window.getComputedStyle(source)
     for (let i = 0; i < css_style_declaration.length; i++) {
-      const property = css_style_declaration[i];
-      target.style[property] = css_style_declaration[property];
+      const property = css_style_declaration[i]
+      target.style[property] = css_style_declaration[property]
     }
   }
 
   function copyStyleSubset(source, target, styles) {
-    const css_style_declaration = window.getComputedStyle(source);
+    const css_style_declaration = window.getComputedStyle(source)
     for (let i = 0; i < styles.length; i++) {
-      const property = styles[i];
-      target.style[property] = css_style_declaration[property];
+      const property = styles[i]
+      target.style[property] = css_style_declaration[property]
     }
   }
 
@@ -56,10 +56,10 @@ const Textarea = (function() {
     //   * https://developer.mozilla.org/en-US/docs/Web/CSS/white-space
     //   * http://css-tricks.com/almanac/properties/w/whitespace/
     // '\n': '<br/>' /[\n]/g
-    const replacements = {'<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;'};
+    const replacements = {'<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;'}
     return html && html.replace(/[&<>"]/g, (entity) => {
-      return replacements[entity];
-    });
+      return replacements[entity]
+    })
   }
 
   // these are a (the?) subset of styles that are relevant to the resulting size of a flow-sized element
@@ -81,35 +81,35 @@ const Textarea = (function() {
     // box-sizing for various vendors
     // '-moz-box-sizing', '-webkit-box-sizing',
     'box-sizing',
-  ];
+  ]
 
   const createShadowElement = function() {
-    const div = document.createElement('div');
+    const div = document.createElement('div')
     // `visibility: hidden` is how jQuery measures `display: none` elements
     // we need `display: block` or `display: inline-block` so that we can set
     // clientWidth and have it stick.
     // These styles are shadow properties that should not be overwrited by
     // the original textarea element.
-    div.style.position = 'absolute';
-    div.style.visibility = 'hidden';
-    div.style.display = 'block'; // in case the css says "div { display: inline; }" or something
-    return div;
-  };
+    div.style.position = 'absolute'
+    div.style.visibility = 'hidden'
+    div.style.display = 'block' // in case the css says "div { display: inline; }" or something
+    return div
+  }
 
   const autodedent = function(string) {
-    const space = [];
-    let match = null;
-    const regex = /(^|\n)(\s+)/g;
+    const space = []
+    let match = null
+    const regex = /(^|\n)(\s+)/g
     // TODO: ignore totally empty lines
     while ((match = regex.exec(string)) !== null) {
-      space.push(parseInt(match[2].length, 10));
+      space.push(parseInt(match[2].length, 10))
     }
     // calculate dedent amount
-    const common_space = Math.min.apply(null, space);
+    const common_space = Math.min.apply(null, space)
     //
-    const replace_regex = new RegExp('(^|\n)\\s{' + common_space + '}', 'g');
-    return string.replace(replace_regex, '$1');
-  };
+    const replace_regex = new RegExp('(^|\n)\\s{' + common_space + '}', 'g')
+    return string.replace(replace_regex, '$1')
+  }
 
   const dentSelection = function(textarea, dedent, tab) {
     /** dentSelection:
@@ -135,51 +135,51 @@ const Textarea = (function() {
     4. TODO: dedent by fraction of a tab if, say, the tab is 4 spaces and there are only 2.
 
     */
-    const selectionStart = textarea.selectionStart;
-    const selectionEnd = textarea.selectionEnd;
-    const selectionWidth = selectionEnd - selectionStart;
+    const selectionStart = textarea.selectionStart
+    const selectionEnd = textarea.selectionEnd
+    const selectionWidth = selectionEnd - selectionStart
     // for begin, start at `selectionStart - 1` so that we don't catch the newline that the cursor is currently on
-    let begin = textarea.value.lastIndexOf('\n', selectionStart - 1);
+    let begin = textarea.value.lastIndexOf('\n', selectionStart - 1)
     // 0-width selections get special handling in case the cursor is sitting at the front of the line
-    let end = textarea.value.indexOf('\n', selectionEnd - (selectionWidth === 0 ? 0 : 1));
+    let end = textarea.value.indexOf('\n', selectionEnd - (selectionWidth === 0 ? 0 : 1))
 
     // shrink/expand to their respective ends of the documents if no newline was found
     if (begin == -1) {
-      begin = 0;
+      begin = 0
     }
     if (end == -1) {
-      end = textarea.value.length;
+      end = textarea.value.length
     }
 
     // before + middle + end: '^blah\nblahblah' + '\nthisthis\nthatthat\nyesyes' + '\nsomething else'
-    const before = textarea.value.slice(0, begin);
-    let middle = textarea.value.slice(begin, end);
-    const after = textarea.value.slice(end);
+    const before = textarea.value.slice(0, begin)
+    let middle = textarea.value.slice(begin, end)
+    const after = textarea.value.slice(end)
 
     if (dedent) {
       // if we have selected all the way to the beginning, we also want to indent the beginning of the string
       //   begin = 0 is special and I can't figure out a way to make regex multiline play nice
-      const dedent_pattern = new RegExp((begin === 0) ? '(^|\n)' + tab : '(\n)' + tab, 'g');
+      const dedent_pattern = new RegExp((begin === 0) ? '(^|\n)' + tab : '(\n)' + tab, 'g')
       // removing a tab
-      middle = middle.replace(dedent_pattern, '$1');
+      middle = middle.replace(dedent_pattern, '$1')
     }
     else {
-      const indent_pattern = new RegExp((begin === 0) ? '(^|\n)' : '(\n)', 'g');
+      const indent_pattern = new RegExp((begin === 0) ? '(^|\n)' : '(\n)', 'g')
       // indenting a tab
-      middle = middle.replace(indent_pattern, '$1' + tab);
+      middle = middle.replace(indent_pattern, '$1' + tab)
     }
     // modification complete, push changes to dom and set selection
-    textarea.value = before + middle + after;
+    textarea.value = before + middle + after
     if (selectionWidth === 0) {
       // TODO: don't move the cursor unless the tab was effective
-      const selectionIndex = selectionStart + (dedent ? -tab.length : tab.length);
-      textarea.setSelectionRange(selectionIndex, selectionIndex);
+      const selectionIndex = selectionStart + (dedent ? -tab.length : tab.length)
+      textarea.setSelectionRange(selectionIndex, selectionIndex)
     }
     else {
       // again, special handling for begin = 0
-      textarea.setSelectionRange(begin === 0 ? 0 : begin + 1, begin + middle.length);
+      textarea.setSelectionRange(begin === 0 ? 0 : begin + 1, begin + middle.length)
     }
-  };
+  }
 
   const autoindentNewline = function(textarea, jump) {
     /**
@@ -190,35 +190,35 @@ const Textarea = (function() {
 
     Should always be 0-width selection
     */
-    const value = textarea.value;
-    let selectionStart = textarea.selectionStart;
+    const value = textarea.value
+    let selectionStart = textarea.selectionStart
     if (jump) {
-      const end_of_line = value.indexOf('\n', selectionStart - 1);
+      const end_of_line = value.indexOf('\n', selectionStart - 1)
       if (end_of_line > -1) {
-        selectionStart = end_of_line;
+        selectionStart = end_of_line
       }
     }
-    const beginning_of_previous_line = value.lastIndexOf('\n', selectionStart - 1) + 1;
+    const beginning_of_previous_line = value.lastIndexOf('\n', selectionStart - 1) + 1
     // if (beginning_of_line > -1) {
-    const previous_indent = value.slice(beginning_of_previous_line).match(/^[ \t]+/);
+    const previous_indent = value.slice(beginning_of_previous_line).match(/^[ \t]+/)
     if (previous_indent) {
       // need to make sure max out beginning_of_previous_line + previous_indent
       // at selectionStart
       // for example, select the middle of some whitespace and press enter
-      const before = textarea.value.slice(0, selectionStart);
-      const after = textarea.value.slice(selectionStart);
+      const before = textarea.value.slice(0, selectionStart)
+      const after = textarea.value.slice(selectionStart)
       // add the newline because we prevented default already
       // should replace selection if we do not have a 0-width selection
-      const insert = '\n' + previous_indent[0];
-      textarea.value = before + insert + after;
-      const cursor = selectionStart + insert.length;
-      textarea.setSelectionRange(cursor, cursor);
-      return true;
+      const insert = '\n' + previous_indent[0]
+      textarea.value = before + insert + after
+      const cursor = selectionStart + insert.length
+      textarea.setSelectionRange(cursor, cursor)
+      return true
     }
     // don't do anything if there is no existing indent
     // don't do anything special on the very first line of the document
     // trigger resizeToFit?
-  };
+  }
 
   // setInterval(function() {
   //   log('textarea.selectionStart', (window.textarea || {}).selectionStart);
@@ -242,17 +242,17 @@ const Textarea = (function() {
       tab: '  ',
       buffer: 0,
       autodedent: false,
-    }, opts);
+    }, opts)
 
-    this.el = el;
+    this.el = el
 
     if (this.opts.autodedent) {
-      this.el.value = autodedent(this.el.value);
+      this.el.value = autodedent(this.el.value)
     }
 
-    this.initTabListener();
-    this.initReturnListener();
-    this.initResizeToFit();
+    this.initTabListener()
+    this.initReturnListener()
+    this.initResizeToFit()
     // todo:
     //   'command+{' -> dedent
     //   'command+}' -> indent
@@ -263,9 +263,9 @@ const Textarea = (function() {
     //   trim trailing white space ?
 
     if (this.opts.poll) {
-      this.initValuePoll(this.opts.poll);
+      this.initValuePoll(this.opts.poll)
     }
-  };
+  }
 
   Textarea.prototype.initTabListener = function() {
     /** set up indentation (tab-hijacking)
@@ -273,45 +273,45 @@ const Textarea = (function() {
     References:
       * https://github.com/wjbryant/taboverride
     */
-    const tab = this.opts.tab;
+    const tab = this.opts.tab
     this.el.addEventListener('keydown', function(ev) {
       // 9 = tab
       if (ev.which == 9) {
-        ev.preventDefault();
+        ev.preventDefault()
         // ev.shiftKey == true ? dedent : indent
-        dentSelection(this, ev.shiftKey, tab);
+        dentSelection(this, ev.shiftKey, tab)
       }
-    }, false);
-  };
+    }, false)
+  }
 
   Textarea.prototype.initReturnListener = function() {
     /**
     10 = newline (\n)
     13 = carriage return (\r)
     */
-    const tab = this.opts.tab;
+    const tab = this.opts.tab
     this.el.addEventListener('keydown', function(ev) {
       if (ev.which == 13) {
-        const handled = autoindentNewline(this, ev.metaKey);
+        const handled = autoindentNewline(this, ev.metaKey)
         if (handled) {
-          ev.preventDefault(); // we've put it in ourselves
+          ev.preventDefault() // we've put it in ourselves
         }
       }
-    }, false);
-  };
+    }, false)
+  }
 
   Textarea.prototype.initValuePoll = function(interval) {
-    const self = this;
+    const self = this
     // for a hash value -- just use the length
-    let last_value_hash = this.el.value.length;
+    let last_value_hash = this.el.value.length
     setInterval(() => {
-      const current_value_hash = self.el.value.length;
+      const current_value_hash = self.el.value.length
       if (current_value_hash != last_value_hash) {
-        self.resizeToFit();
-        last_value_hash = current_value_hash;
+        self.resizeToFit()
+        last_value_hash = current_value_hash
       }
-    }, interval);
-  };
+    }, interval)
+  }
 
   Textarea.prototype.initResizeToFit = function() {
     /** add autosizing functionality to the textarea
@@ -324,50 +324,50 @@ const Textarea = (function() {
     */
     if (this.el.style.width === '') {
       // allow horizontal resizing if there is no manual width setting
-      this.el.style.horizontal = 'horizontal';
+      this.el.style.horizontal = 'horizontal'
     }
     else {
-      this.el.style.horizontal = 'none';
+      this.el.style.horizontal = 'none'
     }
 
-    this.shadow = createShadowElement();
+    this.shadow = createShadowElement()
 
-    const container = this.el.parentNode;
+    const container = this.el.parentNode
     // insert the shadow right before the element
-    container.insertBefore(this.shadow, this.el);
+    container.insertBefore(this.shadow, this.el)
     // document.body.appendChild(this.shadow);
-    copyStyleSubset(this.el, this.shadow, shadow_sized_styles);
+    copyStyleSubset(this.el, this.shadow, shadow_sized_styles)
 
     // should resizeToFit be called with other args based on what happened?
     // i.e., target.resize vs. shadow.resize vs. target input vs. target style change
-    const resizeToFit = this.resizeToFit.bind(this);
+    const resizeToFit = this.resizeToFit.bind(this)
     // https://developer.mozilla.org/en-US/docs/Web/Reference/Events
-    window.addEventListener('resize', resizeToFit, false);
-    document.addEventListener('readystatechange', resizeToFit, false);
-    this.el.addEventListener('blur', resizeToFit, false);
-    this.el.addEventListener('keyup', resizeToFit, false);
-    this.el.addEventListener('change', resizeToFit, false);
-    this.el.addEventListener('cut', resizeToFit, false);
-    this.el.addEventListener('paste', resizeToFit, false);
-    this.el.addEventListener('input', resizeToFit, false);
+    window.addEventListener('resize', resizeToFit, false)
+    document.addEventListener('readystatechange', resizeToFit, false)
+    this.el.addEventListener('blur', resizeToFit, false)
+    this.el.addEventListener('keyup', resizeToFit, false)
+    this.el.addEventListener('change', resizeToFit, false)
+    this.el.addEventListener('cut', resizeToFit, false)
+    this.el.addEventListener('paste', resizeToFit, false)
+    this.el.addEventListener('input', resizeToFit, false)
     // maybe use https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
     // in the future once it's more widely supported
     // but for now, maybe poll the shadow div for changed height? (ewww, I know, polling)
     // ...
 
     // trigger a resize, to start us off
-    this.resizeToFit();
-  };
+    this.resizeToFit()
+  }
 
   Textarea.prototype.resizeToFit = function() {
     if (this.shadow.clientWidth != this.el.clientWidth) {
-      const tmp_style = window.getComputedStyle(this.el);
-      this.shadow.style.width = tmp_style.width;
+      const tmp_style = window.getComputedStyle(this.el)
+      this.shadow.style.width = tmp_style.width
     }
 
-    const html = escapeHTML(this.el.value);
+    const html = escapeHTML(this.el.value)
     // add extra white space to make sure the last line is rendered
-    this.shadow.innerHTML = html + '&nbsp;';
+    this.shadow.innerHTML = html + '&nbsp;'
     // todo: too-long lines with only trailing space won't trigger a newline
     // until you hit a visible character, which triggers an ugly shift of the
     // text to the right as the box tries to fit a full space character into
@@ -381,39 +381,39 @@ const Textarea = (function() {
     // scrollWidth and scrollHeight:
     //   * The width and height of the entire content field, including those parts that are currently hidden.
     //   * If there's no hidden content it should be equal to clientX/Y.
-    const style = window.getComputedStyle(this.el);
+    const style = window.getComputedStyle(this.el)
 
     // we calculate the min/max height from the css, and have an absolute minimum of 2*line-height
     // var line_height = parseInt(style['line-height']) || parseInt(style['font-size']);
-    const min_height = parseInt(style['min-height'], 10);
-    const max_height = parseInt(style['max-height'], 10);
+    const min_height = parseInt(style['min-height'], 10)
+    const max_height = parseInt(style['max-height'], 10)
 
     // the shadow div should now have resized to match the contents of the textarea, so we measure it
-    const shadow_style = window.getComputedStyle(this.shadow);
-    const shadow_height = shadow_style.height;
+    const shadow_style = window.getComputedStyle(this.shadow)
+    const shadow_height = shadow_style.height
 
     // todo: if the user disables auto-expanding with max-height, make sure the shadow
     // does not take up too much space
 
     if (!isNaN(max_height) && shadow_style.height > max_height) {
-      this.el.style.overflow = 'auto';
-      this.el.style.height = '';
+      this.el.style.overflow = 'auto'
+      this.el.style.height = ''
     }
     else if (!isNaN(min_height) && shadow_style.height < min_height) {
-      this.el.style.overflow = 'auto';
-      this.el.style.height = '';
+      this.el.style.overflow = 'auto'
+      this.el.style.height = ''
     }
     else if (shadow_style.height != this.el.style.height) {
       // we are free to be flexible, just match the shadow!
-      this.el.style.overflow = 'hidden';
-      this.el.style.height = shadow_style.height;
+      this.el.style.overflow = 'hidden'
+      this.el.style.height = shadow_style.height
     }
-  };
+  }
 
   Textarea.enhance = function(textarea, opts) {
     /** enhance(): constructor wrapper */
-    return new Textarea(textarea, opts);
-  };
+    return new Textarea(textarea, opts)
+  }
 
-  return Textarea;
-}());
+  return Textarea
+}())

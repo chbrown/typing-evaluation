@@ -27,25 +27,25 @@ Angular.js html:
 
 */
 function CheckboxSequence(container) {
-  const self = this;
+  const self = this
   // previous_checkbox is the last clicked checkbox element
-  this.previous_checkbox = null;
+  this.previous_checkbox = null
   // previous_checked is the resulting checked status of the last clicked
   // checkbox element (unchecked->checked: true, checked->unchecked: false)
-  this.previous_checked = null;
+  this.previous_checked = null
   // listen for clicks on the containing element
   container.addEventListener('click', (ev) => {
     // but only do anything with clicks on checkboxes
     if (ev.target.getAttribute('type') == 'checkbox') {
-      const current_checkbox = ev.target;
-      const current_checked = current_checkbox.checked;
+      const current_checkbox = ev.target
+      const current_checked = current_checkbox.checked
       // only connect between two checkboxes if they were both turned to
       // the same checked status, and shift is being held down
       if (ev.shiftKey && self.previous_checkbox && self.previous_checked == current_checked) {
-        const checkboxes = container.querySelectorAll('[type="checkbox"]');
-        let start_checkbox = null;
-        let end_checkbox = null;
-        const click_event = new Event('click');
+        const checkboxes = container.querySelectorAll('[type="checkbox"]')
+        let start_checkbox = null
+        let end_checkbox = null
+        const click_event = new Event('click')
         // select all entries between the two, exclusive (the endpoints are
         // already in the desired state)
         for (var i = 0, checkbox; (checkbox = checkboxes[i]); i++) {
@@ -55,30 +55,30 @@ function CheckboxSequence(container) {
           if (start_checkbox === null) {
             if (checkbox == self.previous_checkbox) {
               // previous_checkbox precedes current_checkbox in the DOM
-              start_checkbox = self.previous_checkbox;
-              end_checkbox = current_checkbox;
+              start_checkbox = self.previous_checkbox
+              end_checkbox = current_checkbox
             }
             else if (checkbox == current_checkbox) {
               // current_checkbox precedes previous_checkbox in the DOM
-              start_checkbox = current_checkbox;
-              end_checkbox = self.previous_checkbox;
+              start_checkbox = current_checkbox
+              end_checkbox = self.previous_checkbox
             }
           }
           else {
             // if we have set start_checkbox, we are currently inside the
             // sequence to be selected, and only need to watch for end_checkbox.
             if (checkbox == end_checkbox) {
-              break;
+              break
             }
             // otherwise, set the checkbox's checked value to current_checked
-            checkbox.checked = current_checked;
+            checkbox.checked = current_checked
             // and inform any listeners that it's been "clicked"
-            checkbox.dispatchEvent(click_event);
+            checkbox.dispatchEvent(click_event)
           }
         }
       }
-      self.previous_checkbox = current_checkbox;
-      self.previous_checked = current_checked;
+      self.previous_checkbox = current_checkbox
+      self.previous_checked = current_checked
     }
-  });
+  })
 }
