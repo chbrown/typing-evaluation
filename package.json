@@ -15,7 +15,7 @@
     "async": "0.9.0",
     "cookies": "git://github.com/chbrown/cookies.git",
     "http-enhanced": "~0.5.3",
-    "lodash": "3.2.0",
+    "lodash": "3.4.0",
     "loge": "0.0.3",
     "regex-router": "0.2.0",
     "send": "0.12.1",
@@ -24,25 +24,19 @@
     "sv": "0.3.6",
     "yargs": "3.0.4"
   },
+  "devDependencies": {
+    "angular": "1.3.14",
+    "angular-cookies": "1.3.14",
+    "angular-resource": "1.3.14",
+    "angular-route": "1.3.14",
+    "angular-sanitize": "1.3.14",
+    "angular-touch": "1.3.14",
+    "angular-translate": "2.6.1",
+    "angular-ui-router": "0.2.13",
+    "ngstorage": "0.3.3"
+  },
   "staticPattern": "ui/lib/{file}",
   "staticDependencies": {
-    "angular": {
-      "filter": [
-        "angular.js",
-        "angular.min.js",
-        "angular-resource.js",
-        "angular-resource.min.js"
-      ]
-    },
-    "angular-translate": {
-      "url": "git://github.com/angular-translate/bower-angular-translate.git",
-      "filter": [
-        "angular-translate.js",
-        "angular-translate.min.js"
-      ]
-    },
-    "angular-ui-router": "*",
-    "lodash": "*",
     "misc-js": {
       "url": "git://github.com/chbrown/misc-js.git",
       "filter": [
@@ -51,7 +45,6 @@
         "cookies.js",
         "textarea.js"
       ]
-    },
-    "ng-storage": "*"
+    }
   }
 }
