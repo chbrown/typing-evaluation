@@ -5,7 +5,7 @@ var logger = require('loge');
 
 var root_controller = require('./controllers');
 
-var server = module.exports = http.createServer(function(req, res) {
+var server = http.createServer(function(req, res) {
   var request_domain = domain.create();
   request_domain.add(req);
   request_domain.add(res);
@@ -38,6 +38,9 @@ var server = module.exports = http.createServer(function(req, res) {
   });
 })
 .on('listening', function() {
-  var address = this.address();
-  logger.info('server listening on http://%s:%d', address.address, address.port);
+  const address = server.address();
+  const addressString = typeof address == 'string' ? address : `${address.address}:${address.port}`;
+  logger.info('server listening on http://%s', addressString);
 });
+
+module.exports = server;

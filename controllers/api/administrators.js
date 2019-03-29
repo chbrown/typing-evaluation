@@ -1,6 +1,5 @@
 var _ = require('lodash');
 var Router = require('regex-router');
-var url = require('url');
 
 var db = require('../../db');
 var auth = require('../../auth');
@@ -41,10 +40,10 @@ R.post(/^\/api\/administrators$/, function(req, res) {
       if (err) return res.error(err, req.headers);
 
       // storing the password in the clear!
-      data = _.pick(data, ['email', 'password']);
+      var row = _.pick(data, ['email', 'password']);
 
       db.Insert('administrators')
-      .set(data)
+      .set(row)
       .returning('*')
       .execute(function(err, rows) {
         if (err) return res.error(err, req.headers);
@@ -79,11 +78,11 @@ R.post(/^\/api\/administrators\/(\d+)$/, function(req, res, m) {
     req.readData(function(err, data) {
       if (err) return res.error(err, req.headers);
 
-      data = _.pick(data, ['email', 'password']);
+      var row = _.pick(data, ['email', 'password']);
 
       db.Update('administrators')
       .whereEqual({id: m[1]})
-      .setEqual(data)
+      .setEqual(row)
       .returning('*')
       .execute(function(err, rows) {
         if (err) return res.error(err, req.headers);

@@ -1,8 +1,4 @@
-var _ = require('lodash');
 var Router = require('regex-router');
-
-var auth = require('../../auth');
-var db = require('../../db');
 
 var R = new Router(function(req, res) {
   res.status(404).die('No resource at: ' + req.url);

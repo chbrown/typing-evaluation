@@ -12,7 +12,7 @@ function stringifyResponse(res) {
   if (res.data.message) {
     return res.data.message;
   }
-  if (typeof res.data === 'string')  {
+  if (typeof res.data === 'string') {
     return res.data;
   }
   return JSON.stringify(res.data);
@@ -23,7 +23,7 @@ app.directive('checkboxSequence', function() {
     restrict: 'A',
     link: function(scope, el) {
       scope.checkbox_sequence = new CheckboxSequence(el[0]);
-    }
+    },
   };
 });
 
@@ -42,7 +42,7 @@ app.directive('uiSrefActiveAny', function($state) {
         }
       }
       scope.$on('$stateChangeSuccess', updateSrefActiveAny);
-    }
+    },
   };
 });
 
@@ -72,13 +72,13 @@ app.config(function($stateProvider, $locationProvider, $urlRouterProvider) {
   .state('sentences.import', {
     url: '/import',
     templateUrl: '/ui/admin/sentences/import.html',
-    controller: 'sentences.import'
+    controller: 'sentences.import',
   })
   // matches /import, so edit must come after import
   .state('sentences.edit', {
     url: '/{id}',
     templateUrl: '/ui/admin/sentences/edit.html',
-    controller: 'sentences.edit'
+    controller: 'sentences.edit',
   })
   // administrators
   .state('administrators', {
@@ -94,7 +94,7 @@ app.config(function($stateProvider, $locationProvider, $urlRouterProvider) {
   .state('administrators.edit', {
     url: '/{id}',
     templateUrl: '/ui/admin/administrators/edit.html',
-    controller: 'administrators.edit'
+    controller: 'administrators.edit',
   })
   // participants
   .state('participants', {
@@ -110,7 +110,7 @@ app.config(function($stateProvider, $locationProvider, $urlRouterProvider) {
   .state('participants.edit', {
     url: '/{id}',
     templateUrl: '/ui/admin/participants/edit.html',
-    controller: 'participants.edit'
+    controller: 'participants.edit',
   })
   // responses
   .state('responses', {
@@ -151,7 +151,7 @@ app.controller('login', function($scope, $flash, $window, AccessToken) {
   $scope.submit = function() {
     var access_token = AccessToken.authenticateUser({
       email: $scope.email,
-      password: $scope.password
+      password: $scope.password,
     });
 
     var promise = access_token.$promise.then(function() {
