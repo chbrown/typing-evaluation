@@ -34,17 +34,5 @@
     "angular-translate": "2.6.1",
     "angular-ui-router": "0.2.13",
     "ngstorage": "0.3.3"
-  },
-  "staticPattern": "ui/lib/{file}",
-  "staticDependencies": {
-    "misc-js": {
-      "url": "git://github.com/chbrown/misc-js.git",
-      "filter": [
-        "angular-plugins.js",
-        "checkbox-sequence.js",
-        "cookies.js",
-        "textarea.js"
-      ]
-    }
   }
 }
