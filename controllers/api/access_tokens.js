@@ -1,8 +1,8 @@
-const Router = require('regex-router');
+const Router = require('regex-router')
 
 const R = new Router(((req, res) => {
-  res.status(404).die('No resource at: ' + req.url);
-}));
+  res.status(404).die('No resource at: ' + req.url)
+}))
 
 // R.post(/^\/api\/access_tokens\/authenticateUser$/, function(req, res) {
 //   req.readData(function(err, data) {
@@ -18,4 +18,4 @@ const R = new Router(((req, res) => {
 //   });
 // });
 
-module.exports = R.route.bind(R);
+module.exports = R.route.bind(R)

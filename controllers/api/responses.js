@@ -1,44 +1,44 @@
-const _ = require('lodash');
-const logger = require('loge');
-const url = require('url');
-const Router = require('regex-router');
-const sv = require('sv');
-const streaming = require('streaming');
+const _ = require('lodash')
+const logger = require('loge')
+const url = require('url')
+const Router = require('regex-router')
+const sv = require('sv')
+const streaming = require('streaming')
 
-const auth = require('../../auth');
-const db = require('../../db');
+const auth = require('../../auth')
+const db = require('../../db')
 
 const R = new Router(((req, res) => {
-  res.status(404).die('No resource at: ' + req.url);
-}));
+  res.status(404).die('No resource at: ' + req.url)
+}))
 
 function acceptRenderer(req, res) {
   // use this from http-enhanced, once it's there
-  const urlObj = url.parse(req.url, true);
+  const urlObj = url.parse(req.url, true)
   // Handle ?accept= querystring values as well as Accept: headers, defaulting
   // to line-delimited JSON
-  const accept_header = urlObj.query.accept || req.headers.accept || 'application/json; boundary=LF';
+  const accept_header = urlObj.query.accept || req.headers.accept || 'application/json; boundary=LF'
   // now check that header against the accept values we support
   if (accept_header.match(/application\/json;\s+boundary=(NL|LF|EOL)/)) {
-    res.setHeader('Content-Type', 'application/json; boundary=LF');
-    return new streaming.json.Stringifier();
+    res.setHeader('Content-Type', 'application/json; boundary=LF')
+    return new streaming.json.Stringifier()
   }
   else if (accept_header.match(/application\/json/)) {
-    res.setHeader('Content-Type', 'application/json');
-    return new streaming.json.ArrayStringifier();
+    res.setHeader('Content-Type', 'application/json')
+    return new streaming.json.ArrayStringifier()
   }
   else if (accept_header.match(/text\/csv/)) {
-    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    return new sv.Stringifier({peek: 100});
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8')
+    return new sv.Stringifier({peek: 100})
   }
   else if (accept_header.match(/text\/plain/)) {
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    return new sv.Stringifier({peek: 100});
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+    return new sv.Stringifier({peek: 100})
   }
   else {
-    const error = new Error('Cannot format response to match given Accept header');
-    res.status(406).error(error, req.headers);
-    return new streaming.Sink({objectMode: true});
+    const error = new Error('Cannot format response to match given Accept header')
+    res.status(406).error(error, req.headers)
+    return new streaming.Sink({objectMode: true})
   }
 }
 
@@ -46,49 +46,49 @@ function acceptRenderer(req, res) {
 List all responses
 */
 R.get(/^\/api\/responses(\?|$)/, (req, res) => {
-  const urlObj = url.parse(req.url, true);
-  let query = db.Select('responses').orderBy('id');
+  const urlObj = url.parse(req.url, true)
+  let query = db.Select('responses').orderBy('id')
 
   // filter by participant if specified
   if (urlObj.query.participant_id) {
-    query = query.whereEqual({participant_id: urlObj.query.participant_id});
+    query = query.whereEqual({participant_id: urlObj.query.participant_id})
   }
   if (urlObj.query.limit) {
-    query = query.limit(urlObj.query.limit);
+    query = query.limit(urlObj.query.limit)
     // and add the full count
-    query = query.add('responses.*', 'COUNT(responses.id) OVER() AS count');
+    query = query.add('responses.*', 'COUNT(responses.id) OVER() AS count')
   }
 
   query.execute((err, result) => {
-    if (err) return res.error(err, req.headers);
+    if (err) return res.error(err, req.headers)
 
-    res.ngjson(result);
-  });
-});
+    res.ngjson(result)
+  })
+})
 
 /** POST /api/responses
 Insert new response
 */
 R.post(/^\/api\/responses$/, (req, res) => {
   req.readData((err, data) => {
-    if (err) return res.error(err, req.headers);
+    if (err) return res.error(err, req.headers)
 
-    const response = _.omit(data, ['id', 'created']);
+    const response = _.omit(data, ['id', 'created'])
 
-    response.keystrokes = JSON.stringify(response.keystrokes);
+    response.keystrokes = JSON.stringify(response.keystrokes)
 
-    logger.info('inserting response: %j', response);
+    logger.info('inserting response: %j', response)
 
     db.Insert('responses')
     .set(response)
     .returning('*')
     .execute((insertErr, rows) => {
-      if (insertErr) return res.error(insertErr, req.headers);
+      if (insertErr) return res.error(insertErr, req.headers)
 
-      res.status(201).json(rows[0]);
-    });
-  });
-});
+      res.status(201).json(rows[0])
+    })
+  })
+})
 
 /** DELETE /api/responses/:id
 Delete response
@@ -98,12 +98,12 @@ R.delete(/^\/api\/responses\/(\d+)$/, (req, res, m) => {
     db.Delete('responses')
     .whereEqual({id: m[1]})
     .execute((err) => {
-      if (err) return res.error(err, req.headers);
+      if (err) return res.error(err, req.headers)
 
-      res.status(204).end();
-    });
-  });
-});
+      res.status(204).end()
+    })
+  })
+})
 
 
 /** flattenValues(obj: Object)
@@ -113,9 +113,9 @@ Convert all values in object to primitives.
 function flattenValues(obj) {
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const value = obj[key];
+      const value = obj[key]
       if (typeof value != 'string') {
-        obj[key] = JSON.stringify(obj[key]);
+        obj[key] = JSON.stringify(obj[key])
       }
     }
   }
@@ -128,7 +128,7 @@ Sort of like _.extend(target, source), but prefix all keys in source when copyin
 function extendPrefixed(target, prefix, source) {
   for (const key in source) {
     if (Object.prototype.hasOwnProperty.call(source, key)) {
-      target[prefix + key] = source[key];
+      target[prefix + key] = source[key]
     }
   }
 }
@@ -138,7 +138,7 @@ function extendPrefixed(target, prefix, source) {
 Export responses, one keystroke per row.
 */
 R.get(/^\/api\/responses\/keystrokes(\?|$)/, (req, res) => {
-  const urlObj = url.parse(req.url, true);
+  const urlObj = url.parse(req.url, true)
 
   let query = db.Select('responses, participants, sentences')
   .add([
@@ -153,40 +153,40 @@ R.get(/^\/api\/responses\/keystrokes(\?|$)/, (req, res) => {
   ])
   .where('sentences.id = responses.sentence_id')
   .where('participants.id = responses.participant_id')
-  .orderBy('responses.id ASC');
+  .orderBy('responses.id ASC')
 
   // filter by participant if specified
   if (urlObj.query.participant_id) {
-    query = query.whereEqual({participant_id: urlObj.query.participant_id});
+    query = query.whereEqual({participant_id: urlObj.query.participant_id})
   }
 
   query.execute((err, rows) => {
-    if (err) return res.error(err, req.headers);
+    if (err) return res.error(err, req.headers)
     // http://kl:1451/api/responses?accept=text/plain
 
-    const stringifier = acceptRenderer(req, res);
-    stringifier.pipe(res);
+    const stringifier = acceptRenderer(req, res)
+    stringifier.pipe(res)
 
     rows.forEach((row) => {
       row.keystrokes.forEach((keystroke) => {
         // keystroke.timestamp = new Date(keystroke.timestamp).toISOString();
-        keystroke.response_id = row.response_id;
-        keystroke.response_created = row.response_created.toISOString();
-        keystroke.participant_id = row.participant_id;
-        keystroke.sentence_id = row.sentence_id;
-        keystroke.sentence_text = row.sentence_text;
+        keystroke.response_id = row.response_id
+        keystroke.response_created = row.response_created.toISOString()
+        keystroke.participant_id = row.participant_id
+        keystroke.sentence_id = row.sentence_id
+        keystroke.sentence_text = row.sentence_text
 
-        flattenValues(row.participant_demographics);
-        extendPrefixed(keystroke, 'demographics_', row.participant_demographics);
+        flattenValues(row.participant_demographics)
+        extendPrefixed(keystroke, 'demographics_', row.participant_demographics)
 
-        flattenValues(row.participant_parameters);
-        extendPrefixed(keystroke, 'parameters_', row.participant_parameters);
+        flattenValues(row.participant_parameters)
+        extendPrefixed(keystroke, 'parameters_', row.participant_parameters)
 
-        stringifier.write(keystroke);
-      });
-    });
-    stringifier.end();
-  });
-});
+        stringifier.write(keystroke)
+      })
+    })
+    stringifier.end()
+  })
+})
 
-module.exports = R.route.bind(R);
+module.exports = R.route.bind(R)

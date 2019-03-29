@@ -6,26 +6,26 @@ const app = angular.module('adminApp', [
   'pascalprecht.translate', // for $translateProvider and | translate filters
   'typing-evaluation-models',
   'misc-js/angular-plugins',
-]);
+])
 
 function stringifyResponse(res) {
   if (res.data.message) {
-    return res.data.message;
+    return res.data.message
   }
   if (typeof res.data === 'string') {
-    return res.data;
+    return res.data
   }
-  return JSON.stringify(res.data);
+  return JSON.stringify(res.data)
 }
 
 app.directive('checkboxSequence', () => {
   return {
     restrict: 'A',
     link: function(scope, el) {
-      scope.checkbox_sequence = new CheckboxSequence(el[0]);
+      scope.checkbox_sequence = new CheckboxSequence(el[0])
     },
-  };
-});
+  }
+})
 
 app.directive('uiSrefActiveAny', ($state) => {
   return {
@@ -34,23 +34,23 @@ app.directive('uiSrefActiveAny', ($state) => {
       uiSrefActiveAny: '=',
     },
     link: function(scope, el) {
-      const activeClasses = scope.uiSrefActiveAny;
+      const activeClasses = scope.uiSrefActiveAny
       function updateSrefActiveAny() {
         for (const key in activeClasses) {
-          const match = $state.includes(activeClasses[key]);
-          el.toggleClass(key, match);
+          const match = $state.includes(activeClasses[key])
+          el.toggleClass(key, match)
         }
       }
-      scope.$on('$stateChangeSuccess', updateSrefActiveAny);
+      scope.$on('$stateChangeSuccess', updateSrefActiveAny)
     },
-  };
-});
+  }
+})
 
 app.config(($stateProvider, $locationProvider, $urlRouterProvider) => {
   $urlRouterProvider.otherwise(() => {
     // the returned value should be a url expressed relative to the page's base[href]
-    return 'sentences/';
-  });
+    return 'sentences/'
+  })
 
   $stateProvider
   .state('login', {
@@ -122,10 +122,10 @@ app.config(($stateProvider, $locationProvider, $urlRouterProvider) => {
     url: '/',
     templateUrl: '/ui/admin/responses/list.html',
     controller: 'responses.list',
-  });
+  })
 
-  $locationProvider.html5Mode(true);
-});
+  $locationProvider.html5Mode(true)
+})
 
 app.config(($httpProvider) => {
   // trying to inject $state below creates a circular dependency conflict
@@ -133,93 +133,93 @@ app.config(($httpProvider) => {
     return {
       responseError: function(res) {
         if (res.status == 401) {
-          $rootScope.$broadcast('unauthorized', res);
+          $rootScope.$broadcast('unauthorized', res)
         }
-        return $q.reject(res);
+        return $q.reject(res)
       },
-    };
-  });
-});
+    }
+  })
+})
 
 app.run(($rootScope, $state) => {
   $rootScope.$on('unauthorized', () => {
-    $state.go('login');
-  });
-});
+    $state.go('login')
+  })
+})
 
 app.controller('login', ($scope, $flash, $window, AccessToken) => {
   $scope.submit = function() {
     const access_token = AccessToken.authenticateUser({
       email: $scope.email,
       password: $scope.password,
-    });
+    })
 
     const promise = access_token.$promise.then(() => {
-      cookies.set('user_access_token', access_token.token);
+      cookies.set('user_access_token', access_token.token)
       setTimeout(() => {
-        $window.history.back();
-      }, 500);
-      return 'Logged in; returning to previous page.';
+        $window.history.back()
+      }, 500)
+      return 'Logged in; returning to previous page.'
     }, (res) => {
-      const message = res.data.message || res.data.toString();
-      return 'Failed to login. ' + message;
-    });
-    $flash(promise);
-  };
-});
+      const message = res.data.message || res.data.toString()
+      return 'Failed to login. ' + message
+    })
+    $flash(promise)
+  }
+})
 
 app.controller('sentences.list', ($scope, $q, $flash, Sentence) => {
-  $scope.sentences = Sentence.query({active: true});
+  $scope.sentences = Sentence.query({active: true})
 
   $scope.delete = function(sentence) {
     const promise = sentence.$delete(() => {
-      sentence.deleted = true;
+      sentence.deleted = true
     }).then(() => {
-      return 'Deleted sentence.';
-    });
-    $flash(promise);
-  };
+      return 'Deleted sentence.'
+    })
+    $flash(promise)
+  }
 
   $scope.deleteSelected = function() {
     const promises = $scope.sentences.filter((sentence) => {
-      return sentence.selected && !sentence.deleted;
+      return sentence.selected && !sentence.deleted
     }).map((sentence) => {
       return sentence.$delete(() => {
-        sentence.deleted = true;
-      });
-    });
+        sentence.deleted = true
+      })
+    })
     const promise = $q.all(promises).then(() => {
-      return 'Deleted ' + promises.length + ' sentences.';
-    });
-    $flash(promise);
-  };
-});
+      return 'Deleted ' + promises.length + ' sentences.'
+    })
+    $flash(promise)
+  }
+})
 
 app.controller('sentences.edit', ($scope, $flash, $state, Sentence) => {
-  $scope.sentence = Sentence.get($state.params);
+  $scope.sentence = Sentence.get($state.params)
 
   $scope.submit = function() {
     const promise = $scope.sentence.$save().then(() => {
-      $state.go('.', {id: $scope.sentence.id}, {notify: false});
-      return 'Saved sentence.';
+      $state.go('.', {id: $scope.sentence.id}, {notify: false})
+      return 'Saved sentence.'
     }, (res) => {
-      return 'Error saving sentence. ' + stringifyResponse(res);
-    });
-    $flash(promise);
-  };
-});
+      return 'Error saving sentence. ' + stringifyResponse(res)
+    })
+    $flash(promise)
+  }
+})
 
 app.controller('sentences.import', ($scope, $q, $flash, $state, Sentence) => {
-  $scope.active = true;
-  $scope.language = 'en';
+  $scope.active = true
+  $scope.language = 'en'
 
   $scope.prepare = function() {
-    const texts = $scope.input.trim().split(/\n/);
+    const texts = $scope.input.trim().split(/\n/)
 
     // find the maximum view_order in the sentences table
     Sentence.query({order: 'view_order', direction: 'DESC', limit: 1}, (sentences) => {
-      const max_view_order = (sentences.length > 0) ? sentences[0].view_order : 0;
-      const next_view_order = max_view_order + 1;
+      const max_view_order = (sentences.length > 0) ? sentences[0].view_order : 0
+      const next_view_order = max_view_order + 1
       // now construct all the sentences that will be inserted (if submitted)
       $scope.sentences = texts.map((text, i) => {
         return new Sentence({
@@ -227,87 +227,87 @@ app.controller('sentences.import', ($scope, $q, $flash, $state, Sentence) => {
           language: $scope.language,
           active: $scope.active,
           view_order: next_view_order + i,
-        });
-      });
-    });
-  };
+        })
+      })
+    })
+  }
 
   $scope.submit = function() {
     const promises = $scope.sentences.map((sentence) => {
-      return sentence.$save();
-    });
+      return sentence.$save()
+    })
     const promise = $q.all(promises).then((res) => {
-      return 'Inserted ' + res.length + ' sentences.';
+      return 'Inserted ' + res.length + ' sentences.'
     }, (res) => {
-      return 'Error saving sentence. ' + stringifyResponse(res);
-    });
-    $flash(promise);
-  };
-});
+      return 'Error saving sentence. ' + stringifyResponse(res)
+    })
+    $flash(promise)
+  }
+})
 
 
 app.controller('administrators.list', ($scope, $flash, Administrator) => {
-  $scope.administrators = Administrator.query();
+  $scope.administrators = Administrator.query()
 
   $scope.delete = function(administrator) {
     const promise = administrator.$delete().then(() => {
-      $scope.administrators.splice($scope.administrators.indexOf(administrator), 1);
-      return 'Deleted administrator.';
+      $scope.administrators.splice($scope.administrators.indexOf(administrator), 1)
+      return 'Deleted administrator.'
     }, (res) => {
-      return 'Error deleting administrator. ' + stringifyResponse(res);
-    });
-    $flash(promise);
-  };
-});
+      return 'Error deleting administrator. ' + stringifyResponse(res)
+    })
+    $flash(promise)
+  }
+})
 
 
 app.controller('administrators.edit', ($scope, $flash, $state, Administrator) => {
-  $scope.administrator = Administrator.get({id: $state.params.id});
+  $scope.administrator = Administrator.get({id: $state.params.id})
 
   $scope.submit = function() {
     const promise = $scope.administrator.$save().then(() => {
-      $state.go('.', {id: $scope.administrator.id}, {notify: false});
-      return 'Saved administrator.';
+      $state.go('.', {id: $scope.administrator.id}, {notify: false})
+      return 'Saved administrator.'
     }, (res) => {
-      return 'Error saving administrator. ' + stringifyResponse(res);
-    });
-    $flash(promise);
-  };
-});
+      return 'Error saving administrator. ' + stringifyResponse(res)
+    })
+    $flash(promise)
+  }
+})
 
 
 app.controller('participants.list', ($scope, $flash, Participant) => {
-  $scope.participants = Participant.query();
+  $scope.participants = Participant.query()
 
   $scope.delete = function(participant) {
     const promise = participant.$delete().then(() => {
-      $scope.participants.splice($scope.participants.indexOf(participant), 1);
-      return 'Deleted participant.';
+      $scope.participants.splice($scope.participants.indexOf(participant), 1)
+      return 'Deleted participant.'
     }, (res) => {
-      return 'Error deleting participant. ' + stringifyResponse(res);
-    });
-    $flash(promise);
-  };
-});
+      return 'Error deleting participant. ' + stringifyResponse(res)
+    })
+    $flash(promise)
+  }
+})
 
 
 app.controller('participants.edit', ($scope, $flash, $state, Participant, Response) => {
-  $scope.participant = Participant.get({id: $state.params.id});
-  $scope.responses = Response.query({participant_id: $state.params.id});
-});
+  $scope.participant = Participant.get({id: $state.params.id})
+  $scope.responses = Response.query({participant_id: $state.params.id})
+})
 
 
 app.controller('responses.list', ($scope, $flash, Response) => {
-  $scope.responses = Response.query({limit: 100});
-  $scope.accept = 'application/json;+boundary=LF'; // default
+  $scope.responses = Response.query({limit: 100})
+  $scope.accept = 'application/json;+boundary=LF' // default
 
   $scope.delete = function(response) {
     const promise = response.$delete().then(() => {
-      $scope.responses.splice($scope.responses.indexOf(response), 1);
-      return 'Deleted response.';
+      $scope.responses.splice($scope.responses.indexOf(response), 1)
+      return 'Deleted response.'
     }, (res) => {
-      return 'Error deleting response. ' + stringifyResponse(res);
-    });
-    $flash(promise);
-  };
-});
+      return 'Error deleting response. ' + stringifyResponse(res)
+    })
+    $flash(promise)
+  }
+})
