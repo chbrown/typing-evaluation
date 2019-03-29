@@ -11,13 +11,13 @@
   "dependencies": {
     "async": "0.9.0",
     "cookies": "git://github.com/chbrown/cookies.git",
-    "http-enhanced": "~0.5.3",
+    "http-enhanced": "0.5.3",
     "lodash": "3.4.0",
     "loge": "0.0.3",
     "regex-router": "0.2.0",
     "send": "0.12.1",
-    "sqlcmd-pg": "~0.2.3",
-    "streaming": "~0.3.13",
+    "sqlcmd-pg": "0.2.3",
+    "streaming": "0.3.13",
     "sv": "0.3.6",
     "yargs": "3.0.4"
   },
