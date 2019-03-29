@@ -27,25 +27,25 @@ Angular.js html:
 
 */
 function CheckboxSequence(container) {
-  var self = this;
+  const self = this;
   // previous_checkbox is the last clicked checkbox element
   this.previous_checkbox = null;
   // previous_checked is the resulting checked status of the last clicked
   // checkbox element (unchecked->checked: true, checked->unchecked: false)
   this.previous_checked = null;
   // listen for clicks on the containing element
-  container.addEventListener('click', function containerClick(ev) {
+  container.addEventListener('click', (ev) => {
     // but only do anything with clicks on checkboxes
     if (ev.target.getAttribute('type') == 'checkbox') {
-      var current_checkbox = ev.target;
-      var current_checked = current_checkbox.checked;
+      const current_checkbox = ev.target;
+      const current_checked = current_checkbox.checked;
       // only connect between two checkboxes if they were both turned to
       // the same checked status, and shift is being held down
       if (ev.shiftKey && self.previous_checkbox && self.previous_checked == current_checked) {
-        var checkboxes = container.querySelectorAll('[type="checkbox"]');
-        var start_checkbox = null;
-        var end_checkbox = null;
-        var click_event = new Event('click');
+        const checkboxes = container.querySelectorAll('[type="checkbox"]');
+        let start_checkbox = null;
+        let end_checkbox = null;
+        const click_event = new Event('click');
         // select all entries between the two, exclusive (the endpoints are
         // already in the desired state)
         for (var i = 0, checkbox; (checkbox = checkboxes[i]); i++) {

@@ -26,7 +26,7 @@ This module exposes the `Cookies` class, as well as `cookies`, which is a single
 https://raw.github.com/chbrown/misc-js/master/cookies.js
 
 */
-var Cookies = (function() {
+const Cookies = (function() {
   function mergeDefaults(target, defaults) {
     /** mergeDefaults: extend an object with potentially missing fields with specified default values
 
@@ -39,8 +39,8 @@ var Cookies = (function() {
     */
     // if `defaults` is a function, call it to get an object we can iterate over
     if (target === undefined) target = {};
-    var source = defaults.call ? defaults() : defaults;
-    for (var key in source) {
+    const source = defaults.call ? defaults() : defaults;
+    for (const key in source) {
       if (source.hasOwnProperty(key) && !target.hasOwnProperty(key)) {
         target[key] = source[key];
       }
@@ -48,7 +48,7 @@ var Cookies = (function() {
     return target;
   }
 
-  var Cookies = function(defaults) {
+  const Cookies = function(defaults) {
     this.defaults = defaults || {};
   };
   Cookies.version = '0.3.0';
@@ -60,12 +60,12 @@ var Cookies = (function() {
     // otherwise, simply returns a single string value
     opts = mergeDefaults(opts, this.defaults);
 
-    var document_cookie = document.cookie;
-    var cookies = (document_cookie && document_cookie !== '') ? document_cookie.split(/\s*;\s*/) : [];
+    const document_cookie = document.cookie;
+    const cookies = (document_cookie && document_cookie !== '') ? document_cookie.split(/\s*;\s*/) : [];
     for (var i = 0, cookie; (cookie = cookies[i]); i++) {
       // Does this cookie string begin with the name we want?
       if (cookie.slice(0, name.length + 1) == (name + '=')) {
-        var raw = cookie.slice(name.length + 1);
+        const raw = cookie.slice(name.length + 1);
         return opts.raw ? raw : decodeURIComponent(raw);
       }
     }
@@ -74,14 +74,18 @@ var Cookies = (function() {
   Cookies.prototype.set = function(name, value, opts) {
     opts = mergeDefaults(opts, this.defaults);
 
-    var encode = opts.raw ? function(s) { return s; } : encodeURIComponent;
+    const encode = opts.raw ? function(s) {
+      return s;
+    } : encodeURIComponent;
 
-    var pairs = [[encode(name), encode(value.toString())]];
+    const pairs = [[encode(name), encode(value.toString())]];
     if (opts.expires) pairs.push(['expires', opts.expires.toUTCString ? opts.expires.toUTCString() : opts.expires]);
     if (opts.path) pairs.push(['path', opts.path]);
     if (opts.domain) pairs.push(['domain', opts.domain]);
     if (opts.secure) pairs.push(['secure']);
-    var cookie = pairs.map(function(pair) { return pair.join('='); }).join('; ');
+    const cookie = pairs.map((pair) => {
+      return pair.join('=');
+    }).join('; ');
     document.cookie = cookie;
     return cookie;
   };
@@ -96,19 +100,19 @@ var Cookies = (function() {
   Cookies.prototype.all = function(opts) {
     opts = mergeDefaults(opts, this.defaults);
 
-    var cookies = {};
-    var document_cookie = document.cookie;
-    var cookies_list = (document_cookie && document_cookie !== '') ? document_cookie.split(/\s*;\s*/) : [];
-    var cookies_length = cookies_list.length;
-    for (var i = 0; i < cookies_length; i++) {
-      var cookie = cookies_list[i];
-      var cookie_parts = cookie.split('=');
-      var cookie_value = cookie_parts.slice(1).join('=');
+    const cookies = {};
+    const document_cookie = document.cookie;
+    const cookies_list = (document_cookie && document_cookie !== '') ? document_cookie.split(/\s*;\s*/) : [];
+    const cookies_length = cookies_list.length;
+    for (let i = 0; i < cookies_length; i++) {
+      const cookie = cookies_list[i];
+      const cookie_parts = cookie.split('=');
+      const cookie_value = cookie_parts.slice(1).join('=');
       cookies[cookie_parts[0]] = opts.raw ? cookie_value : decodeURIComponent(cookie_value);
     }
     return cookies;
   };
 
   return Cookies;
-})();
-var cookies = new Cookies();
+}());
+const cookies = new Cookies();
