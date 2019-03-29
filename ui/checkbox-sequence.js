@@ -1,4 +1,3 @@
-/*jslint browser: true */
 /** Copyright 2015, Christopher Brown <io@henrian.com>, MIT Licensed
 
 Shift-click to select contiguous sequences of checkboxes.
@@ -24,9 +23,8 @@ Angular.js html:
       </tr>
     </table>
 
-
 */
-function CheckboxSequence(container) {
+export function CheckboxSequence(container) {
   const self = this
   // previous_checkbox is the last clicked checkbox element
   this.previous_checkbox = null
@@ -48,7 +46,8 @@ function CheckboxSequence(container) {
         const click_event = new Event('click')
         // select all entries between the two, exclusive (the endpoints are
         // already in the desired state)
-        for (var i = 0, checkbox; (checkbox = checkboxes[i]); i++) {
+        for (let i = 0; i < checkboxes.length; i++) {
+          const checkbox = checkboxes[i]
           // we're not sure if current_checkbox comes before or after
           // last_checkbox in the DOM tree, so we have to watch out for both
           // until we see one of them
