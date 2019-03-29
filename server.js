@@ -43,4 +43,62 @@ const server = http.createServer((req, res) => {
   logger.info('server listening on http://%s', addressString)
 })
 
-module.exports = server
+function main() {
+  const os = require('os')
+  const path = require('path')
+  const db = require('./db')
+
+  const yargs = require('yargs')
+  .describe({
+    hostname: 'hostname to listen on',
+    port: 'port to listen on',
+    forks: 'number of workers to spawn',
+
+    help: 'print this help message',
+    verbose: 'print extra output',
+    version: 'print version',
+  })
+  .boolean(['help', 'verbose', 'version'])
+  .default({
+    port: parseInt(process.env.PORT, 10) || 80,
+    forks: os.cpus().length,
+  })
+
+  const argv = yargs.argv
+  logger.level = argv.verbose ? 'debug' : 'info'
+
+  if (argv.help) {
+    yargs.showHelp()
+  }
+  else if (argv.version) {
+    console.log(require('../package').version)
+  }
+  else if (cluster.isWorker) {
+    server.listen(argv.port, argv.hostname)
+  }
+  else {
+    db.createDatabaseIfNotExists((err) => {
+      if (err) throw err
+
+      const migrations_dirpath = path.join(__dirname, 'migrations')
+      db.executePatches('_migrations', migrations_dirpath, (patchErr) => {
+        if (patchErr) throw patchErr
+
+        logger.info('Cluster master forking %d initial workers.', argv.forks)
+        for (let i = 0; i < argv.forks; i++) {
+          cluster.fork()
+        }
+        cluster.on('disconnect', (worker) => {
+          logger.error('Worker[%s] died. Forking a new worker.', worker.id)
+          cluster.fork()
+        })
+      })
+    })
+  }
+}
+
+exports.main = main
+
+if (require.main === module) {
+  main()
+}
