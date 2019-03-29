@@ -1,30 +1,30 @@
 /*jslint browser: true */ /*globals angular, cookies */
-var app = angular.module('experimentApp', [
+const app = angular.module('experimentApp', [
   'ngResource',
   'ui.router',
   'pascalprecht.translate', // for $translateProvider and | translate filters
   'typing-evaluation-models',
 ]);
 
-app.filter('trustResourceUrl', function($sce) {
+app.filter('trustResourceUrl', ($sce) => {
   return function(string) {
     return $sce.trustAsResourceUrl(string);
   };
 });
 
-app.config(function($provide) {
+app.config(($provide) => {
   /** monkeypatch ui-router's injectable $state object */
-  $provide.decorator('$state', function($delegate) {
+  $provide.decorator('$state', ($delegate) => {
     // the argument to this function must be "$delegate"
     $delegate.goRel = function goRel(to, params, options) {
-      var merged_params = angular.extend({}, $delegate.params, params);
+      const merged_params = angular.extend({}, $delegate.params, params);
       return $delegate.go(to, merged_params, options);
     };
     return $delegate;
   });
 });
 
-app.config(function($translateProvider) {
+app.config(($translateProvider) => {
   // http://angular-translate.github.io/docs/#/guide
   // $translateProvider.translations('en', {
   //   'Gender': 'Gender',
@@ -39,8 +39,8 @@ app.config(function($translateProvider) {
   $translateProvider.preferredLanguage('en');
 });
 
-app.config(function($urlRouterProvider, $stateProvider, $locationProvider) {
-  $urlRouterProvider.otherwise(function() {
+app.config(($urlRouterProvider, $stateProvider, $locationProvider) => {
+  $urlRouterProvider.otherwise(() => {
     // $location is kind of broken (its getter functions return undefined) if
     // the current url is not under the current base[href]
 
@@ -48,7 +48,7 @@ app.config(function($urlRouterProvider, $stateProvider, $locationProvider) {
     return 'consent' + window.location.search;
   });
 
-  var PARAMS = '?' + ['assignmentId', 'hitId', 'workerId', 'turkSubmitTo', 'demographics', 'consent', 'batch'].join('&');
+  const PARAMS = '?' + ['assignmentId', 'hitId', 'workerId', 'turkSubmitTo', 'demographics', 'consent', 'batch'].join('&');
 
   // the url value in each state is interpreted relative to the page's
   // base[href] value, despite being an absolute path
@@ -86,28 +86,28 @@ app.config(function($urlRouterProvider, $stateProvider, $locationProvider) {
 Simplified version of ui-sref because ui-sref doesn't actually inherit the
 current state params. Goes well with the $state.goRel function declared above.
 */
-app.directive('uiSrefRel', function($state) {
+app.directive('uiSrefRel', ($state) => {
   return {
     restrict: 'A',
     link: function(scope, el, attrs) {
       el.attr('href', $state.href(attrs.uiSrefRel, $state.params));
-    }
+    },
   };
 });
 
-app.controller('consent', function($scope, $state, Participant) {
+app.controller('consent', ($scope, $state, Participant) => {
   $scope.mturk_preview = $state.params.assignmentId == 'ASSIGNMENT_ID_NOT_AVAILABLE';
 
   $scope.submit = function() {
-    var participant = new Participant({
+    const participant = new Participant({
       parameters: $state.params,
       demographics: {},
     });
 
-    participant.$save().then(function() {
+    participant.$save().then(() => {
       cookies.set('participant_id', participant.id);
       $state.goRel('instructions');
-    }, function(res) {
+    }, (res) => {
       console.error(res);
     });
   };
@@ -120,15 +120,15 @@ app.controller('consent', function($scope, $state, Participant) {
   }
 });
 
-app.controller('demographics', function($scope, $state, Participant) {
+app.controller('demographics', ($scope, $state, Participant) => {
   $scope.participant = new Participant({id: cookies.get('participant_id')});
   $scope.demographics = {};
 
   $scope.submit = function() {
     $scope.participant.demographics = $scope.demographics;
-    $scope.participant.$save().then(function() {
+    $scope.participant.$save().then(() => {
       $state.goRel('sentence', {id: 'next'});
-    }, function(res) {
+    }, (res) => {
       console.error(res);
     });
   };
@@ -141,13 +141,9 @@ app.controller('demographics', function($scope, $state, Participant) {
   }
 });
 
-app.controller('sentence', function($scope, $state, Sentence, Participant, Response) {
+app.controller('sentence', ($scope, $state, Sentence, Participant, Response) => {
   // we don't need to load the whole participant
   $scope.participant = new Participant({id: cookies.get('participant_id')});
-  $scope.sentence = Sentence.get({
-    id: $state.params.id,
-    participant_id: $scope.participant.id,
-  }, sentenceLoaded, sentenceFailed);
 
   function sentenceLoaded() {
     // reset input
@@ -162,38 +158,43 @@ app.controller('sentence', function($scope, $state, Sentence, Participant, Respo
     console.error('Failed to fetch sentence', res);
   }
 
-  $scope.$watch('sentence.id', function() {
+  $scope.sentence = Sentence.get({
+    id: $state.params.id,
+    participant_id: $scope.participant.id,
+  }, sentenceLoaded, sentenceFailed);
+
+  $scope.$watch('sentence.id', () => {
     if ($scope.sentence.$resolved) {
       $state.goRel('sentence', {id: $scope.sentence.id}, {notify: false});
     }
   });
 
-  document.addEventListener('keydown', function(ev) {
+  document.addEventListener('keydown', (ev) => {
     // handle special characters that don't equate to a keypress event
     if (ev.which == 8) { // backspace
       // backspace is a special case: it's the only logged control character
       ev.preventDefault();
-      $scope.$apply(function() {
+      $scope.$apply(() => {
         $scope.characters.pop();
         $scope.events.push({timestamp: ev.timeStamp, key: 'backspace'});
       });
     }
     else if (ev.which == 13) { // enter
       ev.preventDefault();
-      $scope.$apply(function() {
+      $scope.$apply(() => {
         $scope.submit(ev);
       });
     }
     // but most key events should drop through to the keypress handler below
   });
-  document.addEventListener('keypress', function(ev) {
+  document.addEventListener('keypress', (ev) => {
     // keypress is only called for non-meta keys (not for shift / ctrl / super / command)
-    $scope.$apply(function() {
+    $scope.$apply(() => {
       ev.preventDefault();
       // most modern browsers have ev.charCode for keypress events, but `which`
       // and `keyCode` can serve as fallbacks
-      var charCode = (ev.charCode !== null) ? ev.charCode : (ev.which || ev.keyCode);
-      var string = String.fromCharCode(charCode);
+      const charCode = (ev.charCode !== null) ? ev.charCode : (ev.which || ev.keyCode);
+      const string = String.fromCharCode(charCode);
       $scope.characters.push(string);
       $scope.events.push({timestamp: ev.timeStamp, key: string});
     });
@@ -204,16 +205,16 @@ app.controller('sentence', function($scope, $state, Sentence, Participant, Respo
       sentence_id: $scope.sentence.id,
       participant_id: $scope.participant.id,
       keystrokes: $scope.events,
-    }, function() {
+    }, () => {
       $scope.sentence.$get({
         id: 'next',
-        participant_id: $scope.participant.id
+        participant_id: $scope.participant.id,
       }, sentenceLoaded, sentenceFailed);
     });
   };
 });
 
-app.controller('conclusion', function($scope, $stateParams) {
+app.controller('conclusion', ($scope, $stateParams) => {
   $scope.turkSubmitTo = $stateParams.turkSubmitTo;
   $scope.assignmentId = $stateParams.assignmentId;
 });

@@ -1,43 +1,39 @@
-/*jslint browser: true */ /*globals _, angular, cookies */
-
-function t_(url) {
-  return url + '?t_=' + (Math.random() * 1000 | 0);
-}
+/*jslint browser: true */ /*globals angular, cookies */
 
 cookies.defaults = function() {
   // root path; expires in a month
   return {
     path: '/',
-    expires: new Date(new Date().getTime() + 31*24*60*60*1000),
+    expires: new Date(new Date().getTime() + 31 * 24 * 60 * 60 * 1000),
   };
 };
 
 (function(angular) {
-  var app = angular.module('typing-evaluation-models', [
+  const app = angular.module('typing-evaluation-models', [
     'ngResource',
   ]);
 
-  app.service('Sentence', function($resource) {
+  app.service('Sentence', ($resource) => {
     return $resource('/api/sentences/:id', {
       id: '@id',
     });
   });
 
-  app.service('Administrator', function($resource) {
+  app.service('Administrator', ($resource) => {
     return $resource('/api/administrators/:id', {
       id: '@id',
     });
   });
 
-  app.service('Participant', function($resource) {
+  app.service('Participant', ($resource) => {
     return $resource('/api/participants/:id', {
       id: '@id',
     });
   });
 
-  app.service('Response', function($resource) {
+  app.service('Response', ($resource) => {
     return $resource('/api/responses/:id', {
       id: '@id',
     });
   });
-})(angular);
+}(angular));

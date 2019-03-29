@@ -1,4 +1,4 @@
-var db = require('./db');
+const db = require('./db');
 
 /** authenticatedAdministrator(req: http.IncomingMessage,
                                callback: (error: Error, administrator: Administrator))
@@ -6,11 +6,11 @@ var db = require('./db');
 Return the authenticated administrator.
 */
 function authenticatedAdministrator(req, callback) {
-  var basic_auth_match = (req.headers.authorization || '').match(/^Basic\s+(.+)$/);
+  const basic_auth_match = (req.headers.authorization || '').match(/^Basic\s+(.+)$/);
   if (basic_auth_match) {
-    var basic_auth_pair = new Buffer(basic_auth_match[1], 'base64').toString('utf8').split(':');
-    var email = basic_auth_pair[0];
-    var password = basic_auth_pair[1];
+    const basic_auth_pair = new Buffer(basic_auth_match[1], 'base64').toString('utf8').split(':');
+    const email = basic_auth_pair[0];
+    const password = basic_auth_pair[1];
 
     // check if the ADMIN_* environment variables have been set
     if (process.env.ADMIN_USER && process.env.ADMIN_PASS) {
@@ -24,7 +24,7 @@ function authenticatedAdministrator(req, callback) {
     db.Select('administrators')
     .whereEqual({email: email, password: password})
     .limit(1)
-    .execute(function(err, rows) {
+    .execute((err, rows) => {
       if (err) return callback(err);
 
       callback(null, rows[0]);
@@ -45,7 +45,7 @@ Try to get the authenticated administrator.
 2. If there is one, return the user object.
 */
 exports.assertAuthorization = function(req, res, callback) {
-  authenticatedAdministrator(req, function(err, administrator) {
+  authenticatedAdministrator(req, (err, administrator) => {
     if (err) {
       return res.error(err, req.headers);
     }

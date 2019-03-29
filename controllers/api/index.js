@@ -1,8 +1,8 @@
-var Router = require('regex-router');
+const Router = require('regex-router');
 
-var R = new Router(function(req, res) {
+const R = new Router(((req, res) => {
   res.status(404).die('No resource at: ' + req.url);
-});
+}));
 
 R.any(/^\/api\/responses/, require('./responses'));
 R.any(/^\/api\/administrators/, require('./administrators'));

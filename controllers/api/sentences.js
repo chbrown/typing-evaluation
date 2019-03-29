@@ -1,14 +1,14 @@
-var async = require('async');
-var _ = require('lodash');
-var Router = require('regex-router');
-var url = require('url');
+const async = require('async');
+const _ = require('lodash');
+const Router = require('regex-router');
+const url = require('url');
 
-var db = require('../../db');
-var auth = require('../../auth');
+const db = require('../../db');
+const auth = require('../../auth');
 
-var R = new Router(function(req, res) {
+const R = new Router(((req, res) => {
   res.status(404).die('No resource at: ' + req.url);
-});
+}));
 
 /** GET /api/sentences?
 
@@ -20,16 +20,16 @@ query: {
 
 List all sentences
 */
-R.get(/^\/api\/sentences(\?|$)/, function(req, res) {
-  auth.assertAuthorization(req, res, function() {
-    var urlObj = url.parse(req.url, true);
+R.get(/^\/api\/sentences(\?|$)/, (req, res) => {
+  auth.assertAuthorization(req, res, () => {
+    const urlObj = url.parse(req.url, true);
 
     // prepare the query
-    var select = db.Select('sentences');
+    let select = db.Select('sentences');
 
     // set ORDER BY clause (this is kind of verbose, to avoid sql injection
     // vulnerability)
-    var orderBy_column = 'view_order';
+    let orderBy_column = 'view_order';
     if (urlObj.query.order == 'id') {
       orderBy_column = 'id';
     }
@@ -39,7 +39,7 @@ R.get(/^\/api\/sentences(\?|$)/, function(req, res) {
     else if (urlObj.query.order == 'created') {
       orderBy_column = 'created';
     }
-    var orderBy_direction = (urlObj.query.direction == 'DESC') ? 'DESC' : 'ASC';
+    const orderBy_direction = (urlObj.query.direction == 'DESC') ? 'DESC' : 'ASC';
     select = select.orderBy(orderBy_column + ' ' + orderBy_direction);
 
     // set LIMIT clause
@@ -47,7 +47,7 @@ R.get(/^\/api\/sentences(\?|$)/, function(req, res) {
       select = select.limit(urlObj.query.limit);
     }
 
-    select.execute(function(err, rows) {
+    select.execute((err, rows) => {
       if (err) return res.error(err, req.headers);
 
       res.ngjson(rows);
@@ -58,14 +58,14 @@ R.get(/^\/api\/sentences(\?|$)/, function(req, res) {
 /** GET /api/sentences/new
 Get blank (empty) sentence
 */
-R.get(/^\/api\/sentences\/new$/, function(req, res) {
-  auth.assertAuthorization(req, res, function() {
+R.get(/^\/api\/sentences\/new$/, (req, res) => {
+  auth.assertAuthorization(req, res, () => {
     db.Select('sentences')
     .add('MAX(view_order) AS max')
-    .execute(function(err, rows) {
+    .execute((err, rows) => {
       if (err) return res.error(err, req.headers);
 
-      var max_view_order = (rows.length > 0) ? rows[0].max : 0;
+      const max_view_order = (rows.length > 0) ? rows[0].max : 0;
       res.json({
         id: null,
         active: true,
@@ -80,18 +80,18 @@ R.get(/^\/api\/sentences\/new$/, function(req, res) {
 /** POST /api/sentences
 Insert new sentence
 */
-R.post(/^\/api\/sentences$/, function(req, res) {
-  auth.assertAuthorization(req, res, function() {
-    req.readData(function(err, data) {
+R.post(/^\/api\/sentences$/, (req, res) => {
+  auth.assertAuthorization(req, res, () => {
+    req.readData((err, data) => {
       if (err) return res.error(err, req.headers);
 
-      data = _.pick(data, ['text', 'language', 'active', 'view_order']);
+      const sentence = _.pick(data, ['text', 'language', 'active', 'view_order']);
 
       db.Insert('sentences')
-      .set(data)
+      .set(sentence)
       .returning('*')
-      .execute(function(err, rows) {
-        if (err) return res.error(err, req.headers);
+      .execute((insertErr, rows) => {
+        if (insertErr) return res.error(insertErr, req.headers);
 
         res.status(201).json(rows[0]);
       });
@@ -104,8 +104,8 @@ Get single sentence
 
 Returns more than just the sentence, though.
 */
-R.get(/^\/api\/sentences\/(\d+)/, function(req, res, m) {
-  var urlObj = url.parse(req.url, true);
+R.get(/^\/api\/sentences\/(\d+)/, (req, res, m) => {
+  const urlObj = url.parse(req.url, true);
 
   async.parallel({
     sentences: function(callback) {
@@ -123,11 +123,11 @@ R.get(/^\/api\/sentences\/(\d+)/, function(req, res, m) {
     total: function(callback) {
       // without ::int, the `total` count would otherwise come out as a string
       db.Select('sentences').add('COUNT(*)::int').execute(callback);
-    }
-  }, function(err, results) {
+    },
+  }, (err, results) => {
     if (err) return res.error(err, req.headers);
 
-    var sentence = results.sentences[0] || {};
+    const sentence = results.sentences[0] || {};
     sentence.participant_completed = (results.completed[0] || {}).count || 0;
     sentence.participant_total = (results.total[0] || {}).count || 0;
 
@@ -140,16 +140,16 @@ Get single sentence for participant
 
 Non-REST, but forwards to the proper REST endpoint
 */
-R.get(/^\/api\/sentences\/next/, function(req, res, m) {
-  var urlObj = url.parse(req.url, true);
-  var participant_id = urlObj.query.participant_id || null;
+R.get(/^\/api\/sentences\/next/, (req, res) => {
+  const urlObj = url.parse(req.url, true);
+  const participant_id = urlObj.query.participant_id || null;
 
   db.Select('sentences')
   .add('id')
   .where('id NOT IN (SELECT sentence_id FROM responses WHERE participant_id = ?)', participant_id)
   .orderBy('view_order ASC')
   .limit(1)
-  .execute(function(err, rows) {
+  .execute((err, rows) => {
     if (err) return res.error(err, req.headers);
     if (rows.length === 0) {
       return res.error({message: 'No more sentences are available.', statusCode: 404}, req.headers);
@@ -163,19 +163,19 @@ R.get(/^\/api\/sentences\/next/, function(req, res, m) {
 /** POST /api/sentences/:id
 Update existing sentence (should be PUT)
 */
-R.post(/^\/api\/sentences\/(\d+)$/, function(req, res, m) {
-  auth.assertAuthorization(req, res, function() {
-    req.readData(function(err, data) {
+R.post(/^\/api\/sentences\/(\d+)$/, (req, res, m) => {
+  auth.assertAuthorization(req, res, () => {
+    req.readData((err, data) => {
       if (err) return res.error(err, req.headers);
 
-      data = _.pick(data, ['text', 'language', 'active', 'view_order']);
+      const sentence = _.pick(data, ['text', 'language', 'active', 'view_order']);
 
       db.Update('sentences')
       .whereEqual({id: m[1]})
-      .setEqual(data)
+      .setEqual(sentence)
       .returning('*')
-      .execute(function(err, rows) {
-        if (err) return res.error(err, req.headers);
+      .execute((updateErr, rows) => {
+        if (updateErr) return res.error(updateErr, req.headers);
 
         res.json(rows[0]);
       });
@@ -186,11 +186,11 @@ R.post(/^\/api\/sentences\/(\d+)$/, function(req, res, m) {
 /** DELETE /api/sentences/:id
 Delete sentence
 */
-R.delete(/^\/api\/sentences\/(\d+)$/, function(req, res, m) {
-  auth.assertAuthorization(req, res, function() {
+R.delete(/^\/api\/sentences\/(\d+)$/, (req, res, m) => {
+  auth.assertAuthorization(req, res, () => {
     db.Delete('sentences')
     .whereEqual({id: m[1]})
-    .execute(function(err) {
+    .execute((err) => {
       if (err) return res.error(err, req.headers);
 
       res.status(204).end();

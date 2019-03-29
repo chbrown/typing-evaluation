@@ -1,23 +1,23 @@
-var _ = require('lodash');
-var logger = require('loge');
-var url = require('url');
-var Router = require('regex-router');
-var sv = require('sv');
-var streaming = require('streaming');
+const _ = require('lodash');
+const logger = require('loge');
+const url = require('url');
+const Router = require('regex-router');
+const sv = require('sv');
+const streaming = require('streaming');
 
-var auth = require('../../auth');
-var db = require('../../db');
+const auth = require('../../auth');
+const db = require('../../db');
 
-var R = new Router(function(req, res) {
+const R = new Router(((req, res) => {
   res.status(404).die('No resource at: ' + req.url);
-});
+}));
 
 function acceptRenderer(req, res) {
   // use this from http-enhanced, once it's there
-  var urlObj = url.parse(req.url, true);
+  const urlObj = url.parse(req.url, true);
   // Handle ?accept= querystring values as well as Accept: headers, defaulting
   // to line-delimited JSON
-  var accept_header = urlObj.query.accept || req.headers.accept || 'application/json; boundary=LF';
+  const accept_header = urlObj.query.accept || req.headers.accept || 'application/json; boundary=LF';
   // now check that header against the accept values we support
   if (accept_header.match(/application\/json;\s+boundary=(NL|LF|EOL)/)) {
     res.setHeader('Content-Type', 'application/json; boundary=LF');
@@ -36,7 +36,7 @@ function acceptRenderer(req, res) {
     return new sv.Stringifier({peek: 100});
   }
   else {
-    var error = new Error('Cannot format response to match given Accept header');
+    const error = new Error('Cannot format response to match given Accept header');
     res.status(406).error(error, req.headers);
     return new streaming.Sink({objectMode: true});
   }
@@ -45,9 +45,9 @@ function acceptRenderer(req, res) {
 /** GET /api/responses
 List all responses
 */
-R.get(/^\/api\/responses(\?|$)/, function(req, res) {
-  var urlObj = url.parse(req.url, true);
-  var query = db.Select('responses').orderBy('id');
+R.get(/^\/api\/responses(\?|$)/, (req, res) => {
+  const urlObj = url.parse(req.url, true);
+  let query = db.Select('responses').orderBy('id');
 
   // filter by participant if specified
   if (urlObj.query.participant_id) {
@@ -59,7 +59,7 @@ R.get(/^\/api\/responses(\?|$)/, function(req, res) {
     query = query.add('responses.*', 'COUNT(responses.id) OVER() AS count');
   }
 
-  query.execute(function(err, result) {
+  query.execute((err, result) => {
     if (err) return res.error(err, req.headers);
 
     res.ngjson(result);
@@ -69,21 +69,21 @@ R.get(/^\/api\/responses(\?|$)/, function(req, res) {
 /** POST /api/responses
 Insert new response
 */
-R.post(/^\/api\/responses$/, function(req, res) {
-  req.readData(function(err, data) {
+R.post(/^\/api\/responses$/, (req, res) => {
+  req.readData((err, data) => {
     if (err) return res.error(err, req.headers);
 
-    data = _.omit(data, ['id', 'created']);
+    const response = _.omit(data, ['id', 'created']);
 
-    data.keystrokes = JSON.stringify(data.keystrokes);
+    response.keystrokes = JSON.stringify(response.keystrokes);
 
-    logger.info('inserting response: %j', data);
+    logger.info('inserting response: %j', response);
 
     db.Insert('responses')
-    .set(data)
+    .set(response)
     .returning('*')
-    .execute(function(err, rows) {
-      if (err) return res.error(err, req.headers);
+    .execute((insertErr, rows) => {
+      if (insertErr) return res.error(insertErr, req.headers);
 
       res.status(201).json(rows[0]);
     });
@@ -93,11 +93,11 @@ R.post(/^\/api\/responses$/, function(req, res) {
 /** DELETE /api/responses/:id
 Delete response
 */
-R.delete(/^\/api\/responses\/(\d+)$/, function(req, res, m) {
-  auth.assertAuthorization(req, res, function() {
+R.delete(/^\/api\/responses\/(\d+)$/, (req, res, m) => {
+  auth.assertAuthorization(req, res, () => {
     db.Delete('responses')
     .whereEqual({id: m[1]})
-    .execute(function(err) {
+    .execute((err) => {
       if (err) return res.error(err, req.headers);
 
       res.status(204).end();
@@ -111,9 +111,9 @@ R.delete(/^\/api\/responses\/(\d+)$/, function(req, res, m) {
 Convert all values in object to primitives.
 */
 function flattenValues(obj) {
-  for (var key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      var value = obj[key];
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const value = obj[key];
       if (typeof value != 'string') {
         obj[key] = JSON.stringify(obj[key]);
       }
@@ -126,8 +126,8 @@ function flattenValues(obj) {
 Sort of like _.extend(target, source), but prefix all keys in source when copying.
 */
 function extendPrefixed(target, prefix, source) {
-  for (var key in source) {
-    if (source.hasOwnProperty(key)) {
+  for (const key in source) {
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
       target[prefix + key] = source[key];
     }
   }
@@ -137,10 +137,10 @@ function extendPrefixed(target, prefix, source) {
 
 Export responses, one keystroke per row.
 */
-R.get(/^\/api\/responses\/keystrokes(\?|$)/, function(req, res) {
-  var urlObj = url.parse(req.url, true);
+R.get(/^\/api\/responses\/keystrokes(\?|$)/, (req, res) => {
+  const urlObj = url.parse(req.url, true);
 
-  var query = db.Select('responses, participants, sentences')
+  let query = db.Select('responses, participants, sentences')
   .add([
     'responses.id AS response_id',
     'responses.keystrokes',
@@ -160,15 +160,15 @@ R.get(/^\/api\/responses\/keystrokes(\?|$)/, function(req, res) {
     query = query.whereEqual({participant_id: urlObj.query.participant_id});
   }
 
-  query.execute(function(err, rows) {
+  query.execute((err, rows) => {
     if (err) return res.error(err, req.headers);
     // http://kl:1451/api/responses?accept=text/plain
 
-    var stringifier = acceptRenderer(req, res);
+    const stringifier = acceptRenderer(req, res);
     stringifier.pipe(res);
 
-    rows.forEach(function(row) {
-      row.keystrokes.forEach(function(keystroke) {
+    rows.forEach((row) => {
+      row.keystrokes.forEach((keystroke) => {
         // keystroke.timestamp = new Date(keystroke.timestamp).toISOString();
         keystroke.response_id = row.response_id;
         keystroke.response_created = row.response_created.toISOString();

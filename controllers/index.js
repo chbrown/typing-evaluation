@@ -1,31 +1,31 @@
-var url = require('url');
-var path = require('path');
-var Router = require('regex-router');
-var send = require('send');
+const url = require('url');
+const path = require('path');
+const Router = require('regex-router');
+const send = require('send');
 
-var auth = require('../auth');
+const auth = require('../auth');
 
-var R = new Router(function(req, res) {
-  var urlObj = url.parse(req.url);
+const R = new Router(((req, res) => {
+  const urlObj = url.parse(req.url);
   urlObj.pathname = '/experiment/';
   res.redirect(url.format(urlObj));
-});
+}));
 
-R.any(/^\/experiment/, function(req, res) {
+R.any(/^\/experiment/, (req, res) => {
   req.url = '/ui/experiment/layout.html';
   R.route(req, res);
 });
 
-R.any(/^\/admin/, function(req, res) {
-  auth.assertAuthorization(req, res, function() {
+R.any(/^\/admin/, (req, res) => {
+  auth.assertAuthorization(req, res, () => {
     req.url = '/ui/admin/layout.html';
     R.route(req, res);
   });
 });
 
-R.get('/info', function(req, res) {
-  var package_json = require('../package.json');
-  var info = {
+R.get('/info', (req, res) => {
+  const package_json = require('../package.json');
+  const info = {
     name: package_json.name,
     version: package_json.version,
     description: package_json.description,
@@ -33,13 +33,13 @@ R.get('/info', function(req, res) {
   res.json(info);
 });
 
-R.any(/^\/ui\/([^?]+)(\?|$)/, function(req, res, m) {
-  var root = path.join(__dirname, '..', 'ui');
+R.any(/^\/ui\/([^?]+)(\?|$)/, (req, res, m) => {
+  const root = path.join(__dirname, '..', 'ui');
   send(req, m[1], {root: root})
-  .on('error', function(err) {
+  .on('error', (err) => {
     res.status(err.status || 500).die('send error: ' + err.message);
   })
-  .on('directory', function() {
+  .on('directory', () => {
     res.status(404).die('No resource at: ' + req.url);
   })
   .pipe(res);

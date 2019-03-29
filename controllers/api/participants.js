@@ -1,22 +1,20 @@
-var _ = require('lodash');
-var url = require('url');
-var logger = require('loge');
-var Router = require('regex-router');
+const _ = require('lodash');
+const Router = require('regex-router');
 
-var auth = require('../../auth');
-var db = require('../../db');
+const auth = require('../../auth');
+const db = require('../../db');
 
-var R = new Router(function(req, res) {
+const R = new Router(((req, res) => {
   res.status(404).die('No resource at: ' + req.url);
-});
+}));
 
 /** GET /api/participants
 List all participants
 */
-R.get(/^\/api\/participants$/, function(req, res) {
+R.get(/^\/api\/participants$/, (req, res) => {
   db.Select('participants')
   .orderBy('id')
-  .execute(function(err, result) {
+  .execute((err, result) => {
     if (err) return res.error(err, req.headers);
 
     res.ngjson(result);
@@ -26,24 +24,24 @@ R.get(/^\/api\/participants$/, function(req, res) {
 /** GET /api/participants/new
 Get blank (unsaved) participant
 */
-R.get(/^\/api\/participants\/new$/, function(req, res) {
+R.get(/^\/api\/participants\/new$/, (req, res) => {
   res.json({id: null, created: new Date()});
 });
 
 /** POST /api/participants
 Insert new participant
 */
-R.post(/^\/api\/participants$/, function(req, res) {
-  req.readData(function(err, data) {
+R.post(/^\/api\/participants$/, (req, res) => {
+  req.readData((err, data) => {
     if (err) return res.error(err, req.headers);
 
-    data = _.pick(data, ['demographics', 'parameters']);
+    const participant = _.pick(data, ['demographics', 'parameters']);
 
     db.Insert('participants')
-    .set(data)
+    .set(participant)
     .returning('*')
-    .execute(function(err, rows) {
-      if (err) return res.error(err, req.headers);
+    .execute((insertErr, rows) => {
+      if (insertErr) return res.error(insertErr, req.headers);
 
       res.status(201).json(rows[0]);
     });
@@ -53,11 +51,11 @@ R.post(/^\/api\/participants$/, function(req, res) {
 /** GET /api/participants/:id
 Get single participant
 */
-R.get(/^\/api\/participants\/(\d+)$/, function(req, res, m) {
+R.get(/^\/api\/participants\/(\d+)$/, (req, res, m) => {
   db.Select('participants')
   .whereEqual({id: m[1]})
   .limit(1)
-  .execute(function(err, rows) {
+  .execute((err, rows) => {
     if (err) return res.error(err, req.headers);
 
     res.json(rows[0]);
@@ -70,18 +68,18 @@ Update existing participant (should be PUT)
 Cannot require auth since we now have to create the participant before the
 demographics get filled in.
 */
-R.post(/^\/api\/participants\/(\d+)$/, function(req, res, m) {
-  req.readData(function(err, data) {
+R.post(/^\/api\/participants\/(\d+)$/, (req, res, m) => {
+  req.readData((err, data) => {
     if (err) return res.error(err, req.headers);
 
-    data = _.pick(data, ['demographics', 'parameters']);
+    const participant = _.pick(data, ['demographics', 'parameters']);
 
     db.Update('participants')
     .whereEqual({id: m[1]})
-    .setEqual(data)
+    .setEqual(participant)
     .returning('*')
-    .execute(function(err, rows) {
-      if (err) return res.error(err, req.headers);
+    .execute((updateErr, rows) => {
+      if (updateErr) return res.error(updateErr, req.headers);
 
       res.json(rows[0]);
     });
@@ -91,12 +89,12 @@ R.post(/^\/api\/participants\/(\d+)$/, function(req, res, m) {
 /** DELETE /api/participants/:id
 Delete participant
 */
-R.delete(/^\/api\/participants\/(\d+)$/, function(req, res, m) {
-  auth.assertAuthorization(req, res, function() {
+R.delete(/^\/api\/participants\/(\d+)$/, (req, res, m) => {
+  auth.assertAuthorization(req, res, () => {
     db.Delete('participants')
     .whereEqual({id: m[1]})
-    .execute(function(err) {
-      if (err) return res.error(err, req.headers);
+    .execute((deleteErr) => {
+      if (deleteErr) return res.error(deleteErr, req.headers);
 
       res.status(204).end();
     });
