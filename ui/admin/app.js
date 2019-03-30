@@ -1,8 +1,18 @@
-/*jslint browser: true */ /*globals angular, CheckboxSequence, cookies */
+const angular = require('angular')
+require('angular-translate') // for 'pascalprecht.translate'
+
+require('../angular-plugins') // for side-effect of loading 'misc-js/angular-plugins' module
+require('../models') // for side-effect of loading 'typing-evaluation-models' module
+require('../ngstorage') // for side-effect of loading 'ngStorage' module
+
+const {CheckboxSequence} = require('./checkbox-sequence')
+const {Cookies} = require('../cookies')
+const cookies = new Cookies()
+
 const app = angular.module('adminApp', [
-  'ngResource',
+  require('angular-resource'),
   'ngStorage',
-  'ui.router',
+  require('angular-ui-router'),
   'pascalprecht.translate', // for $translateProvider and | translate filters
   'typing-evaluation-models',
   'misc-js/angular-plugins',
