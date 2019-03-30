@@ -2,7 +2,6 @@ const angular = require('angular')
 require('angular-translate') // for 'pascalprecht.translate'
 
 require('../angular-plugins') // for side-effect of loading 'misc-js/angular-plugins' module
-require('../models') // for side-effect of loading 'typing-evaluation-models' module
 
 const {Cookies} = require('../cookies')
 const cookies = new Cookies()
@@ -11,7 +10,7 @@ const app = angular.module('experimentApp', [
   require('angular-resource'),
   require('angular-ui-router'),
   'pascalprecht.translate', // for $translateProvider and | translate filters
-  'typing-evaluation-models',
+  require('../models'),
 ])
 
 app.filter('trustResourceUrl', ($sce) => {
