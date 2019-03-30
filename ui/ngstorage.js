@@ -5,7 +5,6 @@ function _storageFactory(storageType) {
   return [
     '$rootScope',
     '$window',
-
     function($rootScope, $window) {
       // #9: Assign a placeholder object if Web Storage is unavailable to prevent breaking the entire AngularJS app
       const webStorage = $window[storageType] || (console.warn('This browser does not support Web Storage!'), {})
@@ -17,7 +16,6 @@ function _storageFactory(storageType) {
               $storage[k] = items[k]
             }
           }
-
           return $storage
         },
         $reset: function(items) {
@@ -26,13 +24,11 @@ function _storageFactory(storageType) {
               delete $storage[k]
             }
           }
-
           return $storage.$default(items)
         },
       }
 
       let _last$storage
-
       let _debounce
 
       for (let i = 0; i < webStorage.length; i++) {
@@ -55,7 +51,6 @@ function _storageFactory(storageType) {
                 if (angular.isDefined(v) && k[0] !== '$') {
                   webStorage.setItem('ngStorage-' + k, angular.toJson(v))
                 }
-
                 delete _last$storage[k]
               })
 
@@ -92,6 +87,9 @@ function _storageFactory(storageType) {
   ]
 }
 
-angular.module('ngStorage', []).
+const moduleName = 'ngStorage'
+angular.module(moduleName, []).
 factory('$localStorage', _storageFactory('localStorage')).
 factory('$sessionStorage', _storageFactory('sessionStorage'))
+
+module.exports = moduleName

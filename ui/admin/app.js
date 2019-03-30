@@ -2,7 +2,6 @@ const angular = require('angular')
 require('angular-translate') // for 'pascalprecht.translate'
 
 require('../angular-plugins') // for side-effect of loading 'misc-js/angular-plugins' module
-require('../ngstorage') // for side-effect of loading 'ngStorage' module
 
 const {CheckboxSequence} = require('./checkbox-sequence')
 const {Cookies} = require('../cookies')
@@ -10,7 +9,7 @@ const cookies = new Cookies()
 
 const app = angular.module('adminApp', [
   require('angular-resource'),
-  'ngStorage',
+  require('../ngstorage'),
   require('angular-ui-router'),
   'pascalprecht.translate', // for $translateProvider and | translate filters
   require('../models'),
