@@ -1,8 +1,6 @@
 const angular = require('angular')
 require('angular-translate') // for 'pascalprecht.translate'
 
-require('../angular-plugins') // for side-effect of loading 'misc-js/angular-plugins' module
-
 const {Cookies} = require('../cookies')
 const cookies = new Cookies()
 
