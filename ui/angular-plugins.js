@@ -6,30 +6,6 @@ https://raw.github.com/chbrown/misc-js/master/angular-plugins.js
 const angular = require('angular')
 
 angular.module('misc-js/angular-plugins', [])
-.directive('fixedflow', () => {
-  /** This directive is intended to be used with a <nav> element, so that it
-  drops out of flow, in the current position, but creates an empty shadow
-  element to keep its place
-
-  <nav fixedflow>
-    <a href="/admin/individuals">Individuals</a>
-    <a href="/admin/administrators">Administrators</a>
-  </nav>
-  */
-  return {
-    restrict: 'A',
-    link: function(scope, el) {
-      // set the el to "position: fixed" in case that's not in the css
-      el.css('position', 'fixed')
-      // placeholder is just a super simple empty shadow element
-      const height = getComputedStyle(el[0]).height
-      const placeholder = angular.element('<div>')
-      placeholder.css('height', height)
-      placeholder.addClass('fixedflow-placeholder')
-      el.after(placeholder)
-    },
-  }
-})
 .directive('enhance', () => {
   /** Only use this if you've loaded misc-js/textarea.js! */
   return {
