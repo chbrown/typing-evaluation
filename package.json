@@ -27,12 +27,21 @@
     "angular-translate": "2.6.1",
     "angular-ui-router": "0.2.13",
     "autoprefixer": "^8.2.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-angularjs-annotate": "^0.8.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "clean-css": "^4.1.9",
     "clean-css-cli": "^4.1.10",
     "less": "^3.0.1",
-    "postcss-cli": "^5.0.0"
+    "postcss-cli": "^5.0.0",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
   },
   "scripts": {
-    "prepack-css": "lessc ui/site.less | postcss --use autoprefixer | cleancss --format breaks:afterRuleEnds=on -o ui/dist/site.css"
+    "prepack-css": "lessc ui/site.less | postcss --use autoprefixer | cleancss --format breaks:afterRuleEnds=on -o ui/dist/site.css",
+    "prepack-js": "NODE_ENV=production webpack",
+    "prepack": "npm run prepack-css && npm run prepack-js"
   }
 }
