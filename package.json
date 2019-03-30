@@ -33,6 +33,6 @@
     "postcss-cli": "^5.0.0"
   },
   "scripts": {
-    "prepack-css": "lessc ui/site.less | postcss --use autoprefixer | cleancss --format breaks:afterRuleEnds=on -o ui/site.css"
+    "prepack-css": "lessc ui/site.less | postcss --use autoprefixer | cleancss --format breaks:afterRuleEnds=on -o ui/dist/site.css"
   }
 }
