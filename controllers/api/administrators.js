@@ -1,4 +1,3 @@
-const _ = require('lodash')
 const Router = require('regex-router')
 
 const db = require('../../db')
@@ -40,10 +39,10 @@ R.post(/^\/api\/administrators$/, (req, res) => {
       if (err) return res.error(err, req.headers)
 
       // storing the password in the clear!
-      const row = _.pick(data, ['email', 'password'])
+      const {email, password} = data
 
       db.Insert('administrators')
-      .set(row)
+      .set({email, password})
       .returning('*')
       .execute((insertErr, rows) => {
         if (insertErr) return res.error(insertErr, req.headers)
@@ -78,11 +77,11 @@ R.post(/^\/api\/administrators\/(\d+)$/, (req, res, m) => {
     req.readData((err, data) => {
       if (err) return res.error(err, req.headers)
 
-      const row = _.pick(data, ['email', 'password'])
+      const {email, password} = data
 
       db.Update('administrators')
       .whereEqual({id: m[1]})
-      .setEqual(row)
+      .setEqual({email, password})
       .returning('*')
       .execute((updateErr, rows) => {
         if (updateErr) return res.error(updateErr, req.headers)

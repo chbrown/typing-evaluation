@@ -1,5 +1,4 @@
 const async = require('async')
-const _ = require('lodash')
 const Router = require('regex-router')
 const url = require('url')
 
@@ -85,10 +84,10 @@ R.post(/^\/api\/sentences$/, (req, res) => {
     req.readData((err, data) => {
       if (err) return res.error(err, req.headers)
 
-      const sentence = _.pick(data, ['text', 'language', 'active', 'view_order'])
+      const {text, language, active, view_order} = data
 
       db.Insert('sentences')
-      .set(sentence)
+      .set({text, language, active, view_order})
       .returning('*')
       .execute((insertErr, rows) => {
         if (insertErr) return res.error(insertErr, req.headers)
@@ -168,11 +167,11 @@ R.post(/^\/api\/sentences\/(\d+)$/, (req, res, m) => {
     req.readData((err, data) => {
       if (err) return res.error(err, req.headers)
 
-      const sentence = _.pick(data, ['text', 'language', 'active', 'view_order'])
+      const {text, language, active, view_order} = data
 
       db.Update('sentences')
       .whereEqual({id: m[1]})
-      .setEqual(sentence)
+      .setEqual({text, language, active, view_order})
       .returning('*')
       .execute((updateErr, rows) => {
         if (updateErr) return res.error(updateErr, req.headers)

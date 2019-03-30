@@ -1,4 +1,3 @@
-const _ = require('lodash')
 const Router = require('regex-router')
 
 const auth = require('../../auth')
@@ -35,10 +34,10 @@ R.post(/^\/api\/participants$/, (req, res) => {
   req.readData((err, data) => {
     if (err) return res.error(err, req.headers)
 
-    const participant = _.pick(data, ['demographics', 'parameters'])
+    const {demographics, parameters} = data
 
     db.Insert('participants')
-    .set(participant)
+    .set({demographics, parameters})
     .returning('*')
     .execute((insertErr, rows) => {
       if (insertErr) return res.error(insertErr, req.headers)
@@ -72,11 +71,11 @@ R.post(/^\/api\/participants\/(\d+)$/, (req, res, m) => {
   req.readData((err, data) => {
     if (err) return res.error(err, req.headers)
 
-    const participant = _.pick(data, ['demographics', 'parameters'])
+    const {demographics, parameters} = data
 
     db.Update('participants')
     .whereEqual({id: m[1]})
-    .setEqual(participant)
+    .setEqual({demographics, parameters})
     .returning('*')
     .execute((updateErr, rows) => {
       if (updateErr) return res.error(updateErr, req.headers)

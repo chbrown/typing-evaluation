@@ -1,4 +1,3 @@
-const _ = require('lodash')
 const logger = require('loge')
 const url = require('url')
 const Router = require('regex-router')
@@ -73,14 +72,13 @@ R.post(/^\/api\/responses$/, (req, res) => {
   req.readData((err, data) => {
     if (err) return res.error(err, req.headers)
 
-    const response = _.omit(data, ['id', 'created'])
+    logger.info('inserting response: %j', data)
 
-    response.keystrokes = JSON.stringify(response.keystrokes)
-
-    logger.info('inserting response: %j', response)
+    // omit 'id' and 'created'
+    const {participant_id, sentence_id, keystrokes} = data
 
     db.Insert('responses')
-    .set(response)
+    .set({participant_id, sentence_id, keystrokes: JSON.stringify(keystrokes)})
     .returning('*')
     .execute((insertErr, rows) => {
       if (insertErr) return res.error(insertErr, req.headers)
