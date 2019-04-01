@@ -1,5 +1,7 @@
 const {resolve} = require('path')
 
+const webpack = require('webpack')
+
 const mode = process.env.NODE_ENV || 'development'
 
 module.exports = {
@@ -11,6 +13,15 @@ module.exports = {
   output: {
     path: resolve(__dirname, 'ui', 'dist'),
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      process: {
+        env: {
+          NODE_ENV: JSON.stringify(mode),
+        },
+      },
+    }),
+  ],
   module: {
     rules: [
       {
