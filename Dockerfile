@@ -1,4 +1,4 @@
-FROM node:0.12
+FROM node:lts
 
 MAINTAINER Christopher Brown <io@henrian.com>
 
