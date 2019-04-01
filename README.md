@@ -70,6 +70,10 @@ Prepare the local database and dump the remote database into it:
     dropdb typing-evaluation; createdb typing-evaluation
     docker exec db pg_dump -U postgres typing-evaluation | psql typing-evaluation
 
+Rebuild docker image:
+
+    docker build -t chbrown/typing-evaluation:$(npm run version --silent) .
+
 
 ## License
 
