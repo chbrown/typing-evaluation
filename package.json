@@ -41,6 +41,7 @@
   "scripts": {
     "prepack-css": "lessc ui/site.less | postcss --use autoprefixer | cleancss --format breaks:afterRuleEnds=on -o ui/dist/site.css",
     "prepack-js": "NODE_ENV=production webpack",
-    "prepack": "npm run prepack-css && npm run prepack-js"
+    "prepack": "npm run prepack-css && npm run prepack-js",
+    "version": "echo $npm_package_version"
   }
 }
