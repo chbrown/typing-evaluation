@@ -1,15 +1,15 @@
-const path = require('path')
+const {resolve} = require('path')
 
-const env = process.env.NODE_ENV || 'development'
+const mode = process.env.NODE_ENV || 'development'
 
 module.exports = {
-  mode: env,
+  mode,
   entry: {
     admin: './ui/admin/app',
     experiment: './ui/experiment/app',
   },
   output: {
-    path: path.resolve(__dirname, 'ui', 'dist'),
+    path: resolve(__dirname, 'ui', 'dist'),
   },
   module: {
     rules: [
