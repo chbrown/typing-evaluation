@@ -2,7 +2,8 @@ const logger = require('loge')
 const url = require('url')
 const Router = require('regex-router')
 const sv = require('sv')
-const streaming = require('streaming')
+const {Stringifier, ArrayStringifier} = require('streaming/json')
+const {Sink} = require('streaming/sink')
 
 const auth = require('../../auth')
 const db = require('../../db')
@@ -20,11 +21,11 @@ function acceptRenderer(req, res) {
   // now check that header against the accept values we support
   if (accept_header.match(/application\/json;\s+boundary=(NL|LF|EOL)/)) {
     res.setHeader('Content-Type', 'application/json; boundary=LF')
-    return new streaming.json.Stringifier()
+    return new Stringifier()
   }
   else if (accept_header.match(/application\/json/)) {
     res.setHeader('Content-Type', 'application/json')
-    return new streaming.json.ArrayStringifier()
+    return new ArrayStringifier()
   }
   else if (accept_header.match(/text\/csv/)) {
     res.setHeader('Content-Type', 'text/csv; charset=utf-8')
@@ -37,7 +38,7 @@ function acceptRenderer(req, res) {
   else {
     const error = new Error('Cannot format response to match given Accept header')
     res.status(406).error(error, req.headers)
-    return new streaming.Sink({objectMode: true})
+    return new Sink({objectMode: true})
   }
 }
 

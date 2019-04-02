@@ -15,8 +15,8 @@
     "regex-router": "0.2.0",
     "send": "0.12.1",
     "sqlcmd-pg": "0.2.3",
-    "streaming": "0.3.13",
-    "sv": "0.3.6",
+    "streaming": "1.1.0",
+    "sv": "0.4.2",
     "yargs": "3.0.4"
   },
   "devDependencies": {
