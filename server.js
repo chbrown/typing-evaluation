@@ -98,7 +98,7 @@ function main() {
     verbose: 'print extra output',
     version: 'print version',
   })
-  .boolean(['help', 'verbose', 'version'])
+  .boolean(['verbose'])
   .default({
     port: parseInt(process.env.PORT, 10) || 80,
     forks: os.cpus().length,
@@ -108,15 +108,7 @@ function main() {
   logger.level = argv.verbose ? 'debug' : 'info'
   logger.debug('Set logging level to %s', logger.level)
 
-  if (argv.help) {
-    yargs.showHelp()
-  }
-  else if (argv.version) {
-    console.log(require('../package').version)
-  }
-  else {
-    start(argv.port, argv.hostname, argv.forks)
-  }
+  start(argv.port, argv.hostname, argv.forks)
 }
 
 exports.main = main
