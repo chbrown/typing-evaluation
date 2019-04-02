@@ -1,0 +1,6 @@
+ALTER TABLE responses
+  ALTER COLUMN keystrokes SET DATA TYPE JSONB;
+
+ALTER TABLE participants
+  ALTER COLUMN demographics SET DATA TYPE JSONB,
+  ALTER COLUMN parameters SET DATA TYPE JSONB;
