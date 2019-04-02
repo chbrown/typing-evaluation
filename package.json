@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "description": "University of Sheffield Typing Evaluation Project",
   "private": true,
-  "repository": "git://github.com/chbrown/typing-evaluation.git",
+  "repository": "github:chbrown/typing-evaluation",
   "author": "Christopher Brown <io@henrian.com>",
   "bin": {
     "typing-evaluation": "bin/typing-evaluation"
