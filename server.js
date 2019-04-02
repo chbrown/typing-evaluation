@@ -1,8 +1,12 @@
 const cluster = require('cluster')
 const domain = require('domain')
+const os = require('os')
+const path = require('path')
+
 const http = require('http-enhanced')
 
 const root_controller = require('./controllers')
+const db = require('./db')
 const {logger} = require('./util')
 
 const server = http.createServer((req, res) => {
@@ -43,11 +47,47 @@ const server = http.createServer((req, res) => {
   logger.info('server listening on http://%s', addressString)
 })
 
-function main() {
-  const os = require('os')
-  const path = require('path')
-  const db = require('./db')
+/**
+Create database and run migrations.
+*/
+function initialize(callback) {
+  db.createDatabaseIfNotExists((createErr) => {
+    if (createErr) {
+      return callback(createErr)
+    }
+    const migrations_dirpath = path.join(__dirname, 'migrations')
+    db.executePatches('_migrations', migrations_dirpath, (patchErr) => {
+      callback(patchErr)
+    })
+  })
+}
 
+/**
+This is the shared entry point for the cluster master and its workers.
+*/
+function start(port, hostname, forks) {
+  if (cluster.isWorker) {
+    // workers:
+    server.listen(port, hostname)
+  }
+  else {
+    // master:
+    initialize(err => {
+      if (err) throw err
+
+      logger.info('Cluster master forking %d initial workers.', forks)
+      for (let i = 0; i < forks; i++) {
+        cluster.fork()
+      }
+      cluster.on('disconnect', (worker) => {
+        logger.error('Cluster worker[%s] died. Forking a new worker.', worker.id)
+        cluster.fork()
+      })
+    })
+  }
+}
+
+function main() {
   const yargs = require('yargs')
   .describe({
     hostname: 'hostname to listen on',
@@ -74,27 +114,8 @@ function main() {
   else if (argv.version) {
     console.log(require('../package').version)
   }
-  else if (cluster.isWorker) {
-    server.listen(argv.port, argv.hostname)
-  }
   else {
-    db.createDatabaseIfNotExists((err) => {
-      if (err) throw err
-
-      const migrations_dirpath = path.join(__dirname, 'migrations')
-      db.executePatches('_migrations', migrations_dirpath, (patchErr) => {
-        if (patchErr) throw patchErr
-
-        logger.info('Cluster master forking %d initial workers.', argv.forks)
-        for (let i = 0; i < argv.forks; i++) {
-          cluster.fork()
-        }
-        cluster.on('disconnect', (worker) => {
-          logger.error('Worker[%s] died. Forking a new worker.', worker.id)
-          cluster.fork()
-        })
-      })
-    })
+    start(argv.port, argv.hostname, argv.forks)
   }
 }
 
