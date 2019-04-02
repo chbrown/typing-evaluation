@@ -1,4 +1,3 @@
-const logger = require('loge')
 const url = require('url')
 const Router = require('regex-router')
 const sv = require('sv')
@@ -7,6 +6,7 @@ const {Sink} = require('streaming/sink')
 
 const auth = require('../../auth')
 const db = require('../../db')
+const {logger} = require('../../util')
 
 const R = new Router(((req, res) => {
   res.status(404).die('No resource at: ' + req.url)

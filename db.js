@@ -1,5 +1,6 @@
-const logger = require('loge')
 const sqlcmd = require('sqlcmd-pg')
+
+const {logger} = require('./util')
 
 // the DB_PORT_5432_TCP_* stuff comes from docker
 const db = new sqlcmd.Connection({
@@ -11,8 +12,7 @@ const db = new sqlcmd.Connection({
 
 // setup logger
 db.on('log', (ev) => {
-  const args = [ev.format].concat(ev.args)
-  logger[ev.level](...args)
+  logger.log(ev.level, ev.format, ...ev.args)
 })
 
 module.exports = db

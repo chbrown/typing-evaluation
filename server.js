@@ -1,9 +1,9 @@
 const cluster = require('cluster')
 const domain = require('domain')
 const http = require('http-enhanced')
-const logger = require('loge')
 
 const root_controller = require('./controllers')
+const {logger} = require('./util')
 
 const server = http.createServer((req, res) => {
   const request_domain = domain.create()
@@ -66,6 +66,7 @@ function main() {
 
   const argv = yargs.argv
   logger.level = argv.verbose ? 'debug' : 'info'
+  logger.debug('Set logging level to %s', logger.level)
 
   if (argv.help) {
     yargs.showHelp()
