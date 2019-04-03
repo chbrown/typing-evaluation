@@ -6,7 +6,7 @@ const {Sink} = require('streaming/sink')
 
 const auth = require('../../auth')
 const db = require('../../db')
-const {logger} = require('../../util')
+const {logger, mapKeys, mapValues, simplify} = require('../../util')
 
 const R = new Router(((req, res) => {
   res.status(404).die('No resource at: ' + req.url)
@@ -37,7 +37,7 @@ function acceptRenderer(req, res) {
   }
   else {
     const error = new Error('Cannot format response to match given Accept header')
-    res.status(406).error(error, req.headers)
+    res.status(406).error(error, req.headers) // Not Acceptable
     return new Sink({objectMode: true})
   }
 }
@@ -104,34 +104,6 @@ R.delete(/^\/api\/responses\/(\d+)$/, (req, res, m) => {
   })
 })
 
-
-/** flattenValues(obj: Object)
-
-Convert all values in object to primitives.
-*/
-function flattenValues(obj) {
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const value = obj[key]
-      if (typeof value != 'string') {
-        obj[key] = JSON.stringify(obj[key])
-      }
-    }
-  }
-}
-
-/** extendPrefixed(target: Object, prefix: string, source: Object)
-
-Sort of like _.extend(target, source), but prefix all keys in source when copying.
-*/
-function extendPrefixed(target, prefix, source) {
-  for (const key in source) {
-    if (Object.prototype.hasOwnProperty.call(source, key)) {
-      target[prefix + key] = source[key]
-    }
-  }
-}
-
 /** GET /api/responses/keystrokes
 
 Export responses, one keystroke per row.
@@ -167,20 +139,23 @@ R.get(/^\/api\/responses\/keystrokes(\?|$)/, (req, res) => {
     stringifier.pipe(res)
 
     rows.forEach((row) => {
+      const {response_id, response_created, participant_id, sentence_id, sentence_content} = row
+      // prefix participant_{demographics,parameters} fields
+      const participant_demographics = mapKeys(
+        row.participant_demographics, key => `demographics_${key}`)
+      const participant_parameters = mapKeys(
+        row.participant_demographics, key => `parameters_${key}`)
+      // merge with other row fields
+      const rawRowObject = Object.assign({
+        response_id,
+        response_created,
+        participant_id,
+        sentence_id,
+        sentence_content,
+      }, participant_demographics, participant_parameters)
+      const rowObject = mapValues(rawRowObject, simplify)
       row.keystrokes.forEach((keystroke) => {
-        // keystroke.timestamp = new Date(keystroke.timestamp).toISOString();
-        keystroke.response_id = row.response_id
-        keystroke.response_created = row.response_created.toISOString()
-        keystroke.participant_id = row.participant_id
-        keystroke.sentence_id = row.sentence_id
-        keystroke.sentence_content = row.sentence_content
-
-        flattenValues(row.participant_demographics)
-        extendPrefixed(keystroke, 'demographics_', row.participant_demographics)
-
-        flattenValues(row.participant_parameters)
-        extendPrefixed(keystroke, 'parameters_', row.participant_parameters)
-
+        Object.assign(keystroke, rowObject)
         stringifier.write(keystroke)
       })
     })
