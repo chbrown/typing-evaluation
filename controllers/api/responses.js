@@ -76,10 +76,10 @@ R.post(/^\/api\/responses$/, (req, res) => {
     logger.info('inserting response: %j', data)
 
     // omit 'id' and 'created'
-    const {participant_id, sentence_id, keystrokes} = data
+    const {participant_id, sentence_id, content, keystrokes} = data
 
     db.Insert('responses')
-    .set({participant_id, sentence_id, keystrokes: JSON.stringify(keystrokes)})
+    .set({participant_id, sentence_id, content, keystrokes: JSON.stringify(keystrokes)})
     .returning('*')
     .execute((insertErr, rows) => {
       if (insertErr) return res.error(insertErr, req.headers)
@@ -116,6 +116,7 @@ R.get(/^\/api\/responses\/keystrokes(\?|$)/, (req, res) => {
     'responses.id AS response_id',
     'responses.keystrokes',
     'responses.created AS response_created',
+    'responses.content AS response_content',
     'participants.id AS participant_id',
     'participants.demographics AS participant_demographics',
     'participants.parameters AS participant_parameters',
@@ -139,7 +140,7 @@ R.get(/^\/api\/responses\/keystrokes(\?|$)/, (req, res) => {
     stringifier.pipe(res)
 
     rows.forEach((row) => {
-      const {response_id, response_created, participant_id, sentence_id, sentence_content} = row
+      const {response_id, response_content, response_created, participant_id, sentence_id, sentence_content} = row
       // prefix participant_{demographics,parameters} fields
       const participant_demographics = mapKeys(
         row.participant_demographics, key => `demographics_${key}`)
@@ -148,6 +149,7 @@ R.get(/^\/api\/responses\/keystrokes(\?|$)/, (req, res) => {
       // merge with other row fields
       const rawRowObject = Object.assign({
         response_id,
+        response_content,
         response_created,
         participant_id,
         sentence_id,
