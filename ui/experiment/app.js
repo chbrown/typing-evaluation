@@ -146,14 +146,14 @@ app.controller('demographics', ($scope, $state, Participant) => {
   }
 })
 
-app.controller('sentence', ($scope, $state, Sentence, Participant, Response) => {
+app.controller('sentence', ($scope, $state, $timeout, Sentence, Participant, Response) => {
   // we don't need to load the whole participant
   $scope.participant = new Participant({id: cookies.get('participant_id')})
 
   function sentenceLoaded() {
     // reset input
-    $scope.characters = []
-    $scope.events = []
+    $scope.content = ''
+    $scope.keystrokes = []
   }
 
   function sentenceFailed(res) {
@@ -174,48 +174,36 @@ app.controller('sentence', ($scope, $state, Sentence, Participant, Response) => 
     }
   })
 
-  document.addEventListener('keydown', (ev) => {
-    // handle special characters that don't equate to a keypress event
-    if (ev.which == 8) { // backspace
-      // backspace is a special case: it's the only logged control character
-      ev.preventDefault()
-      $scope.$apply(() => {
-        $scope.characters.pop()
-        $scope.events.push({timestamp: ev.timeStamp, key: 'backspace'})
-      })
-    }
-    else if (ev.which == 13) { // enter
-      ev.preventDefault()
-      $scope.$apply(() => {
-        $scope.submit(ev)
-      })
-    }
-    // but most key events should drop through to the keypress handler below
-  })
-  document.addEventListener('keypress', (ev) => {
-    // keypress is only called for non-meta keys (not for shift / ctrl / super / command)
-    $scope.$apply(() => {
-      ev.preventDefault()
-      // most modern browsers have ev.charCode for keypress events, but `which`
-      // and `keyCode` can serve as fallbacks
-      const charCode = (ev.charCode !== null) ? ev.charCode : (ev.which || ev.keyCode)
-      const string = String.fromCharCode(charCode)
-      $scope.characters.push(string)
-      $scope.events.push({timestamp: ev.timeStamp, key: string})
-    })
-  })
+  $scope.inputBlur = function(ev) {
+    // immediately(-ish) refocus input whenever it loses focus
+    $timeout(() => {
+      ev.target.focus()
+    }, 100)
+  }
 
-  $scope.submit = function() {
+  function submit() {
     Response.save({
       sentence_id: $scope.sentence.id,
       participant_id: $scope.participant.id,
-      keystrokes: $scope.events,
+      keystrokes: $scope.keystrokes,
+      content: $scope.content,
     }, () => {
       $scope.sentence.$get({
         id: 'next',
         participant_id: $scope.participant.id,
       }, sentenceLoaded, sentenceFailed)
     })
+  }
+
+  $scope.keyEvent = function(ev) {
+    const {type, timeStamp, key, location} = ev
+    $scope.keystrokes.push({type, timeStamp, key, location})
+
+    if (type == 'keyup' && key == 'Enter') {
+      // 'Enter' is the only intercepted control character
+      ev.preventDefault()
+      submit()
+    }
   }
 })
 
