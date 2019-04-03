@@ -2,7 +2,7 @@
   <div style="text-align: right">Sentence #{{sentence.participant_completed + 1}} of {{sentence.participant_total}}</div>
 
   <div style="margin: 20px 0; font-size: 200%">
-    <div class="sentence-container"><span>{{sentence.text}}</span></div>
+    <div class="sentence-container"><span>{{sentence.content}}</span></div>
     <div class="sentence-container" style="color: #00A44C">
       <span ng-repeat="character in characters track by $index"
         ng-bind="character"></span><span class="caret">&nbsp;</span>

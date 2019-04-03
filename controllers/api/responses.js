@@ -148,7 +148,7 @@ R.get(/^\/api\/responses\/keystrokes(\?|$)/, (req, res) => {
     'participants.demographics AS participant_demographics',
     'participants.parameters AS participant_parameters',
     'sentences.id AS sentence_id',
-    'sentences.text AS sentence_text',
+    'sentences.content AS sentence_content',
   ])
   .where('sentences.id = responses.sentence_id')
   .where('participants.id = responses.participant_id')
@@ -173,7 +173,7 @@ R.get(/^\/api\/responses\/keystrokes(\?|$)/, (req, res) => {
         keystroke.response_created = row.response_created.toISOString()
         keystroke.participant_id = row.participant_id
         keystroke.sentence_id = row.sentence_id
-        keystroke.sentence_text = row.sentence_text
+        keystroke.sentence_content = row.sentence_content
 
         flattenValues(row.participant_demographics)
         extendPrefixed(keystroke, 'demographics_', row.participant_demographics)

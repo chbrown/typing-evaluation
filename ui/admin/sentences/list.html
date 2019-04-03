@@ -5,7 +5,7 @@
     <tr>
       <th></th>
       <th>ID</th>
-      <th>Text</th>
+      <th>Content</th>
       <th>Language</th>
       <th>Active</th>
       <th>View Order</th>
@@ -17,7 +17,7 @@
     <tr ng-repeat="sentence in sentences" ng-hide="sentence.deleted">
       <td><input type="checkbox" ng-model="sentence.selected"></td>
       <td>{{sentence.id}}</td>
-      <td><a ui-sref="sentences.edit({id: sentence.id})">{{sentence.text}}</a></td>
+      <td><a ui-sref="sentences.edit({id: sentence.id})">{{sentence.content}}</a></td>
       <td>{{sentence.language}}</td>
       <td>{{sentence.active}}</td>
       <td>{{sentence.view_order}}</td>

@@ -84,10 +84,10 @@ R.post(/^\/api\/sentences$/, (req, res) => {
     req.readData((err, data) => {
       if (err) return res.error(err, req.headers)
 
-      const {text, language, active, view_order} = data
+      const {content, language, active, view_order} = data
 
       db.Insert('sentences')
-      .set({text, language, active, view_order})
+      .set({content, language, active, view_order})
       .returning('*')
       .execute((insertErr, rows) => {
         if (insertErr) return res.error(insertErr, req.headers)
@@ -167,11 +167,11 @@ R.post(/^\/api\/sentences\/(\d+)$/, (req, res, m) => {
     req.readData((err, data) => {
       if (err) return res.error(err, req.headers)
 
-      const {text, language, active, view_order} = data
+      const {content, language, active, view_order} = data
 
       db.Update('sentences')
       .whereEqual({id: m[1]})
-      .setEqual({text, language, active, view_order})
+      .setEqual({content, language, active, view_order})
       .returning('*')
       .execute((updateErr, rows) => {
         if (updateErr) return res.error(updateErr, req.headers)
