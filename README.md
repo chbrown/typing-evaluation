@@ -1,5 +1,7 @@
 # typing-evaluation
 
+[![Pulls from Docker Hub](https://img.shields.io/docker/pulls/chbrown/typing-evaluation.svg)](https://hub.docker.com/r/chbrown/typing-evaluation)
+
 
 ## Getting started
 
