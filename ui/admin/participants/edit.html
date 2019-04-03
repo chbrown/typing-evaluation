@@ -12,19 +12,6 @@
     <h3>Response[{{response.id}}]
       (<a ui-sref="sentences.edit({id: response.sentence_id})">Sentence[{{response.sentence_id}}]</a>)</h3>
     <div>Created <time>{{response.created | date:"MMM d, y"}}</time></div>
-    <table>
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th>Key</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-repeat="keystroke in response.keystrokes">
-          <td>{{keystroke.timestamp}}</td>
-          <td>{{keystroke.key}}</td>
-        </tr>
-      </tbody>
-    </table>
+    <keystrokes-table keystrokes="response.keystrokes" />
   </div>
 </section>

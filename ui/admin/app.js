@@ -58,6 +58,16 @@ app.directive('checkboxSequence', () => {
   }
 })
 
+app.directive('keystrokesTable', () => {
+  return {
+    restrict: 'E',
+    templateUrl: '/ui/admin/keystrokes-table.html',
+    scope: {
+      keystrokes: '=',
+    },
+  }
+})
+
 app.directive('uiSrefActiveAny', ($state) => {
   return {
     restrict: 'A',

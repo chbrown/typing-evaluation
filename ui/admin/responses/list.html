@@ -35,9 +35,7 @@
       <td>{{response.participant_id}}</td>
       <td>{{response.sentence_id}}</td>
       <td>
-        <div ng-repeat="keystroke in response.keystrokes">
-          {{keystroke.timestamp}}: {{keystroke.key}}
-        </div>
+        <keystrokes-table keystrokes="response.keystrokes" />
       </td>
       <td><time>{{response.created | date:"medium"}}</time></td>
     </tr>

@@ -1,0 +1,18 @@
+<table>
+  <thead>
+    <tr>
+      <th>Timestamp</th>
+      <th>Type</th>
+      <th>Key</th>
+      <th>Location</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="keystroke in keystrokes">
+      <td>{{keystroke.timeStamp | number}}</td>
+      <td>{{keystroke.type}}</td>
+      <td>{{keystroke.key}}</td>
+      <td>{{keystroke.location}}</td>
+    </tr>
+  </tbody>
+</table>
