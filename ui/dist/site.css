@@ -10,9 +10,10 @@ form{font-size:90%}
 form .description{font-weight:700}
 form .block{display:block;margin:10px}
 form textarea{width:100%;min-height:50px}
-.sentence-container{margin:10px 0}
-.sentence-container span{white-space:pre-wrap}
-.caret{border-left:1px solid #000}
+.sentence-content{margin:10px 0}
+.sentence-content input,.sentence-content span{font-size:2em;padding:3px;width:100%}
+.sentence-content span{white-space:pre-wrap}
+.sentence-content input{color:#00A44C}
 .flash{position:fixed;top:0;left:0;right:0;z-index:1000;height:35px;vertical-align:middle;text-align:center;color:#DDD;background-color:rgba(0,0,0,.66);pointer-events:none}
 .flash img,.flash span{display:inline-block;vertical-align:middle;margin:6px}
 .admin{font-size:80%}
@@ -33,4 +34,4 @@ form textarea{width:100%;min-height:50px}
 .admin table.fill{width:100%}
 .admin table.fill td:first-child,.admin table.fill th:first-child{padding-left:10px}
 .admin table.fill td:last-child,.admin table.fill th:last-child{padding-right:10px}
-.admin table.lined td,.admin table.lined th{border-bottom:1px solid #DDD}
+.admin table.lined>tbody>tr>td,.admin table.lined>thead>tr>th{border-bottom:1px solid #DDD}
