@@ -9,8 +9,8 @@ services:
     networks:
       - default
   app:
-    build: .
-    image: chbrown/typing-evaluation
+    # build: .
+    image: chbrown/typing-evaluation:2.0.1
     links:
       - db
     environment:
