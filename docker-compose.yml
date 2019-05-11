@@ -1,22 +1,36 @@
-db:
-  image: postgres:11
-app:
-  # image: chbrown/typing-evaluation
-  build: .
-  ports:
-    - "80:80"
-  links:
-    - db
-  environment:
-    - ADMIN_USER=open
-    - ADMIN_PASS=sesame
-    - VIRTUAL_HOST=typingexperiment.com
-  restart: always
-nginx:
-  image: jwilder/nginx-proxy
-  ports:
-    - "80:80"
-    - "443:443"
-  volumes:
-    - "/etc/nginx/certs:/etc/nginx/certs"
-    - "/var/run/docker.sock:/tmp/docker.sock"
+version: "3"
+services:
+  db:
+    image: postgres:11
+    ports:
+      - "5432"
+    volumes:
+      - database:/var/lib/postgresql/data
+    networks:
+      - default
+  app:
+    build: .
+    image: chbrown/typing-evaluation
+    links:
+      - db
+    environment:
+      - ADMIN_USER=open
+      - ADMIN_PASS=sesame
+      - VIRTUAL_HOST=typingexperiment.com
+      - DB_HOST=db
+    restart: unless-stopped
+  nginx:
+    image: jwilder/nginx-proxy
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "certs:/etc/nginx/certs"
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+    environment:
+      - DEFAULT_HOST=typingexperiment.com
+volumes:
+  database:
+  certs:
