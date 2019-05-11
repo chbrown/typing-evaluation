@@ -1,30 +1,29 @@
 ## Deployment
 
-### Install [machine](https://github.com/docker/machine)
+### Install [`docker-machine`](https://github.com/docker/machine)
 
-We're going to use Docker's `machine` to provision and configure our virtual machine. These instructions apply to version 0.2.0 of `machine`.
+We're going to use `docker-machine` to provision and configure our virtual machine.
+These instructions were testing on `docker-machine` version 0.16.1.
 
-    curl -L https://github.com/docker/machine/releases/download/v0.2.0/docker-machine_darwin-amd64 > /usr/local/bin/docker-machine
-    chmod +x /usr/local/bin/docker-machine
+    brew install docker-machine
 
-Now, running `docker-machine -v` should produce the output:
+Now, running `docker-machine --version` should produce the output:
 
-> machine version 0.2.0 (8b9eaf2)
+> docker-machine version 0.16.1, build cce350d
 
 
 ### Start up a droplet on Digital Ocean
 
-You'll need an account on [Digital Ocean](https://www.digitalocean.com/). Once your account is setup, generate a token on the [API](https://cloud.digitalocean.com/settings/applications) page. It should have both `Read` and `Write` scopes. The name you give it doesn't matter, but something like "docker-machine" would make sense. Store this token in your environment like so:
+You'll need an account on [Digital Ocean](https://www.digitalocean.com/).
+Once your account is setup, generate a token on the [API](https://cloud.digitalocean.com/settings/applications) page.
+It should have both `Read` and `Write` scopes. The name you give it doesn't matter, but something like "docker-machine" would make sense.
+Store this token in your environment like so:
 
-    export DO_TOKEN=6c4a0280d36dc219n0t4ctua11ymydigital0ceant0k3n9186729fe910b157bb
+    export DIGITALOCEAN_ACCESS_TOKEN=6c4a0280d36dc219n0t4ctua11ymydigital0ceant0k3n9186729fe910b157bb
 
 Now spin up a Digital Ocean "droplet" (that's what Digital Ocean calls their virtual machines) from the command line:
 
-    docker-machine create -d digitalocean \
-      --digitalocean-access-token $DO_TOKEN \
-      --digitalocean-region nyc3 \
-      --digitalocean-size 512mb \
-      typing-evaluation
+    docker-machine create -d digitalocean --digitalocean-size 512mb typing-evaluation
 
 That will take a minute or two. When it's done, run the following to set the environment variables, `DOCKER_TLS_VERIFY`, `DOCKER_CERT_PATH`, and `DOCKER_HOST`:
 
@@ -34,49 +33,39 @@ Docker commands will now pick up those variables.
 Running `docker ps` now should work, but will only print a list of headers since we haven't yet started any containers.
 
 
-### Run the containers
+### Startup
 
-We'll use a stock PostgreSQL 9.4, and name it `db`:
+The entire stack is defined in [`docker-compose.yml`](docker-compose.yml) which can be deployed with `docker-compose`.
 
-    docker run -d --name db postgres:9.4
+    brew install docker-compose
 
-Before starting nginx, if you have an SSL/TLS key and certificate, put them into `/etc/nginx/certs/` on the droplet:
+_(Work in progress: instructions on SSL certificate handling)_
 
+<!-- Before starting nginx, if you have an SSL/TLS key and certificate, put them into `/etc/nginx/certs/` on the droplet:
     docker-machine ssh typing-evaluation 'mkdir -p /etc/nginx/certs/'
     cat typingexperiment.com.key | docker-machine ssh typing-evaluation 'cat - > /etc/nginx/certs/typingexperiment.com.key'
     cat typingexperiment.com.crt | docker-machine ssh typing-evaluation 'cat - > /etc/nginx/certs/typingexperiment.com.crt'
+-->
 
-It's not too hard to configure the stock `nginx` Dockerfile, but there's a handy auto-configuring container called [`jwilder/nginx-proxy`](https://github.com/jwilder/nginx-proxy) that we'll use instead:
+Before proceeding, you should edit `docker-compose.yml` to change `ADMIN_USER` and `ADMIN_PASS`.
+You may also want to change `VIRTUAL_HOST` to your domain (and `DEFAULT_HOST` to match).
 
-    docker run -d -p 80:80 -p 443:443 -v /etc/nginx/certs:/etc/nginx/certs \
-        -v /var/run/docker.sock:/tmp/docker.sock --name nginx jwilder/nginx-proxy
+Now, ensuring that you're in the same directory as the `docker-compose.yml` file, deploy:
 
-Finally, start the actual web application container:
-
-    # set VIRTUAL_HOST to the hostname you want the app to respond to
-    # ADMIN_USER and ADMIN_PASS are optional, but they're an easy way to
-    # initialize some valid credentials to allow logging into the admin pages.
-    # Of course, you should change them to something else before running this command.
-    docker run -d -e VIRTUAL_HOST=typingexperiment.com -e ADMIN_USER=open -e ADMIN_PASS=sesame \
-        --name app --link db:db --restart always chbrown/typing-evaluation
-
-That will pull the `chbrown/typing-evaluation` Docker container image from [Docker Hub](https://hub.docker.com/r/chbrown/typing-evaluation/), so it might take a while (around five minutes).
-
-The nginx process will have detected the new app container and its `VIRTUAL_HOST` variable, rewriting its configuration to direct requests for `VIRTUAL_HOST` to the application itself.
+    docker-compose up
 
 
 ### Updates
 
-After the first deploy, you can update to the latest version of the app with a shorter sequence of commands:
+Whenever you change the `docker-compose.yml` config, re-deploy like so:
 
     eval "$(docker-machine env typing-evaluation)"
-    docker pull chbrown/typing-evaluation
-    docker rm -f app
-    docker run -d -e VIRTUAL_HOST=typingexperiment.com --link db:db --restart always \
-        --name app chbrown/typing-evaluation
+    docker-compose up
 
 
-## DO API
+---
+
+## Digital Ocean API Reference
 
 An `Authorization` header must be sent with all requests, so we might as well make it reusable:
 
