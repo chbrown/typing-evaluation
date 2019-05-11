@@ -39,16 +39,7 @@ The entire stack is defined in [`docker-compose.yml`](docker-compose.yml) which 
 
     brew install docker-compose
 
-_(Work in progress: instructions on SSL certificate handling)_
-
-<!-- Before starting nginx, if you have an SSL/TLS key and certificate, put them into `/etc/nginx/certs/` on the droplet:
-    docker-machine ssh typing-evaluation 'mkdir -p /etc/nginx/certs/'
-    cat typingexperiment.com.key | docker-machine ssh typing-evaluation 'cat - > /etc/nginx/certs/typingexperiment.com.key'
-    cat typingexperiment.com.crt | docker-machine ssh typing-evaluation 'cat - > /etc/nginx/certs/typingexperiment.com.crt'
--->
-
 Before proceeding, you should edit `docker-compose.yml` to change `ADMIN_USER` and `ADMIN_PASS`.
-You may also want to change `VIRTUAL_HOST` to your domain (and `DEFAULT_HOST` to match).
 
 Now, ensuring that you're in the same directory as the `docker-compose.yml` file, deploy:
 

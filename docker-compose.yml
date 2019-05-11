@@ -11,26 +11,14 @@ services:
   app:
     # build: .
     image: chbrown/typing-evaluation:2.0.1
+    ports:
+      - "80:80"
     links:
       - db
     environment:
       - ADMIN_USER=open
       - ADMIN_PASS=sesame
-      - VIRTUAL_HOST=typingexperiment.com
       - DB_HOST=db
     restart: unless-stopped
-  nginx:
-    image: jwilder/nginx-proxy
-    depends_on:
-      - app
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - "certs:/etc/nginx/certs"
-      - "/var/run/docker.sock:/tmp/docker.sock:ro"
-    environment:
-      - DEFAULT_HOST=typingexperiment.com
 volumes:
   database:
-  certs:
