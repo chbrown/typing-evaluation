@@ -10,7 +10,7 @@ services:
       - default
   app:
     # build: .
-    image: chbrown/typing-evaluation:2.0.1
+    image: chbrown/typing-evaluation:2.0.2
     ports:
       - "80:80"
     links:
