@@ -8,7 +8,7 @@
       <span>{{sentence.content}}</span>
     </div>
     <div class="sentence-content">
-      <input autofocus ng-model="content" ng-blur="inputBlur($event)" ng-keydown="keyEvent($event)" ng-keyup="keyEvent($event)">
+      <input autofocus ng-model="content" ng-blur="inputBlur($event)" ng-keydown="keyEvent($event)" ng-keyup="keyEvent($event)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     </div>
   </div>
 </section>
