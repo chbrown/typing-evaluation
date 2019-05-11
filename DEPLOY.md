@@ -52,7 +52,9 @@ You may also want to change `VIRTUAL_HOST` to your domain (and `DEFAULT_HOST` to
 
 Now, ensuring that you're in the same directory as the `docker-compose.yml` file, deploy:
 
-    docker-compose up
+    docker-compose up --detach
+
+(Without `--detach`, docker will send all the containers' logs to your current terminal session, and stop the containers when you exit the process with Ctrl-C.)
 
 
 ### Updates
@@ -60,7 +62,7 @@ Now, ensuring that you're in the same directory as the `docker-compose.yml` file
 Whenever you change the `docker-compose.yml` config, re-deploy like so:
 
     eval "$(docker-machine env typing-evaluation)"
-    docker-compose up
+    docker-compose up --detach
 
 
 ---
