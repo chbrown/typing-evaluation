@@ -25,9 +25,10 @@ Now spin up a Digital Ocean "droplet" (that's what Digital Ocean calls their vir
 
     docker-machine create -d digitalocean --digitalocean-size 512mb typing-evaluation
 
-That will take a minute or two. When it's done, run the following to set the environment variables, `DOCKER_TLS_VERIFY`, `DOCKER_CERT_PATH`, and `DOCKER_HOST`:
+That will take a minute or two. When it's done, run the following to set the environment variables used by `docker`
+(namely, `DOCKER_TLS_VERIFY`, `DOCKER_HOST`, `DOCKER_CERT_PATH`, and `DOCKER_MACHINE_NAME`):
 
-    eval "$(docker-machine env typing-evaluation)"
+    eval $(docker-machine env typing-evaluation)
 
 Docker commands will now pick up those variables.
 Running `docker ps` now should work, but will only print a list of headers since we haven't yet started any containers.
