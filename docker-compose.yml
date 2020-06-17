@@ -8,6 +8,8 @@ services:
       - database:/var/lib/postgresql/data
     networks:
       - default
+    environment:
+      - POSTGRES_PASSWORD=openpostgresesame
   app:
     # build: .
     image: chbrown/typing-evaluation:2.0.2
@@ -18,7 +20,8 @@ services:
     environment:
       - ADMIN_USER=open
       - ADMIN_PASS=sesame
-      - DB_HOST=db
+      - PGHOST=db
+      - PGPASSWORD=openpostgresesame
     restart: unless-stopped
 volumes:
   database:
