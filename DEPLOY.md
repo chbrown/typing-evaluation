@@ -57,6 +57,13 @@ Whenever you change the `docker-compose.yml` config, re-deploy like so:
     docker-compose up --detach
 
 
+### Destruction
+
+To stop and remove all containers, networks, and volumes (including the database's persistent storage!) created by prior `docker-compose up` commands:
+
+    docker-compose down --volumes
+
+
 ---
 
 ## Digital Ocean API Reference
